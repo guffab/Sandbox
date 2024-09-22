@@ -8,22 +8,29 @@ internal static class SyntaxParser
 {
 #if NETFRAMEWORK
     /// <inheritdoc cref="Split(ReadOnlySpan{char}, ICollection{SyntaxPair}, char)"/>
-    public static SyntaxEnumerator Split(string span, ICollection<SyntaxPair> syntaxPairs, char separator)
-        => Split(span.AsSpan(), syntaxPairs, separator);
+    public static SyntaxEnumerator Split(string input, ICollection<SyntaxPair> syntaxPairs, char separator)
+        => Split(input.AsSpan(), syntaxPairs, separator);
 #endif
+
     /// <summary>
     /// Performs syntax-aware splitting on a span of characters.
     /// </summary>
-    /// <param name="span">The characters to split.</param>
+    /// <param name="input">The characters to split.</param>
     /// <param name="syntaxPairs">The supported syntax identifiers to look out for.</param>
     /// <param name="separator">The separator to split on.</param>
-    public static SyntaxEnumerator Split(ReadOnlySpan<char> span, ICollection<SyntaxPair> syntaxPairs, char separator)
-        => new SyntaxEnumerator(span, syntaxPairs, separator);
+    public static SyntaxEnumerator Split(ReadOnlySpan<char> input, ICollection<SyntaxPair> syntaxPairs, char separator)
+        => new SyntaxEnumerator(input, syntaxPairs, separator);
+
+#if NETFRAMEWORK
+    /// <inheritdoc cref="SliceInBetween(ReadOnlySpan{char}, ICollection{SyntaxPair}, char, char)"/>
+    public static ReadOnlySpan<char> SliceInBetween(string input, ICollection<SyntaxPair> syntaxPairs, char start, char end)
+        => SliceInBetween(input.AsSpan(), syntaxPairs, start, end);
+#endif
 
     /// <summary>
     /// Performs syntax-aware slicing between <paramref name="start"/> and <paramref name="end"/>.
     /// </summary>
-    /// <param name="span">The characters to slice.</param>
+    /// <param name="input">The characters to slice.</param>
     /// <param name="syntaxPairs">The supported syntax identifiers to look out for.</param>
     /// <param name="start">The start of the slice.</param>
     /// <param name="end">The end of the slice.</param>
@@ -31,15 +38,15 @@ internal static class SyntaxParser
     /// The slice will only be performed on the outer-most <paramref name="start"/> and <paramref name="end"/>.<br/>
     /// Slicing may therefore fail if the amount of both does not add up.
     /// </remarks>
-    public static ReadOnlySpan<char> SliceInBetween(ReadOnlySpan<char> span, ICollection<SyntaxPair> syntaxPairs, char start, char end)
+    public static ReadOnlySpan<char> SliceInBetween(ReadOnlySpan<char> input, ICollection<SyntaxPair> syntaxPairs, char start, char end)
     {
         var splitBlocker = new SyntaxSplitBlocker(syntaxPairs);
 
         //find start
-        int splitStart = span.Length;
-        for (int i = 0; i < span.Length; i++)
+        int splitStart = input.Length;
+        for (int i = 0; i < input.Length; i++)
         {
-            var currentChar = span[i];
+            var currentChar = input[i];
 
             //note any blocks
             splitBlocker.Process(currentChar);
@@ -56,9 +63,9 @@ internal static class SyntaxParser
         int surplusOpeners = 0;
 
         //find end
-        for (int i = splitStart; i < span.Length; i++)
+        for (int i = splitStart; i < input.Length; i++)
         {
-            var currentChar = span[i];
+            var currentChar = input[i];
 
             //note any blocks
             splitBlocker.Process(currentChar);
@@ -76,12 +83,12 @@ internal static class SyntaxParser
             {
                 //close all openers first
                 if (surplusOpeners is 0)
-                    return span[splitStart..i];
+                    return input.Slice(splitStart, i - splitStart);
                 else
                     surplusOpeners--;
             }
         }
-        return "";
+        return [];
     }
 
     /// <summary>
@@ -109,7 +116,7 @@ internal static class SyntaxParser
         public SyntaxEnumerator GetEnumerator() => this; //do not rename (duck typing)
 
         /// <summary>The current element of the enumeration. This may only be called after a successful call to <see cref="MoveNext"/></summary>
-        public ReadOnlySpan<char> Current => _span[new Range(_startCurrent, _endCurrent)]; //do not rename (duck typing)
+        public ReadOnlySpan<char> Current => _span.Slice(_startCurrent, _endCurrent - _startCurrent); //do not rename (duck typing)
 
         /// <summary>
         /// Advances the enumerator to the next element of the enumeration.
