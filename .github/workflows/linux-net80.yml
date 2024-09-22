@@ -30,4 +30,4 @@ jobs:
     - name: Build
       run: dotnet build --framework net8.0 --configuration Release --no-restore
     - name: Test
-      run: dotnet test --no-build --framework net8.0 --configuration Release --verbosity quiet
+      run: dotnet test --no-build --framework net8.0 --configuration Release --verbosity minimal
