@@ -16,7 +16,7 @@ jobs:
 
     strategy:
       matrix:
-        dotnet-version: [ '4.8.x', '8.0.x' ]
+        dotnet-version: [ '48', '8.0.x' ]
 
     defaults:
       run:
