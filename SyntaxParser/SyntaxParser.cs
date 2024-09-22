@@ -79,7 +79,7 @@ public static class SyntaxParser
                 continue;
             }
 
-            //if (currentChar == end)
+            if (currentChar == end)
             {
                 //close all openers first
                 if (surplusOpeners is 0)
