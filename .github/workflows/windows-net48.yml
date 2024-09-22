@@ -1,6 +1,8 @@
 # This workflow will build a net48 project on windows
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
 
+name: windows-net48
+
 on:
   push:
     branches: [ "main" ]
@@ -8,7 +10,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build_Net48:
+  build:
 
     runs-on: windows-latest
 
