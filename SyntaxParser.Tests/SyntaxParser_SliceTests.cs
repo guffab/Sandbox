@@ -47,10 +47,10 @@ namespace SyntaxParser.Tests
         private void RunSliceTest(string input, string expectedResult)
         {
             // Act
-            var result = SyntaxParser.SliceInBetween(input, stringSyntax, openingParentheses, closingParentheses);
+            var result = SyntaxParser.SliceInBetween(input, stringSyntax, openingParentheses, closingParentheses).ToString();
 
             // Assert
-            Assert.That(result.ToString() == expectedResult);
+            Assert.That(result == expectedResult, $"Expected '{expectedResult}' but got '{result}' for slicing '{input}'");
         }
     }
 }
