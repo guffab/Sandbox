@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ../SyntaxParser
+        working-directory: ./SyntaxParser
 
     steps:
     - uses: actions/checkout@v4
