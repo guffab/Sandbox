@@ -26,4 +26,4 @@ jobs:
     - name: Build
       run: dotnet build --framework net48 --configuration Release --no-restore
     - name: Test
-      run: dotnet test --no-build --framework net48 --configuration Release --verbosity normal
+      run: dotnet test --no-build --framework net48 --configuration Release --verbosity quiet
