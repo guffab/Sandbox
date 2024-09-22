@@ -24,7 +24,7 @@ public static class SyntaxParser
 #if NETFRAMEWORK
     /// <inheritdoc cref="SliceInBetween(ReadOnlySpan{char}, ICollection{SyntaxPair}, char, char)"/>
     public static ReadOnlySpan<char> SliceInBetween(string input, ICollection<SyntaxPair> syntaxPairs, char start, char end)
-        => SliceInBetween(input.AsSpan(), syntaxPairs, start, end);
+        => [];// SliceInBetween(input.AsSpan(), syntaxPairs, start, end);
 #endif
 
     /// <summary>
