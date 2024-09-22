@@ -37,7 +37,7 @@ namespace SyntaxParser.Tests
             RunSliceTest(input, expectedResult);
         }
 
-        [TestCase("(\"a)", "`b")] //purposefully incorrect test
+        [TestCase("(\"a)", "")]
         [TestCase(" (\"if(,,)) ", "")]
         public void SliceInBetween_BlockingSyntaxStays_ReturnsEmpty(string input, string expectedResult)
         {
