@@ -4,7 +4,7 @@
 /// Handles parsing and interpreting a generic <see cref="string"/> as language syntax.<br/>
 /// The syntax identifiers itself are highly configurable by the caller.
 /// </summary>
-internal static class SyntaxParser
+public static class SyntaxParser
 {
 #if NETFRAMEWORK
     /// <inheritdoc cref="Split(ReadOnlySpan{char}, ICollection{SyntaxPair}, char)"/>
