@@ -10,6 +10,8 @@ internal static class SyntaxParser
     /// <inheritdoc cref="Split(ReadOnlySpan{char}, ICollection{SyntaxPair}, char)"/>
     public static SyntaxEnumerator Split(string input, ICollection<SyntaxPair> syntaxPairs, char separator)
         => Split(input.AsSpan(), syntaxPairs, separator);
+
+#error test net48 build
 #endif
 
     /// <summary>
