@@ -230,4 +230,3 @@ internal static class SyntaxParser
     /// <param name="Priority">The priority of this syntax over another in case of a conflict.</param>
     public readonly record struct SyntaxPair(char Start, char End, int Priority);
 }
-
