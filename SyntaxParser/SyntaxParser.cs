@@ -23,8 +23,8 @@ public static class SyntaxParser
 
 #if NETFRAMEWORK
     /// <inheritdoc cref="SliceInBetween(ReadOnlySpan{char}, ICollection{SyntaxPair}, char, char)"/>
-    public static ReadOnlySpan<char> SliceInBetween(string input, ICollection<SyntaxPair> syntaxPairs, char start, char end)
-        => SliceInBetween(input.AsSpan(), syntaxPairs, start, end);
+    public static ReadOnlySpan<char> SliceInBetween(string input, ICollection<SyntaxPair> syntaxPairs, char start, char end, out ReadOnlySpan<char> remainder)
+        => SliceInBetween(input.AsSpan(), syntaxPairs, start, end, out remainder);
 #endif
 
     /// <summary>
@@ -34,11 +34,12 @@ public static class SyntaxParser
     /// <param name="syntaxPairs">The supported syntax identifiers to look out for.</param>
     /// <param name="start">The start of the slice.</param>
     /// <param name="end">The end of the slice.</param>
+    /// <param name="remainder">The right-hand side of the slice OR the <paramref name="input"/> if the operation fails.</param>
     /// <remarks>
     /// The slice will only be performed on the outer-most <paramref name="start"/> and <paramref name="end"/>.<br/>
     /// Slicing may therefore fail if the amount of both does not add up.
     /// </remarks>
-    public static ReadOnlySpan<char> SliceInBetween(ReadOnlySpan<char> input, ICollection<SyntaxPair> syntaxPairs, char start, char end)
+    public static ReadOnlySpan<char> SliceInBetween(ReadOnlySpan<char> input, ICollection<SyntaxPair> syntaxPairs, char start, char end, out ReadOnlySpan<char> remainder)
     {
         var splitBlocker = new SyntaxSplitBlocker(syntaxPairs);
 
@@ -61,6 +62,7 @@ public static class SyntaxParser
         }
 
         int surplusOpeners = 0;
+        bool startIsEnd = start == end;
 
         //find end
         for (int i = splitStart; i < input.Length; i++)
@@ -73,7 +75,7 @@ public static class SyntaxParser
                 continue;
 
             //find additional openers (this will prevent splitting until they are also closed)
-            if (currentChar == start)
+            if (!startIsEnd && currentChar == start)
             {
                 surplusOpeners++;
                 continue;
@@ -82,12 +84,17 @@ public static class SyntaxParser
             if (currentChar == end)
             {
                 //close all openers first
-                if (surplusOpeners is 0)
-                    return input.Slice(splitStart, i - splitStart);
-                else
+                if (surplusOpeners is not 0)
                     surplusOpeners--;
+                else
+                {
+                    remainder = input.Slice(i + 1);
+                    return input.Slice(splitStart, i - splitStart);
+                }
             }
         }
+
+        remainder = input;
         return [];
     }
 
