@@ -2,16 +2,16 @@ namespace SyntaxParser.Tests
 {
     public class SyntaxParser_SliceTests
     {
-        private const char openingParentheses = '(';
-        private const char closingParentheses = ')';
-        SyntaxParser.SyntaxPair[] fullSyntax;
-        SyntaxParser.SyntaxPair[] stringSyntax;
+        const char openingParentheses = '(';
+        const char closingParentheses = ')';
+        const char separator = ',';
+        private SyntaxParser syntaxParser;
 
         [SetUp]
         public void Setup()
         {
-            fullSyntax = [new SyntaxParser.SyntaxPair('\"', '\"', int.MaxValue), new SyntaxParser.SyntaxPair('(', ')', 0)];
-            stringSyntax = [new SyntaxParser.SyntaxPair('\"', '\"', int.MaxValue)];
+            SyntaxPair[] syntax = [new SyntaxPair('\"', '\"', int.MaxValue), new SyntaxPair('(', ')', 0)];
+            syntaxParser = new SyntaxParser(syntax, separator, openingParentheses, closingParentheses);
         }
 
         [TestCase("(a)", "a")]
@@ -68,10 +68,19 @@ namespace SyntaxParser.Tests
             RunSliceRemainderTest(input, expectedRemainder);
         }
 
-        private void RunSliceTest(string input, string expectedResult, char start = openingParentheses, char end = closingParentheses)
+        private void RunSliceTest(string input, string expectedResult)
         {
             // Act
-            var result = SyntaxParser.SliceInBetween(input, stringSyntax, start, end, out var remainder).ToString();
+            var result = syntaxParser.SliceInBetween(input, out _).ToString();
+
+            // Assert
+            Assert.That(result == expectedResult, $"Expected '{expectedResult}' but got '{result}' for slicing '{input}'");
+        }
+
+        private void RunSliceTest(string input, string expectedResult, char start, char end)
+        {
+            // Act
+            var result = SyntaxParser.SliceInBetween(input, [], start, end, out _).ToString();
 
             // Assert
             Assert.That(result == expectedResult, $"Expected '{expectedResult}' but got '{result}' for slicing '{input}'");
@@ -80,7 +89,7 @@ namespace SyntaxParser.Tests
         private void RunSliceRemainderTest(string input, string expectedRemainder)
         {
             // Act
-            _ = SyntaxParser.SliceInBetween(input, stringSyntax, openingParentheses, closingParentheses, out var spanRemainder);
+            _ = syntaxParser.SliceInBetween(input, out var spanRemainder);
             string remainder = spanRemainder.ToString();
 
             // Assert
