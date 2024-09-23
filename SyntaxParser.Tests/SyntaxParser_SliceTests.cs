@@ -14,6 +14,43 @@ namespace SyntaxParser.Tests
             syntaxParser = new SyntaxParser(syntax, separator, openingParentheses, closingParentheses);
         }
 
+        [TestCase("")]
+        [TestCase(",")]
+        [TestCase("a,b,cd")]
+        public void Split_NoSyntax_PerformRegularSplit(string input)
+        {
+            RunSplitTest(input, input.Split(','));
+        }
+
+        [TestCase("Path(a,b), 100, 500", "Path(a,b)", " 100", " 500")]
+        [TestCase("if (,,), Path(,), 2.5", "if (,,)", " Path(,)", " 2.5")]
+        public void Split_SyntaxIsFinished_ReturnsExpectedSpans(string input, params string[] expectedResult)
+        {
+            RunSplitTest(input, expectedResult);
+        }
+
+        [TestCase("Path(\"),a, b\")", "Path(\"),a, b\")")]
+        [TestCase("Path(\"),a, b\"), c,d", "Path(\"),a, b\")", " c", "d")]
+        public void Split_SyntaxInsideString_ReturnsExpectedSpans(string input, params string[] expectedResult)
+        {
+            RunSplitTest(input, expectedResult);
+        }
+
+        [TestCase("if (a, b , c", "if (a, b , c")]
+        [TestCase("\"a, b , c", "\"a, b , c")]
+        public void Split_IncompleteSyntax_ReturnsInput(string input, params string[] expectedResult)
+        {
+            RunSplitTest(input, expectedResult);
+        }
+
+        [TestCase("\"2,5\"", "\"2,5\"")]
+        [TestCase(" Path(,) ", " Path(,) ")]
+        [TestCase("if(a, b, c) ", "if(a, b, c) ")]
+        public void Split_EnclosingSyntax_ReturnsInput(string input, params string[] expectedResult)
+        {
+            RunSplitTest(input, expectedResult);
+        }
+
         [TestCase("(a)", "a")]
         [TestCase(" (if(,,)) ", "if(,,)")]
         public void SliceInBetween_ValidAmountOfBrackets_ReturnsInner(string input, string expectedResult)
@@ -66,6 +103,18 @@ namespace SyntaxParser.Tests
         public void SliceInBetweenRemainder_ValidAmountOfBrackets_ReturnsTrailingRest(string input, string expectedRemainder)
         {
             RunSliceRemainderTest(input, expectedRemainder);
+        }
+
+        private void RunSplitTest(string input, IList<string> expectedResult)
+        {
+            // Act
+            var result = new List<string>();
+
+            foreach (var subSpan in syntaxParser.Split(input))
+                result.Add(subSpan.ToString());
+
+            // Assert
+            Assert.That(result.SequenceEqual(expectedResult), $"Expected '{string.Join(";", expectedResult)}' (Count = {expectedResult.Count}) but got '{string.Join(";", result)}' (Count = {result.Count}) for splitting '{input}'");
         }
 
         private void RunSliceTest(string input, string expectedResult)
