@@ -4,14 +4,14 @@ namespace SyntaxParser.Tests
     {
         private const char openingParentheses = '(';
         private const char closingParentheses = ')';
-        SyntaxParser.SyntaxPair[] fullSyntax;
-        SyntaxParser.SyntaxPair[] stringSyntax;
+        SyntaxPair[] fullSyntax;
+        SyntaxPair[] stringSyntax;
 
         [SetUp]
         public void Setup()
         {
-            fullSyntax = [new SyntaxParser.SyntaxPair('\"', '\"', int.MaxValue), new SyntaxParser.SyntaxPair('(', ')', 0)];
-            stringSyntax = [new SyntaxParser.SyntaxPair('\"', '\"', int.MaxValue)];
+            fullSyntax = [new SyntaxPair('\"', '\"', int.MaxValue), new SyntaxPair('(', ')', 0)];
+            stringSyntax = [new SyntaxPair('\"', '\"', int.MaxValue)];
         }
 
         [TestCase("(a)", "a")]
