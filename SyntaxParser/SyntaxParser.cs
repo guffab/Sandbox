@@ -22,7 +22,7 @@ public static class SyntaxParser
         => new SyntaxEnumerator(input, syntaxPairs, separator);
 
 #if NETFRAMEWORK
-    /// <inheritdoc cref="SliceInBetween(ReadOnlySpan{char}, ICollection{SyntaxPair}, char, char)"/>
+    /// <inheritdoc cref="SliceInBetween(ReadOnlySpan{char}, ICollection{SyntaxPair}, char, char, out ReadOnlySpan{char})"/>
     public static ReadOnlySpan<char> SliceInBetween(string input, ICollection<SyntaxPair> syntaxPairs, char start, char end, out ReadOnlySpan<char> remainder)
         => SliceInBetween(input.AsSpan(), syntaxPairs, start, end, out remainder);
 #endif
