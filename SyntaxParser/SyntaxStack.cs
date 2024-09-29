@@ -1,32 +1,36 @@
-﻿using System.Diagnostics;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
 namespace SyntaxParser;
 
+// inspired by: https://github.com/dotnet/runtime/blob/main/src/libraries/Common/src/System/Text/ValueStringBuilder.cs
+
 /// <summary>
 /// Represents a stack-based implementation of <see cref="Stack{T}"/> specifically for <see cref="SyntaxPair"/>.
 /// </summary>
-// inspired by: https://github.com/dotnet/runtime/blob/main/src/libraries/Common/src/System/Text/ValueStringBuilder.cs
-internal ref struct SyntaxStack
+/// <param name="initialBuffer">A buffer that will be used as internal storage for this stack.</param>
+/// <remarks>
+/// Once the stack is required to go outside the bounds of the <paramref name="initialBuffer"/> it will allocated a new array on the heap!
+/// </remarks>
+[DebuggerDisplay("Length = {Length}")]
+internal ref struct SyntaxStack(Span<SyntaxPair> initialBuffer)
 {
-    private Span<SyntaxPair> _span;
-    private int _size;
+    private Span<SyntaxPair> _span = initialBuffer; // Storage for stack elements
+    private int _size = 0; // Number of items in the stack
+    private int _version; // Used to keep enumerator in sync w/ collection
+    const int DefaultCapacity = 4;
 
-    public SyntaxStack(Span<SyntaxPair> initialBuffer)
+    public SyntaxStack(int initialCapacity) : this(new SyntaxPair[initialCapacity])
     {
-        _span = initialBuffer;
-        _size = 0;
-    }
-
-    public SyntaxStack(int initialCapacity)
-    {
-        _span = new SyntaxPair[initialCapacity];
-        _size = 0;
     }
 
     public int Length => _size;
 
     public int Capacity => _span.Length;
+
+    public Enumerator GetEnumerator() => new Enumerator(this);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Push(SyntaxPair c)
@@ -37,6 +41,7 @@ internal ref struct SyntaxStack
         {
             chars[pos] = c;
             _size = pos + 1;
+            _version++;
         }
         else
         {
@@ -54,6 +59,7 @@ internal ref struct SyntaxStack
 
         value.CopyTo(_span.Slice(_size));
         _size += value.Length;
+        _version++;
     }
 
     public SyntaxPair Pop()
@@ -66,6 +72,7 @@ internal ref struct SyntaxStack
             throw new InvalidOperationException("Stack is already empty!");
 
         _size = size;
+        _version++;
         return array[size];
     }
 
@@ -75,7 +82,7 @@ internal ref struct SyntaxStack
         Grow(1);
         Push(c);
     }
-     
+
     /// <summary>
     /// Resize the internal buffer either by doubling current buffer size or
     /// by adding <paramref name="additionalCapacityBeyondPos"/> to
@@ -102,5 +109,31 @@ internal ref struct SyntaxStack
 
         _span.Slice(0, _size).CopyTo(newArray);
         _span = newArray;
+    }
+
+    public ref struct Enumerator(SyntaxStack syntaxStack)
+    {
+        private readonly SyntaxStack _stack = syntaxStack;
+        private readonly int _version = syntaxStack._version;
+        private int _index = -2;
+
+        public SyntaxPair Current => _stack._span[_index];
+
+        public bool MoveNext()
+        {
+            if (_version != _stack._version)
+                throw new InvalidOperationException("Collection was modified after the enumerator was instantiated");
+
+            if (_index == -1) // End of enumeration.
+                return false;
+
+            if (_index == -2) // First call to enumerator.
+            {  
+                _index = _stack._size - 1;
+                return _index >= 0;
+            }
+
+            return --_index >= 0;
+        }
     }
 }

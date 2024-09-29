@@ -4,26 +4,23 @@
 /// An object used to look for syntax identifiers and possibly prevent splitting a string/span at the current position.
 /// </summary>
 /// <param name="syntaxPairs">The supported syntax identifiers to look out for.</param>
-public readonly ref struct SyntaxSplitBlocker(ICollection<SyntaxPair> syntaxPairs)
+public ref struct SyntaxSplitBlocker(ICollection<SyntaxPair> syntaxPairs)
 {
     private readonly ICollection<SyntaxPair> syntaxPairs = syntaxPairs;
-    private readonly Stack<SyntaxPair> existingSyntax = new();
-    private readonly SyntaxStack syntaxStack = new();
+    private SyntaxStack syntaxStack = new(4);
 
     /// <summary>
     /// Identifies wether this object is currently preventing a split operation.
     /// </summary>
     public readonly bool IsBlocking()
     {
-        bool a = syntaxStack.Length is not 0;
-
-        return existingSyntax.Count is not 0;
+        return syntaxStack.Length is not 0;
     }
 
     /// <summary>
     /// Processes the next char. This may add or remove a lock.
     /// </summary>
-    public readonly void Process(in char c)
+    public void Process(in char c)
     {
         //complete existing syntax first (this conveniently also handles syntax where [start == end])
         foreach (var syntax in syntaxPairs)
@@ -43,7 +40,6 @@ public readonly ref struct SyntaxSplitBlocker(ICollection<SyntaxPair> syntaxPair
             if (c == syntax.Start)
             {
                 syntaxStack.Push(syntax);
-                existingSyntax.Push(syntax);
                 return;
             }
         }
@@ -52,11 +48,11 @@ public readonly ref struct SyntaxSplitBlocker(ICollection<SyntaxPair> syntaxPair
     /// <summary>
     /// Finishes the last occurence of this <paramref name="syntax"/> if applicable.
     /// </summary>
-    private readonly bool TryFinish(in SyntaxPair syntax)
+    private bool TryFinish(in SyntaxPair syntax)
     {
         int depth = 0;
 
-        foreach (var incompleteSyntax in existingSyntax)
+        foreach (var incompleteSyntax in syntaxStack)
         {
             if (syntax.Priority < incompleteSyntax.Priority)
                 return false;
@@ -67,10 +63,7 @@ public readonly ref struct SyntaxSplitBlocker(ICollection<SyntaxPair> syntaxPair
             if (incompleteSyntax.End == syntax.End)
             {
                 for (int i = 0; i < depth; i++)
-                {
                     syntaxStack.Pop();
-                    existingSyntax.Pop();
-                }
 
                 return true;
             }

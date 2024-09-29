@@ -6,7 +6,7 @@
 public ref struct SyntaxEnumerator
 {
     private readonly ReadOnlySpan<char> _span;
-    private readonly SyntaxSplitBlocker _splitBlocker;
+    private SyntaxSplitBlocker _splitBlocker;
     private readonly char _separator;
 
     private int _startCurrent = -1;
