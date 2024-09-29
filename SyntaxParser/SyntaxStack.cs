@@ -115,7 +115,7 @@ internal ref struct SyntaxStack(Span<SyntaxPair> initialBuffer)
     {
         private readonly SyntaxStack _stack = syntaxStack;
         private readonly int _version = syntaxStack._version;
-        private int _index = -2;
+        private int _index = syntaxStack._size;
 
         public SyntaxPair Current => _stack._span[_index];
 
@@ -126,12 +126,6 @@ internal ref struct SyntaxStack(Span<SyntaxPair> initialBuffer)
 
             if (_index == -1) // End of enumeration.
                 return false;
-
-            if (_index == -2) // First call to enumerator.
-            {  
-                _index = _stack._size - 1;
-                return _index >= 0;
-            }
 
             return --_index >= 0;
         }
