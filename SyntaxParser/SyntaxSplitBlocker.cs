@@ -8,17 +8,15 @@ public readonly ref struct SyntaxSplitBlocker(ICollection<SyntaxPair> syntaxPair
 {
     private readonly ICollection<SyntaxPair> syntaxPairs = syntaxPairs;
     private readonly Stack<SyntaxPair> existingSyntax = new();
-
-    /// <summary>
-    /// The amount of blockers currently present.
-    /// </summary>
-    public readonly int Count => existingSyntax.Count;
+    private readonly SyntaxStack syntaxStack = new();
 
     /// <summary>
     /// Identifies wether this object is currently preventing a split operation.
     /// </summary>
     public readonly bool IsBlocking()
     {
+        bool a = syntaxStack.Length is not 0;
+
         return existingSyntax.Count is not 0;
     }
 
@@ -44,6 +42,7 @@ public readonly ref struct SyntaxSplitBlocker(ICollection<SyntaxPair> syntaxPair
         {
             if (c == syntax.Start)
             {
+                syntaxStack.Push(syntax);
                 existingSyntax.Push(syntax);
                 return;
             }
@@ -68,7 +67,10 @@ public readonly ref struct SyntaxSplitBlocker(ICollection<SyntaxPair> syntaxPair
             if (incompleteSyntax.End == syntax.End)
             {
                 for (int i = 0; i < depth; i++)
+                {
+                    syntaxStack.Pop();
                     existingSyntax.Pop();
+                }
 
                 return true;
             }
