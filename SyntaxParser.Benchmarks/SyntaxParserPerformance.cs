@@ -34,7 +34,7 @@ namespace SyntaxParser.Benchmarks
         [Benchmark]
         public int Splittable()
         {
-            ReadOnlySpan<char> input = "Path(((()))), 313, 12";
+            ReadOnlySpan<char> input = "Path(((((()))))), 313, 12";
             return RunTest(input);
         }
 
