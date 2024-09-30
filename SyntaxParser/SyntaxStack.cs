@@ -113,7 +113,7 @@ internal ref struct SyntaxStack(Span<SyntaxPair> initialBuffer)
         _span = newArray;
     }
 
-    public ref struct Enumerator(SyntaxStack syntaxStack)
+    public ref struct Enumerator(scoped in SyntaxStack syntaxStack)
     {
         private readonly SyntaxStack _stack = syntaxStack;
         private readonly int _version = syntaxStack._version;

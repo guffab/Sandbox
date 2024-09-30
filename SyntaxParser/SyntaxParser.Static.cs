@@ -3,7 +3,7 @@
 public partial class SyntaxParser
 {
 #if NETFRAMEWORK
-    /// <inheritdoc cref="Split(ReadOnlySpan{char}, ICollection{SyntaxPair}, char)"/>
+    /// <inheritdoc cref="Split(ReadOnlySpan{char}, ICollection{SyntaxPair}, char, Span{SyntaxPair})"/>
     public static SyntaxEnumerator Split(string input, ICollection<SyntaxPair> syntaxPairs, char separator, Span<SyntaxPair> initialBuffer = default)
         => Split(input.AsSpan(), syntaxPairs, separator, initialBuffer);
 #endif

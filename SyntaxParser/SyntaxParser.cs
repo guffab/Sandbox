@@ -19,12 +19,12 @@ public partial class SyntaxParser(ICollection<SyntaxPair> syntax, char separator
 #if NETFRAMEWORK
     /// <inheritdoc cref="SyntaxParser.Split(string, ICollection{SyntaxPair}, char, Span{SyntaxPair})"/>
     public SyntaxEnumerator Split(string input, Span<SyntaxPair> initialBuffer = default)
-        => SyntaxParser.Split(input, fullSyntax, separator);
+        => SyntaxParser.Split(input, fullSyntax, separator, initialBuffer);
 #endif
 
     /// <inheritdoc cref="SyntaxParser.Split(ReadOnlySpan{char}, ICollection{SyntaxPair}, char, Span{SyntaxPair})"/>
     public SyntaxEnumerator Split(ReadOnlySpan<char> input, Span<SyntaxPair> initialBuffer = default)
-        => SyntaxParser.Split(input, fullSyntax, separator);
+        => SyntaxParser.Split(input, fullSyntax, separator, initialBuffer);
 
 #if NETFRAMEWORK
     /// <inheritdoc cref="SyntaxParser.SliceInBetween(string, ICollection{SyntaxPair}, char, char, out ReadOnlySpan{char})"/>
