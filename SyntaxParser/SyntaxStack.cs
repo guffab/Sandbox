@@ -73,6 +73,27 @@ internal ref struct SyntaxStack(Span<SyntaxPair> initialBuffer)
         return array[size];
     }
 
+    /// <summary>
+    /// Returns a value that indicates wether there is an object at the top of the <see cref="SyntaxStack"/>, and if one is present, copies it to the <paramref name="result"/> parameter. The object is not removed from the <see cref="SyntaxStack"/>.
+    /// </summary>
+    /// <param name="result">If present, the object at the top of the stack; otherwise, its default value.</param>
+    /// <returns>
+    /// <see langword="true"/> if there is an object at the top of the stack; <see langword="false"/> if the stack is empty.
+    /// </returns>
+    public bool TryPeek(out SyntaxPair result)
+    {
+        var size = _size - 1;
+        var array = _span;
+
+        if ((uint)size >= (uint)array.Length)
+        {
+            result = default;
+            return false;
+        }
+        result = array[size];
+        return true;
+    }
+
     // Non-inline from Stack.Push to improve its code quality as uncommon path
     [MethodImpl(MethodImplOptions.NoInlining)]
     private void PushWithResize(SyntaxPair c)
