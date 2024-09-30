@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 namespace SyntaxParser;
 
 // inspired by: https://github.com/dotnet/runtime/blob/main/src/libraries/Common/src/System/Text/ValueStringBuilder.cs
+//          and: https://github.com/dotnet/runtime/blob/main/src/libraries/System.Collections/src/System/Collections/Generic/Stack.cs
 
 /// <summary>
 /// Represents a stack-based implementation of <see cref="Stack{T}"/> specifically for <see cref="SyntaxPair"/>.
@@ -18,7 +19,6 @@ internal ref struct SyntaxStack(Span<SyntaxPair> initialBuffer)
     private Span<SyntaxPair> _span = initialBuffer; // Storage for stack elements
     private int _size= 0; // Number of items in the stack
     private int _version; // Used to keep enumerator in sync w/ collection
-    const int DefaultCapacity = 4;
 
     public SyntaxStack(int initialCapacity) : this(new SyntaxPair[initialCapacity])
     {
