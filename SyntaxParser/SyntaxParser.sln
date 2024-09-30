@@ -5,7 +5,9 @@ VisualStudioVersion = 17.11.35312.102
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SyntaxParser", "SyntaxParser.csproj", "{014E5261-FED7-47B7-B3CC-22EFBFDF5FD9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyntaxParser.Tests", "..\SyntaxParser.Tests\SyntaxParser.Tests.csproj", "{9BC706A6-F33A-4788-8755-9338A8F9E27C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SyntaxParser.Tests", "..\SyntaxParser.Tests\SyntaxParser.Tests.csproj", "{9BC706A6-F33A-4788-8755-9338A8F9E27C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyntaxParser.Benchmarks", "..\SyntaxParser.Benchmarks\SyntaxParser.Benchmarks.csproj", "{14A5B8EB-6845-41E4-8EF3-0E1D9CC5498B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{9BC706A6-F33A-4788-8755-9338A8F9E27C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9BC706A6-F33A-4788-8755-9338A8F9E27C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9BC706A6-F33A-4788-8755-9338A8F9E27C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{14A5B8EB-6845-41E4-8EF3-0E1D9CC5498B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{14A5B8EB-6845-41E4-8EF3-0E1D9CC5498B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{14A5B8EB-6845-41E4-8EF3-0E1D9CC5498B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{14A5B8EB-6845-41E4-8EF3-0E1D9CC5498B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
