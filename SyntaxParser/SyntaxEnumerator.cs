@@ -6,7 +6,7 @@
 public ref struct SyntaxEnumerator
 {
     private readonly ReadOnlySpan<char> _span;
-    private readonly SyntaxSplitBlocker _splitBlocker;
+    private SyntaxSplitBlocker _splitBlocker;
     private readonly char _separator;
 
     private int _startCurrent = -1;
@@ -14,10 +14,10 @@ public ref struct SyntaxEnumerator
 
     const int separatorLength = 1;
 
-    internal SyntaxEnumerator(ReadOnlySpan<char> span, SyntaxPair[] syntaxPairs, char separator)
+    internal SyntaxEnumerator(ReadOnlySpan<char> span, SyntaxPair[] syntaxPairs, char separator, Span<SyntaxPair> initialBuffer)
     {
         _span = span;
-        _splitBlocker = new SyntaxSplitBlocker(syntaxPairs);
+        _splitBlocker = new SyntaxSplitBlocker(syntaxPairs, initialBuffer);
         _separator = separator;
     }
 

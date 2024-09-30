@@ -17,14 +17,14 @@ public partial class SyntaxParser(SyntaxPair[] syntax, char separator, char star
     private readonly char end = end;
 
 #if NETFRAMEWORK
-    /// <inheritdoc cref="SyntaxParser.Split(string, SyntaxPair[], char)"/>
-    public SyntaxEnumerator Split(string input)
-        => SyntaxParser.Split(input, fullSyntax, separator);
+    /// <inheritdoc cref="SyntaxParser.Split(string, SyntaxPair[], char, Span{SyntaxPair})"/>
+    public SyntaxEnumerator Split(string input, Span<SyntaxPair> initialBuffer = default)
+        => SyntaxParser.Split(input, fullSyntax, separator, initialBuffer);
 #endif
 
-    /// <inheritdoc cref="SyntaxParser.Split(ReadOnlySpan{char}, SyntaxPair[], char)"/>
-    public SyntaxEnumerator Split(ReadOnlySpan<char> input)
-        => SyntaxParser.Split(input, fullSyntax, separator);
+    /// <inheritdoc cref="SyntaxParser.Split(ReadOnlySpan{char}, SyntaxPair[], char, Span{SyntaxPair})"/>
+    public SyntaxEnumerator Split(ReadOnlySpan<char> input, Span<SyntaxPair> initialBuffer = default)
+        => SyntaxParser.Split(input, fullSyntax, separator, initialBuffer);
 
 #if NETFRAMEWORK
     /// <inheritdoc cref="SyntaxParser.SliceInBetween(string, SyntaxPair[], char, char, out ReadOnlySpan{char})"/>

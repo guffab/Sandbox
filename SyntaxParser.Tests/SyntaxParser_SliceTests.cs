@@ -110,7 +110,7 @@ namespace SyntaxParser.Tests
             // Act
             var result = new List<string>();
 
-            foreach (var subSpan in syntaxParser.Split(input))
+            foreach (var subSpan in syntaxParser.Split(input, stackalloc SyntaxPair[64]))
                 result.Add(subSpan.ToString());
 
             // Assert
