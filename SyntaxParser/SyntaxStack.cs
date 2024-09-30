@@ -99,13 +99,19 @@ internal ref struct SyntaxStack(Span<SyntaxPair> initialBuffer)
         Debug.Assert(additionalCapacityBeyondPos > 0);
         Debug.Assert(_size > _span.Length - additionalCapacityBeyondPos, "Grow called incorrectly, no resize is needed.");
 
+        const int DefaultCapacity = 4;
         const uint ArrayMaxLength = 0x7FFFFFC7; // same as Array.MaxLength
 
-        // Increase to at least the required size (_pos + additionalCapacityBeyondPos), but try
-        // to double the size if possible, bounding the doubling to not go beyond the max array length.
-        int newCapacity = (int)Math.Max(
-            (uint)(_size + additionalCapacityBeyondPos),
-            Math.Min((uint)_span.Length * 2, ArrayMaxLength));
+        int newCapacity = DefaultCapacity;
+
+        if (_span.Length is not 0)
+        {
+            // Increase to at least the required size (_pos + additionalCapacityBeyondPos), but try
+            // to double the size if possible, bounding the doubling to not go beyond the max array length.
+            newCapacity = (int)Math.Max(
+                (uint)(_size + additionalCapacityBeyondPos),
+                Math.Min((uint)_span.Length * 2, ArrayMaxLength));
+        }
 
         var newArray = new SyntaxPair[newCapacity];
 
