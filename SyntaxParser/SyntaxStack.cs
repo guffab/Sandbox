@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
 namespace SyntaxParser;
@@ -35,17 +33,16 @@ internal ref struct SyntaxStack(Span<SyntaxPair> initialBuffer)
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Push(SyntaxPair c)
     {
-        int pos = _size;
-        Span<SyntaxPair> chars = _span;
-        if ((uint)pos < (uint)chars.Length)
+        //cast to unsigned accounts for overflow
+        if ((uint)_size < (uint)_span.Length)
         {
-            chars[pos] = c;
-            _size = pos + 1;
+            _span[_size] = c;
+            _size++;
             _version++;
         }
         else
         {
-            GrowAndAppend(c);
+            PushWithResize(c);
         }
     }
 
@@ -76,11 +73,16 @@ internal ref struct SyntaxStack(Span<SyntaxPair> initialBuffer)
         return array[size];
     }
 
+    // Non-inline from Stack.Push to improve its code quality as uncommon path
     [MethodImpl(MethodImplOptions.NoInlining)]
-    private void GrowAndAppend(SyntaxPair c)
+    private void PushWithResize(SyntaxPair c)
     {
+        Debug.Assert(_size == _span.Length);
         Grow(1);
-        Push(c);
+
+        _span[_size] = c;
+        _size++;
+        _version++;
     }
 
     /// <summary>

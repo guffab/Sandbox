@@ -7,7 +7,7 @@
 public ref struct SyntaxSplitBlocker(ICollection<SyntaxPair> syntaxPairs)
 {
     private readonly ICollection<SyntaxPair> syntaxPairs = syntaxPairs;
-    private SyntaxStack syntaxStack = new(4);
+    private SyntaxStack syntaxStack = new();
 
     /// <summary>
     /// Identifies wether this object is currently preventing a split operation.
