@@ -5,9 +5,9 @@
 /// </summary>
 /// <param name="syntaxPairs">The supported syntax identifiers to look out for.</param>
 /// <param name="initialBuffer">A buffer that will be used as internal storage.</param>
-public ref struct SyntaxSplitBlocker(ICollection<SyntaxPair> syntaxPairs, Span<SyntaxPair> initialBuffer = default)
+public ref struct SyntaxSplitBlocker(SyntaxPair[] syntaxPairs, Span<SyntaxPair> initialBuffer = default)
 {
-    private readonly ICollection<SyntaxPair> syntaxPairs = syntaxPairs;
+    private readonly SyntaxPair[] syntaxPairs = syntaxPairs;
     private SyntaxStack syntaxStack = new(initialBuffer);
 
     /// <summary>

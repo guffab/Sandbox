@@ -14,7 +14,7 @@ public ref struct SyntaxEnumerator
 
     const int separatorLength = 1;
 
-    internal SyntaxEnumerator(ReadOnlySpan<char> span, ICollection<SyntaxPair> syntaxPairs, char separator, Span<SyntaxPair> initialBuffer)
+    internal SyntaxEnumerator(ReadOnlySpan<char> span, SyntaxPair[] syntaxPairs, char separator, Span<SyntaxPair> initialBuffer)
     {
         _span = span;
         _splitBlocker = new SyntaxSplitBlocker(syntaxPairs, initialBuffer);
