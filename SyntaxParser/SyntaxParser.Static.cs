@@ -3,8 +3,8 @@
 public partial class SyntaxParser
 {
 #if NETFRAMEWORK
-    /// <inheritdoc cref="Split(ReadOnlySpan{char}, ICollection{SyntaxPair}, char)"/>
-    public static SyntaxEnumerator Split(string input, ICollection<SyntaxPair> syntaxPairs, char separator)
+    /// <inheritdoc cref="Split(ReadOnlySpan{char}, SyntaxPair[], char)"/>
+    public static SyntaxEnumerator Split(string input, SyntaxPair[] syntaxPairs, char separator)
         => Split(input.AsSpan(), syntaxPairs, separator);
 #endif
 
@@ -14,12 +14,12 @@ public partial class SyntaxParser
     /// <param name="input">The characters to split.</param>
     /// <param name="syntaxPairs">The supported syntax identifiers to look out for.</param>
     /// <param name="separator">The separator to split on.</param>
-    public static SyntaxEnumerator Split(ReadOnlySpan<char> input, ICollection<SyntaxPair> syntaxPairs, char separator)
+    public static SyntaxEnumerator Split(ReadOnlySpan<char> input, SyntaxPair[] syntaxPairs, char separator)
         => new SyntaxEnumerator(input, syntaxPairs, separator);
 
 #if NETFRAMEWORK
-    /// <inheritdoc cref="SliceInBetween(ReadOnlySpan{char}, ICollection{SyntaxPair}, char, char, out ReadOnlySpan{char})"/>
-    public static ReadOnlySpan<char> SliceInBetween(string input, ICollection<SyntaxPair> syntaxPairs, char start, char end, out ReadOnlySpan<char> remainder)
+    /// <inheritdoc cref="SliceInBetween(ReadOnlySpan{char}, SyntaxPair[], char, char, out ReadOnlySpan{char})"/>
+    public static ReadOnlySpan<char> SliceInBetween(string input, SyntaxPair[] syntaxPairs, char start, char end, out ReadOnlySpan<char> remainder)
         => SliceInBetween(input.AsSpan(), syntaxPairs, start, end, out remainder);
 #endif
 
@@ -35,7 +35,7 @@ public partial class SyntaxParser
     /// The slice will only be performed on the outer-most <paramref name="start"/> and <paramref name="end"/>.<br/>
     /// Slicing may therefore fail if the amount of both does not add up.
     /// </remarks>
-    public static ReadOnlySpan<char> SliceInBetween(ReadOnlySpan<char> input, ICollection<SyntaxPair> syntaxPairs, char start, char end, out ReadOnlySpan<char> remainder)
+    public static ReadOnlySpan<char> SliceInBetween(ReadOnlySpan<char> input, SyntaxPair[] syntaxPairs, char start, char end, out ReadOnlySpan<char> remainder)
     {
         var splitBlocker = new SyntaxSplitBlocker(syntaxPairs);
 
