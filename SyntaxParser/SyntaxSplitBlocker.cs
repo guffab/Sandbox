@@ -4,10 +4,11 @@
 /// An object used to look for syntax identifiers and possibly prevent splitting a string/span at the current position.
 /// </summary>
 /// <param name="syntaxPairs">The supported syntax identifiers to look out for.</param>
-public ref struct SyntaxSplitBlocker(ICollection<SyntaxPair> syntaxPairs)
+/// <param name="initialBuffer">A buffer that will be used as internal storage.</param>
+public ref struct SyntaxSplitBlocker(ICollection<SyntaxPair> syntaxPairs, Span<SyntaxPair> initialBuffer = default)
 {
     private readonly ICollection<SyntaxPair> syntaxPairs = syntaxPairs;
-    private SyntaxStack syntaxStack = new();
+    private SyntaxStack syntaxStack = new(initialBuffer);
 
     /// <summary>
     /// Identifies wether this object is currently preventing a split operation.

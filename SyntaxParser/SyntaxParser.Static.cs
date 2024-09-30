@@ -4,8 +4,8 @@ public partial class SyntaxParser
 {
 #if NETFRAMEWORK
     /// <inheritdoc cref="Split(ReadOnlySpan{char}, ICollection{SyntaxPair}, char)"/>
-    public static SyntaxEnumerator Split(string input, ICollection<SyntaxPair> syntaxPairs, char separator)
-        => Split(input.AsSpan(), syntaxPairs, separator);
+    public static SyntaxEnumerator Split(string input, ICollection<SyntaxPair> syntaxPairs, char separator, Span<SyntaxPair> initialBuffer = default)
+        => Split(input.AsSpan(), syntaxPairs, separator, initialBuffer);
 #endif
 
     /// <summary>
@@ -14,8 +14,9 @@ public partial class SyntaxParser
     /// <param name="input">The characters to split.</param>
     /// <param name="syntaxPairs">The supported syntax identifiers to look out for.</param>
     /// <param name="separator">The separator to split on.</param>
-    public static SyntaxEnumerator Split(ReadOnlySpan<char> input, ICollection<SyntaxPair> syntaxPairs, char separator)
-        => new SyntaxEnumerator(input, syntaxPairs, separator);
+    /// <param name="initialBuffer">A buffer that will be used as internal storage.</param>
+    public static SyntaxEnumerator Split(ReadOnlySpan<char> input, ICollection<SyntaxPair> syntaxPairs, char separator, Span<SyntaxPair> initialBuffer = default)
+        => new SyntaxEnumerator(input, syntaxPairs, separator, initialBuffer);
 
 #if NETFRAMEWORK
     /// <inheritdoc cref="SliceInBetween(ReadOnlySpan{char}, ICollection{SyntaxPair}, char, char, out ReadOnlySpan{char})"/>
@@ -37,7 +38,7 @@ public partial class SyntaxParser
     /// </remarks>
     public static ReadOnlySpan<char> SliceInBetween(ReadOnlySpan<char> input, ICollection<SyntaxPair> syntaxPairs, char start, char end, out ReadOnlySpan<char> remainder)
     {
-        var splitBlocker = new SyntaxSplitBlocker(syntaxPairs);
+        var splitBlocker = new SyntaxSplitBlocker(syntaxPairs, stackalloc SyntaxPair[64]);
 
         //find start
         int splitStart = input.Length;
