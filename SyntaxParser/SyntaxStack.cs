@@ -28,7 +28,7 @@ internal ref struct SyntaxStack(Span<SyntaxPair> initialBuffer)
 
     public int Capacity => _span.Length;
 
-    public Enumerator GetEnumerator() => new Enumerator(this);
+    public Enumerator GetEnumerator() => new Enumerator(this); //do not rename (duck typing)
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Push(SyntaxPair c)
@@ -119,9 +119,9 @@ internal ref struct SyntaxStack(Span<SyntaxPair> initialBuffer)
         private readonly int _version = syntaxStack._version;
         private int _index = syntaxStack._size;
 
-        public SyntaxPair Current => _stack._span[_index];
+        public SyntaxPair Current => _stack._span[_index]; //do not rename (duck typing)
 
-        public bool MoveNext()
+        public bool MoveNext() //do not rename (duck typing)
         {
             if (_version != _stack._version)
                 throw new InvalidOperationException("Collection was modified after the enumerator was instantiated");
