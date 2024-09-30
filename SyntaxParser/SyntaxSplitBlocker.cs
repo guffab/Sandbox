@@ -4,9 +4,9 @@
 /// An object used to look for syntax identifiers and possibly prevent splitting a string/span at the current position.
 /// </summary>
 /// <param name="syntaxPairs">The supported syntax identifiers to look out for.</param>
-public readonly ref struct SyntaxSplitBlocker(ICollection<SyntaxPair> syntaxPairs)
+public readonly ref struct SyntaxSplitBlocker(SyntaxPair[] syntaxPairs)
 {
-    private readonly ICollection<SyntaxPair> syntaxPairs = syntaxPairs;
+    private readonly SyntaxPair[] syntaxPairs = syntaxPairs;
     private readonly Stack<SyntaxPair> existingSyntax = new();
 
     /// <summary>
