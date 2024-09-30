@@ -16,7 +16,7 @@ namespace SyntaxParser;
 internal ref struct SyntaxStack(Span<SyntaxPair> initialBuffer)
 {
     private Span<SyntaxPair> _span = initialBuffer; // Storage for stack elements
-    private int _size = 0; // Number of items in the stack
+    private int _size= 0; // Number of items in the stack
     private int _version; // Used to keep enumerator in sync w/ collection
     const int DefaultCapacity = 4;
 
