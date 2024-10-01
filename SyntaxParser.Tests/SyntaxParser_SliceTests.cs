@@ -29,6 +29,12 @@ namespace SyntaxParser.Tests
             RunSplitTest(input, expectedResult);
         }
 
+        [TestCase("Formula((),),3", "Formula((),)", "3")]
+        public void Split_SyntaxInterferes_ReturnsExpectedSpans(string input, params string[] expectedResult)
+        {
+            RunSplitTest(input, expectedResult);
+        }
+
         [TestCase("Path(\"),a, b\")", "Path(\"),a, b\")")]
         [TestCase("Path(\"),a, b\"), c,d", "Path(\"),a, b\")", " c", "d")]
         public void Split_SyntaxInsideString_ReturnsExpectedSpans(string input, params string[] expectedResult)
