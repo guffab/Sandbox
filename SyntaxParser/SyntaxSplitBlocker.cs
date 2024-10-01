@@ -40,7 +40,12 @@ public ref struct SyntaxSplitBlocker(SyntaxPair[] syntaxPairs, Span<SyntaxPair> 
         {
             if (c == syntax.Start)
             {
-                syntaxStack.Push(syntax);
+                bool isPriorityHighEnough = !syntaxStack.TryPeek(out var previous) //empty stack
+                                            || syntax.Priority >= previous.Priority; //same or higher priority than last syntax
+
+                if (isPriorityHighEnough)
+                    syntaxStack.Push(syntax);
+
                 return;
             }
         }
