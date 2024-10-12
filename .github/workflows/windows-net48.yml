@@ -27,20 +27,5 @@ jobs:
       run: dotnet build --framework net48 --configuration Release --no-restore
     - name: Test
       run: dotnet test --no-build --framework net48 --configuration Release --verbosity minimal
-
-  # We provide an example implementation as a showcase
-  build_Example-Project:
-  
-    runs-on: windows-latest
-
-    defaults:
-      run:
-        working-directory: ./Examples\Example.SyntaxParser
-
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-    - name: Restore dependencies
-      run: dotnet restore
-    - name: Build
-      run: dotnet build --framework net48 --configuration Release --no-restore
+    - name: Build example project
+      run: dotnet build "../Examples/Example.SyntaxParser/Example.SyntaxParser.sln" --framework net48 --configuration Release --no-restore
