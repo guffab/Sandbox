@@ -3,7 +3,7 @@
 namespace Example
 {
     /// <summary>
-    /// This class serves as a rough guidance for building a custom language parser using <see cref="SyntaxParser.SyntaxParser"/>. <br/>
+    /// This class serves as a rough guidance for building a custom language parser using <see cref="SyntaxView"/>. <br/>
     /// </summary>
     /// <remarks>
     /// It is currently built to parse an excel-formula-like syntax, but you can simply adapt and mix up the syntax as required by <b>your</b> language definition.
@@ -13,7 +13,7 @@ namespace Example
         private const char openingParentheses = '(';
         private const char closingParentheses = ')';
         private const char quote = '\"';
-        private SyntaxParser.SyntaxParser syntaxParser;
+        private SyntaxView syntaxParser;
 
         public MyLanguageParser()
         {
@@ -22,7 +22,7 @@ namespace Example
                 new SyntaxPair(openingParentheses, closingParentheses, 0), //note how parentheses are here defined as "regular" syntax
                 new SyntaxPair(quote, quote, int.MaxValue)                 //while quotes have the highest priority (because they usually serve as string identifiers)
             ];
-            syntaxParser = new SyntaxParser.SyntaxParser(syntax, ',', openingParentheses, closingParentheses);
+            syntaxParser = new SyntaxView(syntax, ',', openingParentheses, closingParentheses);
         }
 
         //callers may provide a string, but by using spans internally, we can make more efficient computations

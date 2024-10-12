@@ -1,4 +1,4 @@
-﻿namespace SyntaxParser;
+﻿namespace SyntaxScanner;
 
 public partial class SyntaxView
 {

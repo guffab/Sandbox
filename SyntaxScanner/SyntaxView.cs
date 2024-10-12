@@ -1,4 +1,4 @@
-﻿namespace SyntaxParser;
+﻿namespace SyntaxScanner;
 
 /// <summary>
 /// Creates syntax-enhanced views over generic <see cref="string"/> input.<br/>

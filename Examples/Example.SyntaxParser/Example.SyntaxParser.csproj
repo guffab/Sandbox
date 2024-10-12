@@ -7,8 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="SyntaxParser">
-      <HintPath>..\..\SyntaxParser\obj\Release\net8.0\SyntaxParser.dll</HintPath>
+    <Reference Include="SyntaxScanner">
+      <HintPath>..\..\SyntaxScanner\obj\Release\net8.0\SyntaxScanner.dll</HintPath>
     </Reference>
   </ItemGroup>
 
