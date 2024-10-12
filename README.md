@@ -10,4 +10,4 @@ While a previous implementation was based on `string`, the most recent implement
 
 ### Sounds cool, but how do I use it? :eyes:
 
-Take a look at the example implementation [here](/Examples/Example.SyntaxParser/).
+Take a look at the example implementation [here](/Examples/Example.SyntaxScanner/).
