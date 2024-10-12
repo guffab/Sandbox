@@ -31,5 +31,7 @@ jobs:
       run: dotnet build --framework net8.0 --configuration Release --no-restore
     - name: Test
       run: dotnet test --no-build --framework net8.0 --configuration Release --verbosity minimal
+    - name: Restore example project
+      run: dotnet restore "../Examples/Example.SyntaxParser"
     - name: Build example project
       run: dotnet build "../Examples/Example.SyntaxParser/Example.SyntaxParser.sln" --framework net8.0 --configuration Release --no-restore
