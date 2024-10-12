@@ -1,17 +1,17 @@
 namespace SyntaxParser.Tests
 {
-    public class SyntaxParser_SliceTests
+    public class SyntaxView_SliceTests
     {
         const char openingParentheses = '(';
         const char closingParentheses = ')';
         const char separator = ',';
-        private SyntaxParser syntaxParser;
+        private SyntaxView syntaxParser;
 
         [SetUp]
         public void Setup()
         {
             SyntaxPair[] syntax = [new SyntaxPair('\"', '\"', int.MaxValue), new SyntaxPair('(', ')', 0)];
-            syntaxParser = new SyntaxParser(syntax, separator, openingParentheses, closingParentheses);
+            syntaxParser = new SyntaxView(syntax, separator, openingParentheses, closingParentheses);
         }
 
         [TestCase("")]
@@ -135,7 +135,7 @@ namespace SyntaxParser.Tests
         private void RunSliceTest(string input, string expectedResult, char start, char end)
         {
             // Act
-            var result = SyntaxParser.SliceInBetween(input, [], start, end, out _).ToString();
+            var result = SyntaxView.SliceInBetween(input, [], start, end, out _).ToString();
 
             // Assert
             Assert.That(result == expectedResult, $"Expected '{expectedResult}' but got '{result}' for slicing '{input}'");
