@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35312.102
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example.SyntaxParser", "Example.SyntaxParser.csproj", "{FAEB447A-56FF-42F6-8B2B-466335DA929C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example.SyntaxScanner", "Example.SyntaxScanner.csproj", "{FAEB447A-56FF-42F6-8B2B-466335DA929C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

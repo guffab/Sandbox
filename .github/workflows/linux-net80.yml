@@ -32,4 +32,4 @@ jobs:
     - name: Test
       run: dotnet test --no-build --framework net8.0 --configuration Release --verbosity minimal
     - name: Build example project
-      run: dotnet build "../Examples/Example.SyntaxParser/Example.SyntaxParser.sln" --framework net8.0 --configuration Release
+      run: dotnet build "../Examples/Example.SyntaxScanner/Example.SyntaxScanner.sln" --framework net8.0 --configuration Release
