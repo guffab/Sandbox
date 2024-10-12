@@ -28,4 +28,4 @@ jobs:
     - name: Test
       run: dotnet test --no-build --framework net48 --configuration Release --verbosity minimal
     - name: Build example project
-      run: dotnet build "../Examples/Example.SyntaxParser/Example.SyntaxParser.sln" --framework net48 --configuration Release
+      run: dotnet build "../Examples/Example.SyntaxScanner/Example.SyntaxScanner.sln" --framework net48 --configuration Release
