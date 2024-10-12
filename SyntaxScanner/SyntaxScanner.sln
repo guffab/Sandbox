@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35312.102
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SyntaxParser", "SyntaxParser.csproj", "{014E5261-FED7-47B7-B3CC-22EFBFDF5FD9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SyntaxScanner", "SyntaxScanner.csproj", "{014E5261-FED7-47B7-B3CC-22EFBFDF5FD9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyntaxParser.Tests", "..\SyntaxParser.Tests\SyntaxParser.Tests.csproj", "{9BC706A6-F33A-4788-8755-9338A8F9E27C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyntaxScanner.Tests", "..\SyntaxScanner.Tests\SyntaxScanner.Tests.csproj", "{9BC706A6-F33A-4788-8755-9338A8F9E27C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

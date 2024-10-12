@@ -1,6 +1,6 @@
 ﻿namespace SyntaxParser;
 
-public partial class SyntaxParser
+public partial class SyntaxView
 {
 #if NETFRAMEWORK
     /// <inheritdoc cref="Split(ReadOnlySpan{char}, SyntaxPair[], char, Span{SyntaxPair})"/>
