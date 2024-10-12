@@ -31,3 +31,24 @@ jobs:
       run: dotnet build --framework net8.0 --configuration Release --no-restore
     - name: Test
       run: dotnet test --no-build --framework net8.0 --configuration Release --verbosity minimal
+      
+  # We provide an example implementation as a showcase
+  build_Example-Project:
+  
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./Examples\Example.SyntaxParser
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build --framework net8.0 --configuration Release --no-restore
