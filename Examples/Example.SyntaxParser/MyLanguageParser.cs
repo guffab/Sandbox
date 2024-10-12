@@ -20,7 +20,7 @@ namespace Example
             SyntaxPair[] syntax =
             [
                 new SyntaxPair(openingParentheses, closingParentheses, 0), //note how parentheses are here defined as "regular" syntax
-                new SyntaxPair(quote, quote)                 //while quotes have the highest priority (because they usually serve as string identifiers)
+                new SyntaxPair(quote, quote, int.MaxValue)                 //while quotes have the highest priority (because they usually serve as string identifiers)
             ];
             syntaxParser = new SyntaxView(syntax, ',', openingParentheses, closingParentheses);
         }
