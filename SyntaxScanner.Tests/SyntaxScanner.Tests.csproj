@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SyntaxParser\SyntaxScanner.csproj" />
+    <ProjectReference Include="..\SyntaxScanner\SyntaxScanner.csproj" />
   </ItemGroup>
   
   <ItemGroup>
