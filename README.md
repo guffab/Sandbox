@@ -1,8 +1,8 @@
-## SyntaxParser
+## SyntaxScanner
 
 ### What is it? :star2:
 
-**SyntaxParser** is a .NET library for syntax-aware splitting and slicing based on arbitrary string input. The available API lets you freely define the syntax of your language and how it interacts with one another.
+**SyntaxScanner** is a high-performance .NET library for syntax-aware splitting and slicing based on arbitrary string input. The available API lets you freely define the syntax rules of your language and how it interacts with one another.
 
 ### How does it perform? :rocket:
 
