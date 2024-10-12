@@ -1,4 +1,4 @@
-﻿namespace SyntaxParser;
+﻿namespace SyntaxScanner;
 
 /// <summary>
 /// An object used to look for syntax identifiers and possibly prevent splitting a string/span at the current position.

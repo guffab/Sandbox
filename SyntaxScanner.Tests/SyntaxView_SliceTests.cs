@@ -1,4 +1,4 @@
-namespace SyntaxParser.Tests
+namespace SyntaxScanner.Tests
 {
     public class SyntaxView_SliceTests
     {

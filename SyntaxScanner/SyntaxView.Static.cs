@@ -1,4 +1,4 @@
-﻿namespace SyntaxParser;
+﻿namespace SyntaxScanner;
 
 public partial class SyntaxView
 {
@@ -14,7 +14,7 @@ public partial class SyntaxView
     /// <param name="input">The characters to split.</param>
     /// <param name="syntaxPairs">The supported syntax identifiers to look out for.</param>
     /// <param name="separator">The separator to split on.</param>
-    /// <param name="initialBuffer">A buffer that will be used as internal storage.</param>
+    /// <param name="initialBuffer">A buffer that will be used as internal storage. For stack-allocated arrays, this should be kept well below a length of 128 (adding up to ~1 kb)</param>
     public static SyntaxEnumerator Split(ReadOnlySpan<char> input, SyntaxPair[] syntaxPairs, char separator, Span<SyntaxPair> initialBuffer = default)
         => new SyntaxEnumerator(input, syntaxPairs, separator, initialBuffer);
 

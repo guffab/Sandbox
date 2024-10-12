@@ -1,4 +1,4 @@
-﻿namespace SyntaxParser;
+﻿namespace SyntaxScanner;
 
 /// <summary>
 /// Enables enumerating each split within a <see cref="ReadOnlySpan{T}"/> that has been divided using a single separator.

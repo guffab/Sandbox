@@ -8,3 +8,6 @@
 
 While a previous implementation was based on `string`, the most recent implementation uses `ReadOnlySpan<char>` on the API level, as well as internally. Additionally, most usages of ${\textsf{\color{navyblue}class}}$ objects are now substituted with ${\textsf{\color{navyblue}ref struct}}$ objects to avoid heap allocations.
 
+### Sounds cool, but how do I use it? :eyes:
+
+Take a look at the example implementation [here](/Examples/Example.SyntaxParser/).
