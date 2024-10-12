@@ -1,4 +1,4 @@
-﻿using SyntaxParser;
+﻿using SyntaxScanner;
 
 namespace Example
 {
