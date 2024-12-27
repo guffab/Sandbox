@@ -94,8 +94,8 @@ namespace FlexibleIterator.Tests
             Assert.Multiple(() =>
             {
                 //Assert
-                Assert.That(startFromBack == list[list.Count - 2]);
-                Assert.That(endFromBack == list[1]);
+                Assert.That(startFromBack, Is.EqualTo(list[list.Count - 2]));
+                Assert.That(endFromBack, Is.EqualTo(list[1]));
             });
         }
     }

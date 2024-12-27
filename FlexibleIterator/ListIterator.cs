@@ -40,7 +40,6 @@ namespace FlexibleIterator
                 return true;
             }
 
-            _index += 2;
             _current = default;
             return false;
         }
@@ -61,7 +60,6 @@ namespace FlexibleIterator
                 return true;
             }
 
-            _index -= 2;
             _current = default;
             return false;
         }
