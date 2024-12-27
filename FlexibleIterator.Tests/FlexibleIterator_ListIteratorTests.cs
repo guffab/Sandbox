@@ -26,7 +26,7 @@ namespace FlexibleIterator.Tests
             foreach (var elem in array.GetFlexibleIterator())
                 arrayIteratorResult.Add(elem);
 
-            //Asset
+            //Assert
             Assert.Multiple(() =>
             {
                 Assert.That(listIteratorResult.SequenceEqual(list));
