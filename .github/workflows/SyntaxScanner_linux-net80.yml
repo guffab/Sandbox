@@ -9,6 +9,7 @@ on:
     paths: [ 'SyntaxScanner/**' ]
   pull_request:
     branches: [ "main" ]
+    paths: [ 'SyntaxScanner/**' ]
 
 jobs:
   build:
