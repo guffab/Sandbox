@@ -23,5 +23,4 @@ This project aims to freely allow switching direction of enumeration, while stay
 
 ### What is it built on? :wrench:
 
-Since their interface extends the `IEnumerator<T>` interface, all iterators implicitly support iteration through a foreach block (which is forward-only by definition).
-
+Since their interface extends both the `IEnumerator<T>` and `IEnumerable<T>` interface, all iterators implicitly support iteration through a foreach block (which is forward-only by definition).
