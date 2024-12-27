@@ -21,7 +21,7 @@ Take a look at the example implementation [here](/Examples/Example.SyntaxScanner
 A set of iterators that extend the built-in enumeration of known collections. While the built-in solution is great already, it only allows enumeration in a forward direction.
 This project aims to freely allow switching direction of enumeration, while staying compatible with existing solutions.
 
-### How is it implemented? :wrench:
+### What is it built on? :wrench:
 
 Since their interface extends the `IEnumerator<T>` interface, all iterators implicitly support iteration through a foreach block (which is forward-only by definition).
 
