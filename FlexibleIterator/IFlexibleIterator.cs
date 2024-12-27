@@ -21,7 +21,7 @@ namespace FlexibleIterator
         /// Advances the enumerator to the element by an <paramref name="offset"/> to its current position.
         /// </summary>
         /// <returns>
-        /// <see langword="true"/> if the enumerator was successfully advanced to a another (or the same) element;
+        /// <see langword="true"/> if the enumerator was successfully advanced to another (or the same) element;
         /// <see langword="false"/> if the enumerator moved out of bounds.
         /// </returns>
         /// <exception cref="System.InvalidOperationException">The collection was modified after the enumerator was created.</exception>
