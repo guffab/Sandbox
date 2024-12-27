@@ -19,10 +19,14 @@ namespace FlexibleIterator
         /// <inheritdoc/>
         public T Current => _current!;
 
-        /// <summary>
-        /// Enables the use of foreach on this object.
-        /// </summary>
-        public ListIterator<T> GetEnumerator() => this; //do not rename (duck typing)
+        /// <inheritdoc cref="IEnumerable{T}.GetEnumerator"/>
+        public IEnumerator<T> GetEnumerator() => _list.GetEnumerator(); //avoids an extra interface allocation
+
+        /// <inheritdoc/>
+        IEnumerator<T> IEnumerable<T>.GetEnumerator() => GetEnumerator();
+
+        /// <inheritdoc/>
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => GetEnumerator();
 
         /// <inheritdoc/>
         public bool MoveNext()
