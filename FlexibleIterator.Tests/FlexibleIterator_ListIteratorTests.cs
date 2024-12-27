@@ -4,18 +4,19 @@ namespace FlexibleIterator.Tests
     public class FlexibleIterator_ListIteratorTests
     {
         private List<int> list;
-        private int[] array;
 
         [SetUp]
         public void Setup()
         {
             list = Enumerable.Range(0, 10).ToList();
-            array = Enumerable.Range(0, 10).ToArray();
         }
 
         [Test]
         public void Iterator_Foreach_Works()
         {
+            //Arrange
+            var array = list.ToArray();
+
             var listIteratorResult = new List<int>();
             var arrayIteratorResult = new List<int>();
 
@@ -97,6 +98,40 @@ namespace FlexibleIterator.Tests
                 Assert.That(startFromBack, Is.EqualTo(list[list.Count - 2]));
                 Assert.That(endFromBack, Is.EqualTo(list[1]));
             });
+        }
+
+        [TestCase(0, 1)]
+        [TestCase(1, 2)]
+        [TestCase(1, 4, -1, 2, -3)]
+        public void Iterator_ValidMove_ForwardBackwardWorks(int expectedResult, params int[] instructions)
+        {
+            //Arrange
+            var iterator = list.GetFlexibleIterator();
+
+            //Act
+            foreach (var offset in instructions)
+                iterator.Move(offset);
+
+            //Assert
+            Assert.That(iterator.Current, Is.EqualTo(expectedResult));
+        }
+
+        [TestCase(0)]
+        [TestCase(10, 0)]
+        [TestCase(5, -7)]
+        public void Iterator_InValidMove_ReportsError(params int[] instructions)
+        {
+            //Arrange
+            var iterator = list.GetFlexibleIterator();
+
+            bool isValid = true;
+
+            //Act
+            foreach (var offset in instructions)
+                isValid = iterator.Move(offset);
+
+            //Assert
+            Assert.That(isValid, Is.EqualTo(false));
         }
     }
 }
