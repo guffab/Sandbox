@@ -20,7 +20,7 @@ namespace FlexibleIterator
         public T Current => _current!;
 
         /// <inheritdoc cref="IEnumerable{T}.GetEnumerator"/>
-        public IEnumerator<T> GetEnumerator() => _list.GetEnumerator(); //avoids an extra interface allocation
+        public IEnumerator<T> GetEnumerator() => _list.GetEnumerator();
 
         /// <inheritdoc/>
         IEnumerator<T> IEnumerable<T>.GetEnumerator() => GetEnumerator();
