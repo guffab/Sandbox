@@ -5,7 +5,6 @@ name: SyntaxScanner on [linux-net80]
 
 on:
   push:
-    branches: [ "main" ]
     paths:
       - 'SyntaxScanner/**'
   pull_request:
