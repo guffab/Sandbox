@@ -6,10 +6,10 @@ name: SyntaxScanner on [windows-net48]
 on:
   push:
     branches: [ "main" ]
-    paths: [ 'SyntaxScanner/**' ]
+    paths: [ 'SyntaxScanner*/**' ]
   pull_request:
     branches: [ "main" ]
-    paths: [ 'SyntaxScanner/**' ]
+    paths: [ 'SyntaxScanner*/**' ]
 
 jobs:
   build:
