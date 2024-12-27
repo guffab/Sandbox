@@ -12,7 +12,7 @@ namespace FlexibleIterator
         private IList<T> _list = list;
         private int _index;
         private T? _current;
-        private bool lastForward = true;
+        private bool _lastForward = true;
 
         object? System.Collections.IEnumerator.Current => Current;
 
@@ -31,10 +31,10 @@ namespace FlexibleIterator
         /// <inheritdoc/>
         public bool MoveNext()
         {
-            if (!lastForward)
+            if (!_lastForward)
             {
                 _index += 2;
-                lastForward = true;
+                _lastForward = true;
             }
 
             if (((uint)_index < (uint)_list.Count))
@@ -51,10 +51,10 @@ namespace FlexibleIterator
         /// <inheritdoc/>
         public bool MovePrevious()
         {
-            if (lastForward)
+            if (_lastForward)
             {
                 _index -= 2;
-                lastForward = false;
+                _lastForward = false;
             }
 
             if (((uint)_index < (uint)_list.Count))
@@ -71,7 +71,6 @@ namespace FlexibleIterator
         /// <inheritdoc/>
         public bool Move(int offset)
         {
-            //input of 0 is implicitly supported
             if (offset > 0)
             {
                 for (int i = 0; i < offset; i++)
@@ -83,6 +82,12 @@ namespace FlexibleIterator
             }
             else
             {
+                if (offset is 0)
+                {
+                    return (!_lastForward || _index is not 0) //enumeration has already started
+                        && (uint)_index < (uint)_list.Count; //not out of bounds
+                }
+
                 for (int i = 0; i > offset; i--)
                 {
                     if (!MovePrevious())
