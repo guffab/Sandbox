@@ -71,12 +71,17 @@ namespace FlexibleIterator
         /// <inheritdoc/>
         public bool Move(int offset)
         {
+            int index = _index;
+
             if (offset > 0)
             {
                 for (int i = 0; i < offset; i++)
                 {
                     if (!MoveNext())
+                    {
+                        _index = index;
                         return false;
+                    }
                 }
                 return true;
             }
@@ -91,7 +96,10 @@ namespace FlexibleIterator
                 for (int i = 0; i > offset; i--)
                 {
                     if (!MovePrevious())
+                    {
+                        _index = index;
                         return false;
+                    }
                 }
                 return true;
             }

@@ -1,4 +1,6 @@
 
+using System.Reflection;
+
 namespace FlexibleIterator.Tests
 {
     public class FlexibleIterator_ListIteratorTests
@@ -132,6 +134,26 @@ namespace FlexibleIterator.Tests
 
             //Assert
             Assert.That(isValid, Is.EqualTo(false));
+        }
+
+        [TestCase(0, 0)]
+        [TestCase(3, 12)]
+        [TestCase(3, -12)]
+        public void Iterator_InvalidMove_ResetsIndex(int setupInstruction, int outOfBoundsInstruction)
+        {
+            //Arrange
+            var iterator = list.GetFlexibleIterator();
+            var indexField = iterator.GetType().GetField("_index", BindingFlags.NonPublic | BindingFlags.Instance);
+
+            //Act
+            iterator.Move(setupInstruction);
+            int index = (int)indexField.GetValue(iterator)!;
+
+            iterator.Move(outOfBoundsInstruction);
+            int newIndex = (int)indexField.GetValue(iterator)!;
+
+            //Assert
+            Assert.That(newIndex, Is.EqualTo(index));
         }
     }
 }
