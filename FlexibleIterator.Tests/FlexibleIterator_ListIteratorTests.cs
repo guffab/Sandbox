@@ -133,5 +133,30 @@ namespace FlexibleIterator.Tests
             //Assert
             Assert.That(isValid, Is.EqualTo(false));
         }
+
+        [TestCase(2, 23)]
+        [TestCase(2, -23)]
+        public void Iterator_InvalidMove_InverseMoveReturnsSecondLastElement(params int[] instructions)
+        {
+            //Arrange
+            var iterator = list.GetFlexibleIterator();
+            var forward = true;
+
+            //Act
+            foreach (var offset in instructions)
+            {
+                if (!iterator.Move(offset))
+                {
+                    forward = offset > 0;
+                    break;
+                }
+            }
+
+            //Assert
+            _ = forward ? iterator.MovePrevious() : iterator.MoveNext();
+            var expected = forward ? list[list.Count - 2] : list[1];
+
+            Assert.That(iterator.Current, Is.EqualTo(expected));
+        }
     }
 }
