@@ -19,13 +19,9 @@ namespace FlexibleIterator
         /// <inheritdoc/>
         public T Current => _current!;
 
-        /// <inheritdoc cref="IEnumerable{T}.GetEnumerator"/>
+        /// <inheritdoc/>
         public IEnumerator<T> GetEnumerator() => _list.GetEnumerator();
 
-        /// <inheritdoc/>
-        IEnumerator<T> IEnumerable<T>.GetEnumerator() => GetEnumerator();
-
-        /// <inheritdoc/>
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => GetEnumerator();
 
         /// <inheritdoc/>
