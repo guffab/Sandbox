@@ -158,5 +158,24 @@ namespace FlexibleIterator.Tests
 
             Assert.That(iterator.Current, Is.EqualTo(expected));
         }
+
+        [TestCase(2, -1)]
+        [TestCase(10, -1, 1)]
+        public void Iterator_MoveToSecond_PrimaryCanBeAccessed(params int[] instructions)
+        {
+            //Arrange
+            var iterator = list.GetFlexibleIterator();
+
+            //Act
+            for (int i = 0; i < instructions.Length - 1; i++)
+                iterator.Move(instructions[i]);
+
+            int lastOffset = instructions.Last();
+            int expectedResult = lastOffset > 0 ? list.Last() : list.First();
+            iterator.Move(lastOffset);
+
+            //Assert
+            Assert.That(iterator.Current, Is.EqualTo(expectedResult));
+        }
     }
 }
