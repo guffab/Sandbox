@@ -19,23 +19,15 @@ namespace FlexibleIterator
         /// <inheritdoc/>
         public T Current => _current!;
 
-        /// <inheritdoc cref="IEnumerable{T}.GetEnumerator"/>
+        /// <inheritdoc/>
         public IEnumerator<T> GetEnumerator() => _list.GetEnumerator();
 
-        /// <inheritdoc/>
-        IEnumerator<T> IEnumerable<T>.GetEnumerator() => GetEnumerator();
-
-        /// <inheritdoc/>
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => GetEnumerator();
 
         /// <inheritdoc/>
         public bool MoveNext()
         {
-            if (!_lastForward)
-            {
-                _index += 2;
-                _lastForward = true;
-            }
+            AdjustIndexForward();
 
             if (((uint)_index < (uint)_list.Count))
             {
@@ -51,11 +43,7 @@ namespace FlexibleIterator
         /// <inheritdoc/>
         public bool MovePrevious()
         {
-            if (_lastForward)
-            {
-                _index -= 2;
-                _lastForward = false;
-            }
+            AdjustIndexBackward();
 
             if (((uint)_index < (uint)_list.Count))
             {
@@ -73,12 +61,20 @@ namespace FlexibleIterator
         {
             if (offset > 0)
             {
-                for (int i = 0; i < offset; i++)
+                AdjustIndexForward();
+
+                //new index must not be out of bounds
+                var offsetIndex = _index + offset - 1;
+                if ((uint)offsetIndex < (uint)_list.Count)
                 {
-                    if (!MoveNext())
-                        return false;
+                    _current = _list[offsetIndex];
+                    _index = offsetIndex + 1;
+                    return true;
                 }
-                return true;
+
+                _current = default;
+                _index = _list.Count;
+                return false;
             }
             else
             {
@@ -88,12 +84,20 @@ namespace FlexibleIterator
                         && (uint)_index < (uint)_list.Count; //not out of bounds
                 }
 
-                for (int i = 0; i > offset; i--)
+                AdjustIndexBackward();
+
+                //new index must not be out of bounds
+                var offsetIndex = _index + offset + 1;
+                if ((uint)offsetIndex < (uint)_list.Count)
                 {
-                    if (!MovePrevious())
-                        return false;
+                    _current = _list[offsetIndex];
+                    _index = offsetIndex - 1;
+                    return true;
                 }
-                return true;
+
+                _current = default;
+                _index = -1;
+                return false;
             }
         }
 
@@ -105,6 +109,24 @@ namespace FlexibleIterator
 
         public void Dispose()
         {
+        }
+
+        private void AdjustIndexBackward()
+        {
+            if (_lastForward)
+            {
+                _index -= 2;
+                _lastForward = false;
+            }
+        }
+
+        private void AdjustIndexForward()
+        {
+            if (!_lastForward)
+            {
+                _index += 2;
+                _lastForward = true;
+            }
         }
     }
 }
