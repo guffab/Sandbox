@@ -11,16 +11,16 @@ Additionally, most usages of ${\textsf{\color{navyblue}class}}$ objects are now 
 
 ### Sounds cool, but how do I use it? :eyes:
 
-Take a look at the example implementation [here](/Examples/Example.SyntaxScanner/).
+Take a look at the example implementation [here](/Examples/Example.SyntaxScanner/MyLanguageParser.cs).
 
 
-## FlexibleIterator
+## BidirectionalIterator
 
 ### What is it? :star2:
 
-A set of iterators that extend the built-in enumeration of known collections. While the built-in solution is great already, it only allows enumeration in a forward direction.
-This project aims to freely allow switching direction of enumeration, while staying compatible with existing solutions.
+Do you love enumerables, foreach loops and their strong integration with LINQ? Me too. But have you also ever wanted to go back a few elements or switch direction mid-way of enumeration? <br>
+Then this is for you: an iterator that moves forward, backward, jumps over how many elements you like, and itegrates seamlessly with LINQ.
 
 ### What is it built on? :wrench:
 
-Since their interface extends both the `IEnumerator<T>` and `IEnumerable<T>` interface, all iterators implicitly support iteration through a foreach block (which is forward-only by definition).
+Since their interface extends both the `IEnumerator<T>` and `IEnumerable<T>` interface, all bidirectional iterators automatically support foreach blocks and LINQ (which are forward-only by definition).

@@ -1,7 +1,7 @@
 
-namespace FlexibleIterator.Tests
+namespace BidirectionalIterator.Tests
 {
-    public class FlexibleIterator_ListIteratorTests
+    public class ListIteratorTests
     {
         private List<int> list;
 
@@ -21,10 +21,10 @@ namespace FlexibleIterator.Tests
             var arrayIteratorResult = new List<int>();
 
             //Act
-            foreach (var elem in list.GetFlexibleIterator())
+            foreach (var elem in list.GetBidirectionalIterator())
                 listIteratorResult.Add(elem);
 
-            foreach (var elem in array.GetFlexibleIterator())
+            foreach (var elem in array.GetBidirectionalIterator())
                 arrayIteratorResult.Add(elem);
 
             //Assert
@@ -39,7 +39,7 @@ namespace FlexibleIterator.Tests
         public void Iterator_SwitchDirection_ReturnsPreviousElement()
         {
             //Arrange
-            var iterator = list.GetFlexibleIterator();
+            var iterator = list.GetBidirectionalIterator();
 
             for (int i = 0; i < list.Count / 2; i++)
                 iterator.MoveNext();
@@ -58,7 +58,7 @@ namespace FlexibleIterator.Tests
         public void Iterator_SwitchDirectionTwice_ReturnsSameElement()
         {
             //Arrange
-            var iterator = list.GetFlexibleIterator();
+            var iterator = list.GetBidirectionalIterator();
 
             for (int i = 0; i < list.Count / 2; i++)
                 iterator.MoveNext();
@@ -77,7 +77,7 @@ namespace FlexibleIterator.Tests
         public void Iterator_ReadUntilEndAndSwitch_ElementDoesNotRepeat()
         {
             //Arrange
-            var iterator = list.GetFlexibleIterator();
+            var iterator = list.GetBidirectionalIterator();
             int startFromBack = -1;
             int endFromBack = -1;
 
@@ -106,7 +106,7 @@ namespace FlexibleIterator.Tests
         public void Iterator_ValidMove_ForwardBackwardWorks(int expectedResult, params int[] instructions)
         {
             //Arrange
-            var iterator = list.GetFlexibleIterator();
+            var iterator = list.GetBidirectionalIterator();
 
             //Act
             foreach (var offset in instructions)
@@ -122,7 +122,7 @@ namespace FlexibleIterator.Tests
         public void Iterator_InValidMove_ReportsError(params int[] instructions)
         {
             //Arrange
-            var iterator = list.GetFlexibleIterator();
+            var iterator = list.GetBidirectionalIterator();
 
             bool isValid = true;
 
@@ -139,7 +139,7 @@ namespace FlexibleIterator.Tests
         public void Iterator_InvalidMove_InverseMoveReturnsSecondLastElement(params int[] instructions)
         {
             //Arrange
-            var iterator = list.GetFlexibleIterator();
+            var iterator = list.GetBidirectionalIterator();
             var forward = true;
 
             //Act
@@ -164,7 +164,7 @@ namespace FlexibleIterator.Tests
         public void Iterator_MoveToSecond_PrimaryCanBeAccessed(params int[] instructions)
         {
             //Arrange
-            var iterator = list.GetFlexibleIterator();
+            var iterator = list.GetBidirectionalIterator();
 
             //Act
             for (int i = 0; i < instructions.Length - 1; i++)

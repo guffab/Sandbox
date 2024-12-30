@@ -1,11 +1,11 @@
 ﻿
-namespace FlexibleIterator
+namespace BidirectionalIterator
 {
     /// <summary>
     /// Supports a simple iteration in both directions over a generic collection.
     /// </summary>
     /// <typeparam name="T">The type of objects to enumerate.</typeparam>
-    public interface IFlexibleIterator<T> : IEnumerator<T>, IEnumerable<T>
+    public interface IBidirectionalIterator<T> : IEnumerator<T>, IEnumerable<T>
     {
         /// <summary>
         /// Advances the enumerator to the previous element of the collection.

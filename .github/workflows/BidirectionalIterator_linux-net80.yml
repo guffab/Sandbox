@@ -1,15 +1,15 @@
 # This workflow will build a net80 project on linux
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
 
-name: FlexibleIterator on [linux-net80]
+name: BidirectionalIterator on [linux-net80]
 
 on:
   push:
     branches: [ "main" ]
-    paths: [ 'FlexibleIterator*/**' ]
+    paths: [ 'BidirectionalIterator*/**' ]
   pull_request:
     branches: [ "main" ]
-    paths: [ 'FlexibleIterator*/**' ]
+    paths: [ 'BidirectionalIterator*/**' ]
 
 jobs:
   build:
@@ -18,7 +18,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: ./FlexibleIterator
+        working-directory: ./BidirectionalIterator
 
     steps:
     - name: Checkout repository
