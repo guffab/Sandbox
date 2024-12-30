@@ -21,7 +21,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\FlexibleIterator\FlexibleIterator.csproj" />
+		<ProjectReference Include="..\BidirectionalIterator\BidirectionalIterator.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -1,5 +1,5 @@
 ﻿
-namespace FlexibleIterator
+namespace BidirectionalIterator
 {
     /// <summary>
     /// Can freely iterate forwards and backwards over the contents of a <see cref="System.Collections.Generic.IList{T}"/>.
@@ -7,7 +7,7 @@ namespace FlexibleIterator
     /// <remarks>
     /// Be aware that no versioning checks can be implemented for this object, since internals of an IList are not visible to this assembly.
     /// </remarks>
-    public struct ListIterator<T>(IList<T> list) : IFlexibleIterator<T>
+    public struct ListIterator<T>(IList<T> list) : IBidirectionalIterator<T>
     {
         private IList<T> _list = list;
         private int _index;
