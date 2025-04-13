@@ -47,6 +47,7 @@ namespace SyntaxScanner
 
                     //add current token
                     indices.Add((ParseType.Token, range));
+                    i += (range.End.Value - range.Start.Value) - 1;//offset by multi-length
                 }
             }
 
