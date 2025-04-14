@@ -6,13 +6,16 @@ using System.Threading.Tasks;
 
 namespace SyntaxScanner
 {
-    internal class TokenParser
+    public class TokenParser
     {
-        public static string[] Tokens = ["+", "-", "*", "/", "=", "=="];
+        private static string[] Tokens = ["+", "-", "*", "/", "=", "=="];
 
-        bool IsTerm(ReadOnlySpan<char> rawInput)
+        public static bool IsOperation(string rawInput, out Operation? operation) => IsOperation(rawInput.AsSpan(), out operation);
+
+        public static bool IsOperation(ReadOnlySpan<char> rawInput, out Operation? operation)
         {
-            var indices = Formalize(rawInput, Tokens);
+            var indices = FindTokens(rawInput, Tokens);
+            operation = null;
 
             if (indices.Count <= 1)// && indices.FirstOrDefault().Type is not ParseType.Token)
                 return false;
@@ -28,46 +31,43 @@ namespace SyntaxScanner
             return true;
         }
 
-        /// <summary>
-        /// Tests: 
-        /// 123 + 47 * 7  -1/3 == 12
-        /// b = 12 == false
-        /// </summary>
-        /// <param name="rawInput"></param>
-        /// <param name="tokenLookupTable"></param>
-        /// <returns></returns>
-        internal List<(ParseType Type, Range Range)> Formalize(ReadOnlySpan<char> rawInput, string[] tokenLookupTable)
+        private static List<(ParseType Type, Range Range)> FindTokens(ReadOnlySpan<char> rawInput, string[] tokenLookupTable)
         {
             var indices = new List<(ParseType Type, Range Range)>();
+            int lastMatch = 0;
+
             for (int i = 0; i < rawInput.Length; i++)
             {
                 if (FindBestMatch(rawInput, tokenLookupTable, i, out Range range))
                 {
-                    //add all the stuff preceding the token
+                    //preceding literals
+                    if (lastMatch < i - 1)
+                        indices.Add((ParseType.Literal, new Range(lastMatch, i)));
 
-                    //add current token
                     indices.Add((ParseType.Token, range));
-                    i += (range.End.Value - range.Start.Value) - 1;//offset by multi-length
+
+                    //adjust indices
+                    int tokenLength = range.End.Value - range.Start.Value;
+                    lastMatch = i + tokenLength;
+                    i += tokenLength - 1;//loop will add 1 by itself
                 }
             }
 
             //include stuff after last token
             var lastToken = indices.LastOrDefault();
             if (lastToken.Type is ParseType.Token && lastToken.Range.End.Value < rawInput.Length)
-                indices.Add((ParseType.Other, new Range(lastToken.Range.End, rawInput.Length)));
+                indices.Add((ParseType.Literal, new Range(lastToken.Range.End, rawInput.Length)));
 
             return indices;
         }
 
-        private bool FindBestMatch(ReadOnlySpan<char> rawInput, string[] tokenLookupTable, int i, out Range range)
+        private static bool FindBestMatch(ReadOnlySpan<char> rawInput, string[] tokenLookupTable, int i, out Range range)
         {
-            string candidate;
-
             foreach (var token in tokenLookupTable)
             {
-                if (token[i] == rawInput[i])
+                if (token[0] == rawInput[i])
                 {
-                    candidate = token;
+                    //find other candidates; if none, return current. else check next char
                     range = new Range(i, i + 1);
                     return true;
                 }
@@ -80,10 +80,37 @@ namespace SyntaxScanner
 
     internal enum ParseType
     {
-        Other = 0,
+        Literal = 0,
         
         Token = 1,
     }
+
+    public enum OperatorKind
+    {
+        /// <summary> + </summary>
+        Add,
+
+        /// <summary> - </summary>
+        Subtract,
+
+        /// <summary> * </summary>
+        Multiply,
+
+        /// <summary> / </summary>
+        Divide,
+
+        /// <summary> == </summary>
+        Equals,
+
+        /// <summary> = </summary>
+        Assignment,
+    }
+
+    public record Operation(IFormula Left, OperatorKind OperatorKind, IFormula Right) : IFormula;
+
+    public record Literal(string Value) : IFormula;
+
+    public interface IFormula { };
 
 #if NETFRAMEWORK
 
@@ -103,6 +130,11 @@ namespace SyntaxScanner
         /// <summary>Indicates whether the current Range object is equal to another Range object.</summary>
         /// <param name="other">An object to compare with this object</param>
         public bool Equals(Range other) => other.Start.Equals(Start) && other.End.Equals(End);
+
+        public override string ToString()
+        {
+            return Start.ToString() + ".." + End.ToString();
+        }
     }
 
     /// <summary>
@@ -122,6 +154,11 @@ namespace SyntaxScanner
 
         /// <summary>Converts integer number to an Index.</summary>
         public static implicit operator Index(int value) => new Index(value);
+
+        public override string ToString()
+        {
+            return Value.ToString();
+        }
     }
 #endif
 }
