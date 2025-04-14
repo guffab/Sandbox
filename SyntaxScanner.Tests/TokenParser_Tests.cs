@@ -19,7 +19,7 @@ namespace SyntaxScanner.Tests
         public void aa()
         {
             var expected = new Operation(new Literal("123"), OperatorKind.Add, new Literal("45"));
-            _ = TokenParser.IsOperation("123+45", out Operation? result);
+            _ = TokenParser.IsOperation("123 + 45", out Operation? result);
 
             Assert.That(result, Is.EqualTo(expected));
         }

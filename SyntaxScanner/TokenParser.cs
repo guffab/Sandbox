@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿
 namespace SyntaxScanner
 {
     public class TokenParser
@@ -20,6 +15,13 @@ namespace SyntaxScanner
             if (indices.Count <= 1)// && indices.FirstOrDefault().Type is not ParseType.Token)
                 return false;
 
+            //simplest case
+            if (indices.Count == 3)
+            {
+
+                operation = new Operation(new Literal(indices[0].Value), Parse(indices[1].Value), new Literal(indices[2].Value));
+            }
+
             //find first highest priority and create it (prince)
             //enter loop (recursion)
             //bool is Left; //indicates wether the other operand still needs to be parsed
@@ -27,53 +29,66 @@ namespace SyntaxScanner
             //if equal or lower, include (prince) in this one. Else same for other (switched sides).
             // => new (prince) included on other side
             //when direct neighbor is not highest priority -> enter recursion
-            
+
             return true;
         }
 
-        private static List<(ParseType Type, Range Range)> FindTokens(ReadOnlySpan<char> rawInput, string[] tokenLookupTable)
+        private static OperatorKind Parse(string value)
         {
-            var indices = new List<(ParseType Type, Range Range)>();
-            int lastMatch = 0;
+            return value switch
+            {
+                "+" => OperatorKind.Add,
+                "-" => OperatorKind.Subtract,
+                "*" => OperatorKind.Multiply,
+                "/" => OperatorKind.Divide,
+                "=" => OperatorKind.Assignment,
+                "==" => OperatorKind.Equals,
+                _ => throw new NotImplementedException(),
+            };
+        }
+
+        private static List<(ParseType Type, string Value)> FindTokens(ReadOnlySpan<char> rawInput, string[] tokenLookupTable)
+        {
+            var indices = new List<(ParseType Type, string Value)>();
+            int lastMatchEnd = 0;
 
             for (int i = 0; i < rawInput.Length; i++)
             {
-                if (FindBestMatch(rawInput, tokenLookupTable, i, out Range range))
+                if (FindBestMatch(rawInput, tokenLookupTable, i, out string match))
                 {
                     //preceding literals
-                    if (lastMatch < i - 1)
-                        indices.Add((ParseType.Literal, new Range(lastMatch, i)));
+                    if (lastMatchEnd < i - 1)
+                        indices.Add((ParseType.Literal, rawInput.Slice(lastMatchEnd, i - lastMatchEnd).Trim().ToString()));
 
-                    indices.Add((ParseType.Token, range));
+                    indices.Add((ParseType.Token, match));
 
                     //adjust indices
-                    int tokenLength = range.End.Value - range.Start.Value;
-                    lastMatch = i + tokenLength;
-                    i += tokenLength - 1;//loop will add 1 by itself
+                    lastMatchEnd = i + match.Length;
+                    i += match.Length - 1;//loop will add 1 by itself
                 }
             }
 
             //include stuff after last token
             var lastToken = indices.LastOrDefault();
-            if (lastToken.Type is ParseType.Token && lastToken.Range.End.Value < rawInput.Length)
-                indices.Add((ParseType.Literal, new Range(lastToken.Range.End, rawInput.Length)));
+            if (lastToken.Type is ParseType.Token && lastMatchEnd < rawInput.Length - 1)
+                indices.Add((ParseType.Literal, rawInput.Slice(lastMatchEnd).Trim().ToString()));
 
             return indices;
         }
 
-        private static bool FindBestMatch(ReadOnlySpan<char> rawInput, string[] tokenLookupTable, int i, out Range range)
+        private static bool FindBestMatch(ReadOnlySpan<char> rawInput, string[] tokenLookupTable, int i, out string match)
         {
             foreach (var token in tokenLookupTable)
             {
                 if (token[0] == rawInput[i])
                 {
                     //find other candidates; if none, return current. else check next char
-                    range = new Range(i, i + 1);
+                    match = token;
                     return true;
                 }
             }
 
-            range = new Range();
+            match = "";
             return false;
         }
     }
@@ -81,7 +96,7 @@ namespace SyntaxScanner
     internal enum ParseType
     {
         Literal = 0,
-        
+
         Token = 1,
     }
 
@@ -112,53 +127,4 @@ namespace SyntaxScanner
 
     public interface IFormula { };
 
-#if NETFRAMEWORK
-
-    /// <summary>
-    /// Simplified backport from .NET Core.
-    /// </summary>
-    /// <param name="start">Represent the inclusive start index of the range.</param>
-    /// <param name="end">Represent the exclusive end index of the range.</param>
-    public readonly struct Range(Index start, Index end) : IEquatable<Range>
-    {
-        /// <summary>Represent the inclusive start index of the Range.</summary>
-        public Index Start { get; } = start;
-
-        /// <summary>Represent the exclusive end index of the Range.</summary>
-        public Index End { get; } = end;
-
-        /// <summary>Indicates whether the current Range object is equal to another Range object.</summary>
-        /// <param name="other">An object to compare with this object</param>
-        public bool Equals(Range other) => other.Start.Equals(Start) && other.End.Equals(End);
-
-        public override string ToString()
-        {
-            return Start.ToString() + ".." + End.ToString();
-        }
-    }
-
-    /// <summary>
-    /// Simplified backport from .NET Core.
-    /// </summary>
-    public readonly struct Index(int value) : IEquatable<Index>
-    {
-        /// <summary>Returns the index value.</summary>
-        public readonly int Value = value;
-
-        /// <summary>Indicates whether the current Index object is equal to another Index object.</summary>
-        /// <param name="other">An object to compare with this object</param>
-        public bool Equals(Index other) => Value == other.Value;
-
-        /// <summary>Returns the hash code for this instance.</summary>
-        public override int GetHashCode() => Value;
-
-        /// <summary>Converts integer number to an Index.</summary>
-        public static implicit operator Index(int value) => new Index(value);
-
-        public override string ToString()
-        {
-            return Value.ToString();
-        }
-    }
-#endif
 }
