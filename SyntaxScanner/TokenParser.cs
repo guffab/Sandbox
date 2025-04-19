@@ -5,7 +5,9 @@ namespace SyntaxScanner
     {
         private static string[] Tokens = ["+", "-", "*", "/", "=", "=="];
 
+#if NETFRAMEWORK
         public static bool IsOperation(string rawInput, out Operation? operation) => IsOperation(rawInput.AsSpan(), out operation);
+#endif
 
         public static bool IsOperation(ReadOnlySpan<char> rawInput, out Operation? operation)
         {
@@ -15,6 +17,10 @@ namespace SyntaxScanner
             if (indices.Count <= 1)// && indices.FirstOrDefault().Type is not ParseType.Token)
                 return false;
 
+            //currently no valid usage (except for negative numbers?)
+            if (indices.First().Type is ParseType.Token)
+                return false;
+            
             //simplest case
             if (indices.Count == 3)
             {
@@ -22,7 +28,33 @@ namespace SyntaxScanner
                 operation = new Operation(new Literal(indices[0].Value), Parse(indices[1].Value), new Literal(indices[2].Value));
             }
 
+            //preparing step
+            var parsed = new List<IFormula>(indices.Count);
+
             //find first highest priority and create it (prince)
+            var x = int.MinValue;
+            var start = 0;
+
+            for (int i = 0; i < indices.Count; i++)
+            {
+                var (type, value) = indices[0];
+                if (type is not ParseType.Token)
+                    continue;
+                
+                //find top-performer
+                var priority = GetPriority(Parse(value));
+                if (priority > x)
+                    start = i;
+            }
+
+            //temporary fix
+            if (indices[start - 1].Type is ParseType.Literal && indices[start + 1].Type is ParseType.Literal)
+            {
+                var prince = new Operation(new Literal(indices[start-1].Value), Parse(indices[start].Value), new Literal(indices[start+1].Value));
+            }
+            else
+                return false;
+            
             //enter loop (recursion)
             //bool is Left; //indicates wether the other operand still needs to be parsed
             //find highest priority on left side and compare to highest on right
@@ -47,6 +79,19 @@ namespace SyntaxScanner
             };
         }
 
+        private static int GetPriority(OperatorKind kind)
+        {
+            return kind switch
+            {
+                OperatorKind.Assignment => -2,
+                OperatorKind.Equals => -1,
+                //OperatorKind.LessOrEquals => 0,
+                OperatorKind.Add or OperatorKind.Subtract => 1,
+                OperatorKind.Multiply or OperatorKind.Divide => 2,
+                _ => throw new NotImplementedException(),
+            };
+        }
+        
         private static List<(ParseType Type, string Value)> FindTokens(ReadOnlySpan<char> rawInput, string[] tokenLookupTable)
         {
             var indices = new List<(ParseType Type, string Value)>();
