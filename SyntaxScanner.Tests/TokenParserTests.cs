@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SyntaxScanner.Tests
 {
-    internal class TokenParser_Tests
+    internal class TokenParserTests
     {
 
         [SetUp]
@@ -16,7 +16,7 @@ namespace SyntaxScanner.Tests
         }
 
         [Test]
-        public void aa()
+        public void TokenParser_SingleOperation_ParseFine()
         {
             var expected = new Operation(new Literal("123"), OperatorKind.Add, new Literal("45"));
             _ = TokenParser.IsOperation("123 + 45", out Operation? result);
@@ -25,7 +25,23 @@ namespace SyntaxScanner.Tests
         }
 
         [Test]
-        public void bb()
+        public void TokenParser_DifferentTokens_RespectPriorities()
+        {
+            var test1 = "1 + 2 * 3";
+            var test2 = "1 * 2 + 3";
+            
+            var expected1 = new Operation(new Literal("1"), OperatorKind.Add, new Operation(new Literal("2"), OperatorKind.Multiply, new Literal("3")));
+            var expected2 = new Operation(new Operation(new Literal("1"), OperatorKind.Multiply, new Literal("2")), OperatorKind.Add, new Literal("3"));
+            
+            _ = TokenParser.IsOperation(test1, out var result1);
+            _ = TokenParser.IsOperation(test2, out var result2);
+            
+            Assert.That(result1, Is.EqualTo(expected1));
+            Assert.That(result2, Is.EqualTo(expected2));
+        }
+        
+        [Test]
+        public void TokenParser_MultipleOperations_ParseWithCorrectPriority()
         {
             var a = new Operation(new Literal("47"), OperatorKind.Multiply, new Literal("7"));
             var b = new Operation(new Literal("1"), OperatorKind.Divide, new Literal("3"));
@@ -39,7 +55,7 @@ namespace SyntaxScanner.Tests
         }
 
         [Test]
-        public void cc()
+        public void TokenParser_SimilarTokens_IdentifyCorrectOne()
         {
             var a = new Operation(new Literal("12"), OperatorKind.Equals, new Literal("false"));
 
