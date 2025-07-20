@@ -13,9 +13,9 @@ public ref struct SyntaxTokenSplitEnumerator
     private readonly string[] _supportedTokens;
     private HashSet<char> _tokenStarts;
 
-    private int _startCurrent = -1;
-    private int _endCurrent = -1;
-    private bool _isToken = false;
+    private int _startCurrent;
+    private int _endCurrent;
+    private bool _isToken;
 
     internal SyntaxTokenSplitEnumerator(ReadOnlySpan<char> span, SyntaxPair[] syntaxPairs, string[] supportedTokens, Span<SyntaxPair> initialBuffer)
     {
@@ -56,11 +56,23 @@ public ref struct SyntaxTokenSplitEnumerator
             if (!_tokenStarts.Contains(currentChar))
                 continue;
 
-            //extract literal
+            //extract literal (if any)
+            if (startNext != i)
+            {
+                _endCurrent = i;
+                _isToken = false;
+                return true;
+            }
+
+#warning trim candidate tokens?
             //find longest token match
             //extract token (size is minimum 1)
+            int tokenLength = FindLongestTokenMatch(_span, i, _supportedTokens);
+            _endCurrent = i + tokenLength;
+            _isToken = true;
+            return true;
         }
-
+        
         //last item
         _isToken = false;
         _endCurrent = _span.Length;
