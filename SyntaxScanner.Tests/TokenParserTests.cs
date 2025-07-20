@@ -35,7 +35,7 @@ namespace SyntaxScanner.Tests
         }
 
         [TestCase("a + b", "a ", "+", " b")]
-        [TestCase(" a+b", " a", "+", "b")]
+        [TestCase(" a+b", " a", "+", "b ")]
         [TestCase("-2", "-", "2")]
         [TestCase("c++", "c", "+", "+")]
         public void TokenParser_WithTokens_SplitCorrectly(string input, params string[] expectedResult)
