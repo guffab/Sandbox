@@ -1,6 +1,6 @@
 namespace SyntaxScanner.Tests
 {
-    public class SyntaxView_SliceTests
+    public class SyntaxViewSliceTests
     {
         const char openingParentheses = '(';
         const char closingParentheses = ')';

@@ -19,6 +19,25 @@ public partial class SyntaxView
         => new SyntaxEnumerator(input, syntaxPairs, separator, initialBuffer);
 
 #if NETFRAMEWORK
+    /// <inheritdoc cref="SplitByTokens(ReadOnlySpan{char}, SyntaxPair[], string[], Span{SyntaxPair})"/>1
+    public static SyntaxTokenSplitEnumerator SplitByTokens(string input, SyntaxPair[] syntaxPairs, string[] supportedTokens, Span<SyntaxPair> initialBuffer = default)
+        => SplitByTokens(input.AsSpan(), syntaxPairs, supportedTokens, initialBuffer);    
+#endif
+
+    /// <summary>
+    /// Performs syntax-aware token/literal splitting on a span of characters.
+    /// </summary>
+    /// <param name="input">The characters to split.</param>
+    /// <param name="syntaxPairs">The supported syntax identifiers to look out for.</param>
+    /// <param name="supportedTokens">The tokens to split on and return. Tokens are currently limited to up to two chars.</param>
+    /// <param name="initialBuffer">A buffer that will be used as internal storage. For stack-allocated arrays, this should be kept well below a length of 128 (adding up to ~1 kb)</param>
+    /// <remarks>
+    /// This may return partial tokens if the input is insufficient.
+    /// </remarks>
+    public static SyntaxTokenSplitEnumerator SplitByTokens(ReadOnlySpan<char> input, SyntaxPair[] syntaxPairs, string[] supportedTokens, Span<SyntaxPair> initialBuffer = default)
+        => new SyntaxTokenSplitEnumerator(input, syntaxPairs, supportedTokens, initialBuffer);
+
+#if NETFRAMEWORK
     /// <inheritdoc cref="SliceInBetween(ReadOnlySpan{char}, SyntaxPair[], char, char, out ReadOnlySpan{char})"/>
     public static ReadOnlySpan<char> SliceInBetween(string input, SyntaxPair[] syntaxPairs, char start, char end, out ReadOnlySpan<char> remainder)
         => SliceInBetween(input.AsSpan(), syntaxPairs, start, end, out remainder);
