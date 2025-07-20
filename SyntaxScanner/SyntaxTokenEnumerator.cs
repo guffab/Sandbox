@@ -23,6 +23,9 @@ public ref struct SyntaxTokenSplitEnumerator
         _supportedTokens = supportedTokens;
         _splitBlocker = new SyntaxSplitBlocker(syntaxPairs, initialBuffer);
         _tokenStarts = [.. supportedTokens.Select(x => x.FirstOrDefault())];
+
+        if (supportedTokens.Any(x => x.Length > 2))
+            throw new ArgumentException($"Tokens longer than two characters are currently not supported. Adapt method {nameof(FindLongestTokenMatch)} if needed.", nameof(supportedTokens));
     }
 
     /// <summary>Gets an enumerator that allows for iteration over the split span.</summary>
@@ -64,44 +67,31 @@ public ref struct SyntaxTokenSplitEnumerator
                 return true;
             }
 
-#warning trim candidate tokens?
-            //find longest token match
-            //extract token (size is minimum 1)
-            int tokenLength = FindLongestTokenMatch(_span, i, _supportedTokens);
+            //extract longest token match (minimum 1 char)
+            int tokenLength = FindLongestTokenMatch(_span.Slice(i), _supportedTokens);
             _endCurrent = i + tokenLength;
             _isToken = true;
             return true;
         }
-        
+
         //last item
         _isToken = false;
         _endCurrent = _span.Length;
 
         return _startCurrent < _endCurrent;
     }
-    
-    private static int FindLongestTokenMatch(ReadOnlySpan<char> path, int cutpoint, string[] candidates)
+
+    private static int FindLongestTokenMatch(ReadOnlySpan<char> span, string[] supportedTokens)
     {
-        int tokenLength = 1; //we already identified the precence of a token
-
-        for (int j = 1; j < path.Length - cutpoint; j++)
+        //check if any candidate matches both chars
+        foreach (var candidate in supportedTokens)
         {
-            bool anyfound = false;
+            if (candidate[0] != span[0])
+                continue;
 
-            foreach (var candidate in candidates)
-            {
-                if (candidate.Length > j && candidate[j] == path[cutpoint + j])
-                {
-                    anyfound = true;
-                    tokenLength++;
-                    break;
-                }
-            }
-
-            //there wont be any future match, so we can return early
-            if (!anyfound)
-                break;
+            if (candidate.Length > 1 && candidate[1] == span[1])
+                return 2;
         }
-        return tokenLength;
+        return 1; //default to one char token
     }
 }

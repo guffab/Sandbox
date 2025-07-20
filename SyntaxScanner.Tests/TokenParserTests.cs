@@ -19,7 +19,7 @@ namespace SyntaxScanner.Tests
         }
 
         [Test]
-        public void TokenParser_EmptyInput_ReturnsFalse()
+        public void TokenEnumerator_EmptyInput_ReturnsFalse()
         {
             RunSplitTest("", Array.Empty<string>());
             RunSplitTest("", Array.Empty<bool>());
@@ -28,7 +28,7 @@ namespace SyntaxScanner.Tests
         [TestCase(" ")]
         [TestCase("()")]
         [TestCase(" ( ) ")]
-        public void TokenParser_NoTokens_ReturnsInput(string input)
+        public void TokenEnumerator_NoTokens_ReturnsInput(string input)
         {
             RunSplitTest(input, [input]);
             RunSplitTest(input, [false]);
@@ -38,7 +38,7 @@ namespace SyntaxScanner.Tests
         [TestCase(" a+b", " a", "+", "b")]
         [TestCase("-2", "-", "2")]
         [TestCase("c++", "c", "+", "+")]
-        public void TokenParser_WithTokens_SplitCorrectly(string input, params string[] expectedResult)
+        public void TokenEnumerator_WithTokens_SplitCorrectly(string input, params string[] expectedResult)
         {
             RunSplitTest(input, expectedResult);
         }
@@ -47,7 +47,20 @@ namespace SyntaxScanner.Tests
         [TestCase(" a+b", false, true, false)]
         [TestCase("-2", true, false)]
         [TestCase("c++", false, true, true)]
-        public void TokenParser_WithTokens_ReturnCorrectContext(string input, params bool[] expectedResult)
+        public void TokenEnumerator_WithTokens_ReturnCorrectContext(string input, params bool[] expectedResult)
+        {
+            RunSplitTest(input, expectedResult);
+        }
+
+        [TestCase("a < b", "a ", "<", " b")]
+        [TestCase("a <= b", "a ", "<=", " b")]
+        public void TokenEnumerator_TwoCharTokens_IdentifyCorrectly(string input, params string[] expectedResult)
+        {
+            RunSplitTest(input, expectedResult);
+        }
+
+        [TestCase("a = b", "a ", "=", " b")] //note how '=' is not a token, but '==' is
+        public void TokenEnumerator_IncompleteTokenMatch_ReturnAnyway(string input, params string[] expectedResult)
         {
             RunSplitTest(input, expectedResult);
         }

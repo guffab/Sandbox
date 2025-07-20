@@ -29,7 +29,7 @@ public partial class SyntaxView
     /// </summary>
     /// <param name="input">The characters to split.</param>
     /// <param name="syntaxPairs">The supported syntax identifiers to look out for.</param>
-    /// <param name="supportedTokens">The tokens to split on and return.</param>
+    /// <param name="supportedTokens">The tokens to split on and return. Tokens are currently limited to up to two chars.</param>
     /// <param name="initialBuffer">A buffer that will be used as internal storage. For stack-allocated arrays, this should be kept well below a length of 128 (adding up to ~1 kb)</param>
     /// <remarks>
     /// This may return partial tokens if the input is insufficient.
