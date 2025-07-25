@@ -38,6 +38,37 @@ public partial class SyntaxView
         => new SyntaxTokenSplitEnumerator(input, syntaxPairs, supportedTokens, initialBuffer);
 
 #if NETFRAMEWORK
+    /// <inheritdoc cref="IndexOf(ReadOnlySpan{char}, SyntaxPair[], char)"/>
+    public static int IndexOf(string input, SyntaxPair[] syntaxPairs, char value)
+        => IndexOf(input.AsSpan(), syntaxPairs, value);
+#endif
+
+    /// <summary>
+    /// Performs a syntax-aware search for the <paramref name="value"/> parameter.
+    /// </summary>
+    /// <param name="input">The characters to search in.</param>
+    /// <param name="syntaxPairs">The supported syntax identifiers to look out for.</param>
+    /// <param name="value">The value to find in the input chars.</param>
+    /// <returns>The zero-based index position of the <paramref name="value"/> parameter from the start of the current instance if that char is found, or -1 if it is not.</returns>
+    public static int IndexOf(ReadOnlySpan<char> input, SyntaxPair[] syntaxPairs, char value)
+    {
+        var blocker = new SyntaxSplitBlocker(syntaxPairs, stackalloc SyntaxPair[64]);
+
+        for (int i = 0; i < input.Length; i++)
+        {
+            var currentChar = input[i];
+
+            blocker.Process(currentChar);
+            if (blocker.IsBlocking())
+                continue;
+
+            if (currentChar == value)
+                return i;
+        }
+        return -1;
+    }
+
+#if NETFRAMEWORK
     /// <inheritdoc cref="SliceInBetween(ReadOnlySpan{char}, SyntaxPair[], char, char, out ReadOnlySpan{char})"/>
     public static ReadOnlySpan<char> SliceInBetween(string input, SyntaxPair[] syntaxPairs, char start, char end, out ReadOnlySpan<char> remainder)
         => SliceInBetween(input.AsSpan(), syntaxPairs, start, end, out remainder);
