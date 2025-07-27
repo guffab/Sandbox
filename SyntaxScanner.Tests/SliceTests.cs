@@ -44,6 +44,7 @@ public class SliceTests
     }
 
     [TestCase("(\"a)", "")]
+    [TestCase("\"(a)", "")]
     [TestCase(" (\"if(,,)) ", "")]
     public void SliceInBetween_BlockingSyntaxStays_ReturnsEmpty(string input, string expectedResult)
     {

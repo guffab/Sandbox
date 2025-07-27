@@ -22,7 +22,13 @@ public class IndexOfTests
     [TestCase("a", 'a', 0)]
     [TestCase("angle", 'g', 2)]
     [TestCase("a++;", ';', 3)]
-    public void IndexOf_SingleCharacterInput_ReturnsCorrectIndex(string input, char value, int expectedIndex)
+    public void IndexOf_NoSyntax_ReturnsCorrectIndex(string input, char value, int expectedIndex)
+    {
+        RunIndexOfTest(input, value, expectedIndex);
+    }
+
+    [TestCase("a\";\";", ';', 4)]
+    public void IndexOf_WithSyntax_ReturnsCorrectIndex(string input, char value, int expectedIndex)
     {
         RunIndexOfTest(input, value, expectedIndex);
     }
