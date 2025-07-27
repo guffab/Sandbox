@@ -5,13 +5,17 @@ namespace SyntaxScanner.Tests
         const char openingParentheses = '(';
         const char closingParentheses = ')';
         const char separator = ',';
-        private SyntaxView syntaxParser;
+        private SyntaxPair[] fullSyntax;
+        private SyntaxPair[] syntaxSubset;
 
         [SetUp]
         public void Setup()
         {
-            SyntaxPair[] syntax = [new SyntaxPair('\"', '\"', int.MaxValue), new SyntaxPair('(', ')', 0)];
-            syntaxParser = new SyntaxView(syntax, separator, openingParentheses, closingParentheses);
+            var quotesSynxtax = new SyntaxPair('\"', '\"', int.MaxValue);
+            var parenthesesSyntax = new SyntaxPair('(', ')', 0);
+
+            fullSyntax = [quotesSynxtax, parenthesesSyntax];
+            syntaxSubset = [quotesSynxtax];
         }
 
         [TestCase("")]
@@ -116,7 +120,7 @@ namespace SyntaxScanner.Tests
             // Act
             var result = new List<string>();
 
-            foreach (var subSpan in syntaxParser.Split(input, stackalloc SyntaxPair[64]))
+            foreach (var subSpan in SyntaxView.Split(input, fullSyntax, separator, stackalloc SyntaxPair[64]))
                 result.Add(subSpan.ToString());
 
             // Assert
@@ -126,7 +130,7 @@ namespace SyntaxScanner.Tests
         private void RunSliceTest(string input, string expectedResult)
         {
             // Act
-            var result = syntaxParser.SliceInBetween(input, out _).ToString();
+            var result = SyntaxView.SliceInBetween(input, syntaxSubset, openingParentheses, closingParentheses, out _).ToString();
 
             // Assert
             Assert.That(result == expectedResult, $"Expected '{expectedResult}' but got '{result}' for slicing '{input}'");
@@ -144,7 +148,7 @@ namespace SyntaxScanner.Tests
         private void RunSliceRemainderTest(string input, string expectedRemainder)
         {
             // Act
-            _ = syntaxParser.SliceInBetween(input, out var spanRemainder);
+            _ = SyntaxView.SliceInBetween(input, syntaxSubset, openingParentheses, closingParentheses, out var spanRemainder);
             string remainder = spanRemainder.ToString();
 
             // Assert
