@@ -10,19 +10,21 @@ namespace Example
     /// </remarks>
     public class MyLanguageParser
     {
-        private const char openingParentheses = '(';
-        private const char closingParentheses = ')';
-        private const char quote = '\"';
-        private SyntaxView syntaxParser;
+        const char openingParentheses = '(';
+        const char closingParentheses = ')';
+        const char quote = '\"';
+        const char separator = ',';
+        
+        private SyntaxPair[] fullSyntax;
+        private SyntaxPair[] syntaxSubset;
 
         public MyLanguageParser()
         {
-            SyntaxPair[] syntax =
-            [
-                new SyntaxPair(openingParentheses, closingParentheses, 0), //note how parentheses are here defined as "regular" syntax
-                new SyntaxPair(quote, quote, int.MaxValue)                 //while quotes have the highest priority (because they usually serve as string identifiers)
-            ];
-            syntaxParser = new SyntaxView(syntax, ',', openingParentheses, closingParentheses);
+            var quotesSynxtax = new SyntaxPair(openingParentheses, closingParentheses, 0); //note how parentheses are here defined as "regular" syntax
+            var parenthesesSyntax = new SyntaxPair(quote, quote, int.MaxValue); //while quotes have the highest priority (because they usually serve as string identifiers)
+
+            fullSyntax = [quotesSynxtax, parenthesesSyntax];
+            syntaxSubset = [quotesSynxtax];
         }
 
         //callers may provide a string, but by using spans internally, we can make more efficient computations
@@ -39,7 +41,7 @@ namespace Example
             //assuming input is enclosed by parentheses 
             if (input[0] is openingParentheses && input[input.Length - 1] is closingParentheses)
             {
-                var inner = syntaxParser.SliceInBetween(input, out var remainder);
+                var inner = SyntaxView.SliceInBetween(input, syntaxSubset, openingParentheses, closingParentheses, out var remainder);
 
                 //now we need to define how our language works: is it incorrect to have something after the parentheses or could it even be a requirement?
                 if (!remainder.Trim().IsEmpty)
@@ -57,7 +59,7 @@ namespace Example
 
             //split input on every comma separator, unless some other syntax plays into it
             var subParts = new List<IParsedLanguage?>();
-            foreach (var subSpan in syntaxParser.Split(input, stackalloc SyntaxPair[64])) //we provide a small stack-allocated buffer for best performance
+            foreach (var subSpan in SyntaxView.Split(input, fullSyntax, separator, stackalloc SyntaxPair[64])) //we provide a small stack-allocated buffer for best performance
             {
                 subParts.Add(Parse(subSpan));
             }
