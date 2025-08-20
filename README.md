@@ -6,20 +6,6 @@
 
 ## Usage
 
-* `Slicing with syntax awareness`
-
-```csharp
-var input = "path(\"notice this closing quote ->)<- \"), trailing text";
-var syntax = [ new SyntaxPair('\"', '\"') ];
-
-var slice = SyntaxView.SliceInBetween(input, syntax, '(', ')', out var remainder);
-
-//slice: '"notice this closing quote ->)<- "'
-//remainder: ', trailing text'
-``` 
-
-<br/>
-
 * `IndexOf with syntax awareness`
 
 ```csharp
@@ -49,6 +35,21 @@ foreach (var slice in SyntaxView.Split(input, syntax, ',', stackalloc SyntaxPair
 //results: 'path(a,b)' ' \"b,c,d\"' ' e'
 ```
 
+<br/>
+
+* `Slicing with syntax awareness`
+
+```csharp
+var input = "path(\"notice this closing quote ->)<- \"), trailing text";
+var syntax = [ new SyntaxPair('\"', '\"') ];
+
+var slice = SyntaxView.SliceInBetween(input, syntax, '(', ')', out var remainder);
+
+//slice: '"notice this closing quote ->)<- "'
+//remainder: ', trailing text'
+``` 
+
+<br/>
 
 # BidirectionalIterator
 
