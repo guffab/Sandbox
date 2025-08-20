@@ -21,6 +21,20 @@ var length = input.Length;
 
 <br/>
 
+* `Slicing with syntax awareness`
+
+```csharp
+var input = "path(\"notice this closing quote ->)<- \"), trailing text";
+var syntax = [ new SyntaxPair('\"', '\"') ];
+
+var slice = SyntaxView.SliceInBetween(input, syntax, '(', ')', out var remainder);
+
+//slice: '"notice this closing quote ->)<- "'
+//remainder: ', trailing text'
+``` 
+
+<br/>
+
 * `Split with syntax awareness`
 
 ```csharp
@@ -37,19 +51,25 @@ foreach (var slice in SyntaxView.Split(input, syntax, ',', stackalloc SyntaxPair
 
 <br/>
 
-* `Slicing with syntax awareness`
+* `Split per token (mainly used for arimethic operators)`
 
 ```csharp
-var input = "path(\"notice this closing quote ->)<- \"), trailing text";
-var syntax = [ new SyntaxPair('\"', '\"') ];
 
-var slice = SyntaxView.SliceInBetween(input, syntax, '(', ')', out var remainder);
 
-//slice: '"notice this closing quote ->)<- "'
-//remainder: ', trailing text'
+var input = "a + b";
+var supportedTokens = ["==", "!=", "<", "<=", ">", ">=", "+", "-", "*", "/"];
+
+foreach (var (start, end, isToken) in SyntaxView.SplitByTokens(input, [], supportedTokens, stackalloc SyntaxPair[64])) //optionally reserve some space on the stack for maximum performance
+{
+    //do something with it
+    var slice = input.Slice(start, end);
+}
+
+//results: 'a ' '+' ' b'
 ``` 
 
 <br/>
+
 
 # BidirectionalIterator
 
