@@ -61,8 +61,8 @@ var supportedTokens = ["==", "!=", "<", "<=", ">", ">=", "+", "-", "*", "/"];
 
 foreach (var (start, end, isToken) in SyntaxView.SplitByTokens(input, [], supportedTokens, stackalloc SyntaxPair[64])) //optionally reserve some space on the stack for maximum performance
 {
-    //do something with it
     var slice = input.Slice(start, end);
+    var tokenOrNot = isToken;
 }
 
 //results: 'a ' '+' ' b'
