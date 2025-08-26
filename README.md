@@ -4,7 +4,7 @@
 
 **SyntaxScanner**  is a high-performance .NET library for syntax-aware splitting and slicing based on arbitrary text input. The available API lets you freely define the syntax rules of your language and how it interacts with one another. It is heavily optimized to favor stack allocations and `ReadOnlySpan<char>` for maximum performance.
 
-## Usage
+## Usage and comparison with native methods
 
 * `IndexOf with syntax awareness`
 
@@ -12,11 +12,13 @@
 var input = "a = \";\" ;";
 var syntax = [ new SyntaxPair('\"', '\"') ];
 
+var length = input.Length; //length: 9
+
 var index = SyntaxView.IndexOf(input, syntax, value);
-var length = input.Length;
+var standardIndex = input.IndexOf(value);
 
 //index: 8
-//length: 9
+//standardIndex: 5
 ```
 
 <br/>
@@ -24,13 +26,21 @@ var length = input.Length;
 * `Slicing with syntax awareness`
 
 ```csharp
-var input = "path(\"notice this closing quote ->)<- \"), trailing text";
+var input = "path(\"some text) \"), trailing text";
 var syntax = [ new SyntaxPair('\"', '\"') ];
 
 var slice = SyntaxView.SliceInBetween(input, syntax, '(', ')', out var remainder);
 
-//slice: '"notice this closing quote ->)<- "'
-//remainder: ', trailing text'
+var start = input.IndexOf('(');
+var end = input.IndexOf(')', start);
+var standardSlice = input.SubString(start, end - start);
+var standardRemainder = input.SubString(end);
+
+//slice: "\"some text) \""
+//remainder: ", trailing text"
+
+//standardSlice: "\"some text"
+//standardRemainder: " \"), trailing text"
 ``` 
 
 <br/>
@@ -41,12 +51,19 @@ var slice = SyntaxView.SliceInBetween(input, syntax, '(', ')', out var remainder
 var input = "path(a,b), \"b,c,d\", e";
 var syntax = [ new SyntaxPair('\"', '\"'), new SyntaxPair('(', ')') ];
 
+//streams in the resulting slices to avoid allocating an array
 foreach (var slice in SyntaxView.Split(input, syntax, ',', stackalloc SyntaxPair[64])) //optionally reserve some space on the stack for maximum performance
 {
     //do something with it
 }
 
-//results: 'path(a,b)' ' \"b,c,d\"' ' e'
+var standardSplit = input.Split(',');
+
+//results (each slice): ["path(a,b)", " \"b,c,d\"", " e"]
+//                       └─────────┘  └──────────┘  └──┘
+
+//standardSplit: ["path(a", "b)", " \"b", "c", "d\"", " e"]
+//                └──────┘  └──┘  └────┘  └─┘  └───┘  └──┘
 ```
 
 <br/>
@@ -54,7 +71,6 @@ foreach (var slice in SyntaxView.Split(input, syntax, ',', stackalloc SyntaxPair
 * `Split per token (mainly used for arimethic operators)`
 
 ```csharp
-
 
 var input = "a + b";
 var supportedTokens = ["==", "!=", "<", "<=", ">", ">=", "+", "-", "*", "/"];
