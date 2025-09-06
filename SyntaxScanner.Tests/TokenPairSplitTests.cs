@@ -37,7 +37,7 @@ internal class TokenPairSplitTests
     }
 
     [TestCase("'a'", true)]
-    [TestCase("a 'b'", true, false)] //other way around actually, just for testing the test
+    [TestCase("a 'b'", false, true)] //other way around actually, just for testing the test
     [TestCase("'a' b", true, false)]
     public void TokenPairEnumerator_WithTokens_ReturnCorrectContext(string input, params bool[] expectedResult)
     {
