@@ -1,6 +1,5 @@
 ﻿namespace SyntaxScanner;
 
-
 /// <summary>
 /// Creates syntax-enhanced views over generic <see cref="string"/> input.<br/>
 /// </summary>
@@ -30,7 +29,7 @@ public class SyntaxView
         => new SyntaxEnumerator(input, syntaxPairs, separator, initialBuffer);
 
 #if NETFRAMEWORK
-    /// <inheritdoc cref="SplitByTokens(ReadOnlySpan{char}, SyntaxPair[], string[], Span{SyntaxPair})"/>1
+    /// <inheritdoc cref="SplitByTokens(ReadOnlySpan{char}, SyntaxPair[], string[], Span{SyntaxPair})"/>
     public static SyntaxTokenSplitEnumerator SplitByTokens(string input, SyntaxPair[] syntaxPairs, string[] supportedTokens, Span<SyntaxPair> initialBuffer = default)
         => SplitByTokens(input.AsSpan(), syntaxPairs, supportedTokens, initialBuffer);
 #endif
@@ -47,6 +46,22 @@ public class SyntaxView
     /// </remarks>
     public static SyntaxTokenSplitEnumerator SplitByTokens(ReadOnlySpan<char> input, SyntaxPair[] syntaxPairs, string[] supportedTokens, Span<SyntaxPair> initialBuffer = default)
         => new SyntaxTokenSplitEnumerator(input, syntaxPairs, supportedTokens, initialBuffer);
+
+#if NETFRAMEWORK
+    /// <inheritdoc cref="SplitByTokenPair(ReadOnlySpan{char}, SyntaxPair[], SyntaxPair, Span{SyntaxPair})"/>1
+    public static TokenPairSplitEnumerator SplitByTokenPair(string input, SyntaxPair[] syntaxPairs, SyntaxPair tokenPair, Span<SyntaxPair> initialBuffer = default)
+        => SplitByTokenPair(input.AsSpan(), syntaxPairs, tokenPair, initialBuffer);
+#endif
+
+    /// <summary>
+    /// Performs syntax-aware splitting around a token pair.
+    /// </summary>
+    /// <param name="input">The characters to split.</param>
+    /// <param name="syntaxPairs">The supported syntax identifiers to look out for.</param>
+    /// <param name="tokenPair">The token pair to split on and return.</param>
+    /// <param name="initialBuffer">A buffer that will be used as internal storage. For stack-allocated arrays, this should be kept well below a length of 128 (adding up to ~1 kb)</param>
+    public static TokenPairSplitEnumerator SplitByTokenPair(ReadOnlySpan<char> input, SyntaxPair[] syntaxPairs, SyntaxPair tokenPair, Span<SyntaxPair> initialBuffer = default)
+        => new TokenPairSplitEnumerator(input, syntaxPairs, tokenPair, initialBuffer);
 
 #if NETFRAMEWORK
     /// <inheritdoc cref="IndexOf(ReadOnlySpan{char}, SyntaxPair[], char)"/>
