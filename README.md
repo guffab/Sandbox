@@ -87,6 +87,7 @@ var standardSplit = input.Split(separators, StringSplitOptions.None);
 //                └───┘  └────┘  └───┘  └──┘
 ``` 
 
+<br/>
 
 # IBidirectionalIterator
 
@@ -139,5 +140,3 @@ if (iterator.Move(-3)) //move three indices backwards
     var current = iterator.Current;
 }
 ```
-
-<br/>
