@@ -93,6 +93,7 @@ var standardSplit = input.Split(separators, StringSplitOptions.None);
 # BidirectionalIterator
 
 ## What is it?
+## What is it?
 
 Do you love enumerables, foreach loops and their strong integration with LINQ? But, have you also ever missed the option to reverse direction mid-way of enumeration? Then this is for you: an iterator that moves forwards, backwards, jumps over how many elements you like, and itegrates seamlessly with LINQ.
 
