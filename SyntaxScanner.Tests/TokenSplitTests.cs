@@ -8,7 +8,7 @@ internal class TokenSplitTests
     [SetUp]
     public void Setup()
     {
-        syntax = [new SyntaxPair('\"', '\"', int.MaxValue), new SyntaxPair('(', ')', 0)];
+        syntax = [new SyntaxPair('(', ')', 0)];
         supportedTokens = ["==", "!=", "<", "<=", ">", ">=", "+", "-", "*", "/"];
     }
 
@@ -17,6 +17,12 @@ internal class TokenSplitTests
     {
         RunSplitTest("", Array.Empty<string>());
         RunSplitTest("", Array.Empty<bool>());
+    }
+
+    [Test]
+    public void TokenEnumerator_UnsupportedTokenLength_Throws()
+    {
+        Assert.Throws<ArgumentException>(() => SyntaxView.SplitByTokens("", syntax, ["??="]));
     }
 
     [TestCase(" ")]
@@ -55,6 +61,12 @@ internal class TokenSplitTests
 
     [TestCase("a = b", "a ", "=", " b")] //note how '=' is not a token, but '==' is
     public void TokenEnumerator_IncompleteTokenMatch_ReturnAnyway(string input, params string[] expectedResult)
+    {
+        RunSplitTest(input, expectedResult);
+    }
+
+    [TestCase("(a + b)", "(a + b)")]
+    public void TokenEnumerator_BlockingSyntax_NoSplit(string input, params string[] expectedResult)
     {
         RunSplitTest(input, expectedResult);
     }

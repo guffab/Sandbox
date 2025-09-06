@@ -50,6 +50,16 @@ internal class TokenPairSplitTests
         RunSplitTest(input, expectedResult);
     }
 
+
+    [TestCase("('a')", "('a')")]
+    [TestCase("'(a')", "'(a')")]
+    [TestCase("('a)'", "('a)", "'")]
+    public void TokenPairEnumerator_BlockingSyntax_NoSplit(string input, params string[] expectedResult)
+    {
+        RunSplitTest(input, expectedResult);
+    }
+
+
     private void RunSplitTest(string input, IList<bool> expectedResult)
     {
         // Act
