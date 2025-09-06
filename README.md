@@ -1,26 +1,142 @@
-## SyntaxScanner
+# SyntaxView
 
-### What is it?
+## What is it?
 
-**SyntaxScanner** is a high-performance .NET library for syntax-aware splitting and slicing based on arbitrary string input. The available API lets you freely define the syntax rules of your language and how it interacts with one another.
+**SyntaxView**  is a high-performance .NET library for syntax-aware splitting and slicing based on arbitrary text input. The available API lets you freely define the syntax rules of your language and how it interacts with one another. It is heavily optimized to favor stack allocations and `ReadOnlySpan<char>` for maximum performance.
 
-### How does it perform?
+## Usage and comparison with native methods
 
-While a previous implementation was based on `string`, the most recent implementation uses `ReadOnlySpan<char>` on the API level, as well as internally.
-Additionally, most usages of ${\textsf{\color{navyblue}class}}$ objects are now substituted with ${\textsf{\color{navyblue}ref struct}}$ objects to avoid heap allocations.
+* `IndexOf with syntax awareness`
 
-### Sounds cool, but how do I use it?
+```csharp
+var input = "a = ';' ;";
+var syntax = [ new SyntaxPair('\'', '\'') ];
 
-Take a look at the example implementation [here](/Examples/Example.SyntaxScanner/MyLanguageParser.cs).
+var index = SyntaxView.IndexOf(input, syntax, value);
+var standardIndex = input.IndexOf(value);
 
+//index: 8
+//standardIndex: 5
+```
 
-## BidirectionalIterator
+<br/>
 
-### What is it?
+* `Slicing with syntax awareness`
 
-Do you love enumerables, foreach loops and their strong integration with LINQ? Did you ever feel the need to go back a few elements or switch direction mid-way of enumeration? <br>
-Then this is for you: an iterator that moves forward, backward, jumps over how many elements you like, and itegrates seamlessly with LINQ.
+```csharp
+var input = "path('some text) '), trailing text";
+var syntax = [ new SyntaxPair('\'', '\'') ];
 
-### What is it built on?
+var slice = SyntaxView.SliceInBetween(input, syntax, '(', ')', out var remainder);
 
-Since their interface extends both the `IEnumerator<T>` and `IEnumerable<T>` interface, all bidirectional iterators automatically support foreach blocks and LINQ (which are forward-only by definition).
+var start = input.IndexOf('(');
+var end = input.IndexOf(')', start);
+var standardSlice = input.SubString(start, end - start);
+var standardRemainder = input.SubString(end);
+
+//slice: "'some text) '"
+//standardSlice: "'some text"
+
+//remainder: ", trailing text"
+//standardRemainder: " '), trailing text"
+``` 
+
+<br/>
+
+* `Split with syntax awareness`
+
+```csharp
+var input = "path(a,b), 'b,c,d', e";
+var syntax = [ new SyntaxPair('\'', '\''), new SyntaxPair('(', ')') ];
+
+//streams in the resulting slices to avoid allocating an array
+foreach (var slice in SyntaxView.Split(input, syntax, ',', stackalloc SyntaxPair[64])) //optionally reserve some space on the stack for maximum performance
+{
+    //do something with it
+}
+
+var standardSplit = input.Split(',');
+
+//results (each slice): ["path(a,b)", " 'b,c,d'", " e"]
+//                       └─────────┘  └────────┘  └──┘
+
+//standardSplit: ["path(a", "b)", " 'b", "c", "d'", " e"]
+//                └──────┘  └──┘  └───┘  └─┘  └──┘  └──┘
+```
+
+<br/>
+
+* `Split with syntax awareness (include separators)`
+
+```csharp
+var input = "(1 + 3) * 2 == 4";
+var separators = ["+", "*", "==" ];//extend as needed
+var syntax = [ new SyntaxPair('(', ')') ];
+
+foreach (var (start, end, isToken) in SyntaxView.SplitByTokens(input, syntax, separators, stackalloc SyntaxPair[64])) //optionally reserve some space on the stack for maximum performance
+{
+    var slice = input.Slice(start, end);
+}
+
+var standardSplit = input.Split(separators, StringSplitOptions.None);
+
+//results (each slice): ["(1 + 3) ", "*", " 2 ", "==", " 4"]
+//                       └────────┘  └─┘  └───┘  └──┘  └──┘
+
+//standardSplit: ["(1 ", " 3) ", " 2 ", " 4"]
+//                └───┘  └────┘  └───┘  └──┘
+``` 
+
+<br/>
+
+# IBidirectionalIterator
+
+## What is it?
+
+**IBidirectionalIterator** is an interface supporting forwards, backwards and mixed enumeration, all while maintaining full compatibility with LINQ and foreach loops.
+
+## Usage
+
+* `Creating the iterator`
+
+```csharp
+var list = Enumerable.Range(0, 10).ToList();
+var iterator = list.GetBidirectionalIterator(); //implemented as an extension method
+```
+
+<br/>
+
+* `Using foreach/LINQ`
+
+```csharp
+foreach (var item in iterator) { }
+
+var count = iterator.Select(x => x).Count();
+```
+
+<br/>
+
+* `Backwards enumeration`
+
+```csharp
+while (iterator.MovePrevious())
+{
+    var current = iterator.Current;
+}
+```
+
+<br/>
+
+* `Jumping over items`
+
+```csharp
+if (iterator.Move(4)) //move four indices forwards
+{
+    var current = iterator.Current;
+}
+
+if (iterator.Move(-3)) //move three indices backwards
+{
+    var current = iterator.Current;
+}
+```
