@@ -87,19 +87,16 @@ var standardSplit = input.Split(separators, StringSplitOptions.None);
 //                └───┘  └────┘  └───┘  └──┘
 ``` 
 
-<br/>
 
-
-# BidirectionalIterator
+# IBidirectionalIterator
 
 ## What is it?
-## What is it?
 
-Do you love enumerables, foreach loops and their strong integration with LINQ? But, have you also ever missed the option to reverse direction mid-way of enumeration? Then this is for you: an iterator that moves forwards, backwards, jumps over how many elements you like, and itegrates seamlessly with LINQ.
+**IBidirectionalIterator** is an interface supporting forwards, backwards and mixed enumeration, all while maintaining full compatibility with LINQ and foreach loops.
 
 ## Usage
 
-* `creating the iterator`
+* `Creating the iterator`
 
 ```csharp
 var list = Enumerable.Range(0, 10).ToList();
@@ -108,7 +105,7 @@ var iterator = list.GetBidirectionalIterator(); //implemented as an extension me
 
 <br/>
 
-* `foreach/LINQ usage`
+* `Using foreach/LINQ`
 
 ```csharp
 foreach (var item in iterator) { }
@@ -118,7 +115,7 @@ var count = iterator.Select(x => x).Count();
 
 <br/>
 
-* `backwards enumeration`
+* `Backwards enumeration`
 
 ```csharp
 while (iterator.MovePrevious())
@@ -129,7 +126,7 @@ while (iterator.MovePrevious())
 
 <br/>
 
-* `jump over items`
+* `Jumping over items`
 
 ```csharp
 if (iterator.Move(4)) //move four indices forwards
