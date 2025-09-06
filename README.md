@@ -110,11 +110,9 @@ var iterator = list.GetBidirectionalIterator(); //implemented as an extension me
 * `foreach/LINQ usage`
 
 ```csharp
-int count = 0;
-foreach (var item in iterator)
-    count++;
+foreach (var item in iterator) { }
 
-var result = iterator.Select(x => x).Count(); //10
+var count = iterator.Select(x => x).Count();
 ```
 
 <br/>
