@@ -14,9 +14,10 @@ namespace Example
         const char closingParentheses = ')';
         const char quote = '\"';
         const char separator = ',';
-        
+
         private SyntaxPair[] fullSyntax;
         private SyntaxPair[] syntaxSubset;
+        private string[] supportedTokens = ["+", "-", "*", "/"];
 
         public MyLanguageParser()
         {
@@ -34,7 +35,7 @@ namespace Example
         public IParsedLanguage? Parse(ReadOnlySpan<char> input)
         {
             input = input.Trim(); //allocation-free, simply a different view over the same char array
-            
+
             if (input.IsEmpty)
                 return default;
 
@@ -65,6 +66,23 @@ namespace Example
             }
 
             return default;
+        }
+
+        private void CopmarisonWithExtensions(ReadOnlySpan<char> input)
+        {
+            SyntaxView.IndexOf(input, fullSyntax, separator);
+            input.IndexOf(separator, fullSyntax);
+
+            SyntaxView.SliceInBetween(input, syntaxSubset, '(', ')', out _);
+            input.SliceBetween('(', ')', syntaxSubset);
+
+            foreach (var subSpan in SyntaxView.Split(input, fullSyntax, separator)) ;
+            foreach (var subSpan in input.Split(separator, fullSyntax)) ;
+
+            foreach (var (start, end, isToken) in SyntaxView.SplitByTokens(input, fullSyntax, supportedTokens)) ;
+            foreach (var (start, end, isToken) in input.SplitTokenized(supportedTokens, fullSyntax)) ;
+
+            
         }
     }
 
