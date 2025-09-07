@@ -26,6 +26,14 @@ public static class SyntaxExtensions
     public static SyntaxTokenSplitEnumerator SplitTokenized(this ReadOnlySpan<char> input, string[] supportedTokens, SyntaxPair[] syntaxPairs, Span<SyntaxPair> initialBuffer = default)
         => SyntaxView.SplitByTokens(input, syntaxPairs, supportedTokens, initialBuffer);
 
+    /// <inheritdoc cref="SyntaxView.SplitByTokenPair(string, SyntaxPair[], SyntaxPair, Span{SyntaxPair})"/>1
+    public static TokenPairSplitEnumerator SplitTokenized(this string input, SyntaxPair tokenPair, SyntaxPair[] syntaxPairs, Span<SyntaxPair> initialBuffer = default)
+        => SyntaxView.SplitByTokenPair(input, syntaxPairs, tokenPair, initialBuffer);
+
+    /// <inheritdoc cref="SyntaxView.SplitByTokenPair(ReadOnlySpan{char}, SyntaxPair[], SyntaxPair, Span{SyntaxPair})"/>1
+    public static TokenPairSplitEnumerator SplitTokenized(this ReadOnlySpan<char> input, SyntaxPair tokenPair, SyntaxPair[] syntaxPairs, Span<SyntaxPair> initialBuffer = default)
+        => SyntaxView.SplitByTokenPair(input, syntaxPairs, tokenPair, initialBuffer);
+
     /// <inheritdoc cref="SyntaxView.SliceInBetween(string, SyntaxPair[], char, char, out ReadOnlySpan{char})"/>
     public static ReadOnlySpan<char> SliceInBetween(this string input, char start, char end, SyntaxPair[] syntaxPairs, out ReadOnlySpan<char> remainder)
         => SyntaxView.SliceInBetween(input, syntaxPairs, start, end, out remainder);

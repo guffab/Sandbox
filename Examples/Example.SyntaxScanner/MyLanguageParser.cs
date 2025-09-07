@@ -18,6 +18,7 @@ namespace Example
         private SyntaxPair[] fullSyntax;
         private SyntaxPair[] syntaxSubset;
         private string[] supportedTokens = ["+", "-", "*", "/"];
+        private SyntaxPair tokenPair = new SyntaxPair('\'', '\'', 0);
 
         public MyLanguageParser()
         {
@@ -81,8 +82,9 @@ namespace Example
 
             foreach (var (start, end, isToken) in SyntaxView.SplitByTokens(input, fullSyntax, supportedTokens)) ;
             foreach (var (start, end, isToken) in input.SplitTokenized(supportedTokens, fullSyntax)) ;
-
             
+            foreach (var (start, end, isToken) in SyntaxView.SplitByTokenPair(input, fullSyntax, tokenPair)) ;
+            foreach (var (start, end, isToken) in input.SplitTokenized(tokenPair, fullSyntax)) ;
         }
     }
 
