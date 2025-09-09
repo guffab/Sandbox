@@ -65,7 +65,7 @@ internal class TokenPairSplitTests
         // Act
         var result = new List<bool>();
 
-        foreach (var (start, end, isToken) in SyntaxView.SplitByTokenPair(input, syntax, tokenPair, stackalloc SyntaxPair[64]))
+        foreach (var (start, end, isToken) in SyntaxView.SplitTokenized(input, syntax, tokenPair, stackalloc SyntaxPair[64]))
             result.Add(isToken);
 
         // Assert
@@ -77,7 +77,7 @@ internal class TokenPairSplitTests
         // Act
         var result = new List<string>();
 
-        foreach (var (start, end, isToken) in SyntaxView.SplitByTokenPair(input, syntax, tokenPair, stackalloc SyntaxPair[64]))
+        foreach (var (start, end, isToken) in SyntaxView.SplitTokenized(input, syntax, tokenPair, stackalloc SyntaxPair[64]))
             result.Add(input.Substring(start, end - start));
 
         // Assert
