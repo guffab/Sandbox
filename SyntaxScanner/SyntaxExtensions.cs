@@ -2,7 +2,6 @@ namespace SyntaxScanner;
 
 public static class SyntaxExtensions
 {
-#if NETFRAMEWORK
     /// <inheritdoc cref="SyntaxView.IndexOf(string, SyntaxPair[], char)"/>
     public static int IndexOf(this string input, char value, SyntaxPair[] syntaxPairs)
         => SyntaxView.IndexOf(input, syntaxPairs, value);
@@ -26,7 +25,6 @@ public static class SyntaxExtensions
     /// <inheritdoc cref="SyntaxView.SliceBetween(string, SyntaxPair[], char, char, out ReadOnlySpan{char})"/>
     public static ReadOnlySpan<char> SliceBetween(this string input, char start, char end, SyntaxPair[] syntaxPairs)
         => SyntaxView.SliceBetween(input, syntaxPairs, start, end);
-#endif
 
     /// <inheritdoc cref="SyntaxView.IndexOf(ReadOnlySpan{char}, SyntaxPair[], char)"/>
     public static int IndexOf(this ReadOnlySpan<char> input, char value, SyntaxPair[] syntaxPairs)

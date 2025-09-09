@@ -1,1 +1,0 @@
-using static SyntaxScanner.SyntaxExtensions;
