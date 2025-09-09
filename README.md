@@ -4,7 +4,9 @@
 
 **SyntaxView**  is a high-performance .NET library for syntax-aware splitting and slicing based on arbitrary text input. The available API lets you freely define the syntax rules of your language and how it interacts with one another. It is heavily optimized to favor stack allocations and `ReadOnlySpan<char>` for maximum performance.
 
-## Usage and comparison with native methods
+## Examples vs. Native
+
+#### This section is intended as a showcase for the library, thus comparisons to existing `string` methods are made.
 
 * `IndexOf with syntax awareness`
 
@@ -12,8 +14,8 @@
 var input = "a = ';' ;";
 var syntax = [ new SyntaxPair('\'', '\'') ];
 
-var index = SyntaxView.IndexOf(input, syntax, value);
-var standardIndex = input.IndexOf(value);
+var index = input.IndexOf(';', syntax);
+var standardIndex = input.IndexOf(';');
 
 //index: 8
 //standardIndex: 5
@@ -27,7 +29,7 @@ var standardIndex = input.IndexOf(value);
 var input = "path('some text) '), trailing text";
 var syntax = [ new SyntaxPair('\'', '\'') ];
 
-var slice = SyntaxView.SliceInBetween(input, syntax, '(', ')', out var remainder);
+var slice = input.SliceInBetween('(', ')', syntax, out var remainder);
 
 var start = input.IndexOf('(');
 var end = input.IndexOf(')', start);
@@ -50,7 +52,7 @@ var input = "path(a,b), 'b,c,d', e";
 var syntax = [ new SyntaxPair('\'', '\''), new SyntaxPair('(', ')') ];
 
 //streams in the resulting slices to avoid allocating an array
-foreach (var slice in SyntaxView.Split(input, syntax, ',', stackalloc SyntaxPair[64])) //optionally reserve some space on the stack for maximum performance
+foreach (var slice in input.Split(',', syntax, stackalloc SyntaxPair[64])) //optionally reserve some space on the stack for maximum performance
 {
     //do something with it
 }
@@ -73,7 +75,7 @@ var input = "(1 + 3) * 2 == 4";
 var separators = ["+", "*", "==" ];//extend as needed
 var syntax = [ new SyntaxPair('(', ')') ];
 
-foreach (var (start, end, isToken) in SyntaxView.SplitByTokens(input, syntax, separators, stackalloc SyntaxPair[64])) //optionally reserve some space on the stack for maximum performance
+foreach (var (start, end, isToken) in input.SplitTokenized(separators, syntax, stackalloc SyntaxPair[64])) //optionally reserve some space on the stack for maximum performance
 {
     var slice = input.Slice(start, end);
 }
