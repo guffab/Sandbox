@@ -3,7 +3,7 @@
 /// <summary>
 /// Enables enumerating each split within a <see cref="ReadOnlySpan{T}"/> that has been divided using a single separator.
 /// </summary>
-public ref struct SyntaxEnumerator
+public ref struct SplitEnumerator
 {
     private readonly ReadOnlySpan<char> _span;
     private SyntaxSplitBlocker _splitBlocker;
@@ -14,7 +14,7 @@ public ref struct SyntaxEnumerator
 
     const int separatorLength = 1;
 
-    internal SyntaxEnumerator(ReadOnlySpan<char> span, SyntaxPair[] syntaxPairs, char separator, Span<SyntaxPair> initialBuffer)
+    internal SplitEnumerator(ReadOnlySpan<char> span, SyntaxPair[] syntaxPairs, char separator, Span<SyntaxPair> initialBuffer)
     {
         _span = span;
         _splitBlocker = new SyntaxSplitBlocker(syntaxPairs, initialBuffer);
@@ -22,7 +22,7 @@ public ref struct SyntaxEnumerator
     }
 
     /// <summary>Gets an enumerator that allows for iteration over the split span.</summary>
-    public SyntaxEnumerator GetEnumerator() => this; //do not rename (duck typing)
+    public SplitEnumerator GetEnumerator() => this; //do not rename (duck typing)
 
     /// <summary>The current element of the enumeration. This may only be called after a successful call to <see cref="MoveNext"/></summary>
     public ReadOnlySpan<char> Current => _span.Slice(_startCurrent, _endCurrent - _startCurrent); //do not rename (duck typing)

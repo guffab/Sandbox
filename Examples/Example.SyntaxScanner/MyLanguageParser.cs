@@ -14,9 +14,11 @@ namespace Example
         const char closingParentheses = ')';
         const char quote = '\"';
         const char separator = ',';
-        
+
         private SyntaxPair[] fullSyntax;
         private SyntaxPair[] syntaxSubset;
+        private string[] supportedTokens = ["+", "-", "*", "/"];
+        private SyntaxPair tokenPair = new SyntaxPair('\'', '\'', 0);
 
         public MyLanguageParser()
         {
@@ -34,14 +36,14 @@ namespace Example
         public IParsedLanguage? Parse(ReadOnlySpan<char> input)
         {
             input = input.Trim(); //allocation-free, simply a different view over the same char array
-            
+
             if (input.IsEmpty)
                 return default;
 
             //assuming input is enclosed by parentheses 
             if (input[0] is openingParentheses && input[input.Length - 1] is closingParentheses)
             {
-                var inner = SyntaxView.SliceInBetween(input, syntaxSubset, openingParentheses, closingParentheses, out var remainder);
+                var inner = SyntaxView.SliceBetween(input, syntaxSubset, openingParentheses, closingParentheses, out var remainder);
 
                 //now we need to define how our language works: is it incorrect to have something after the parentheses or could it even be a requirement?
                 if (!remainder.Trim().IsEmpty)
@@ -65,6 +67,24 @@ namespace Example
             }
 
             return default;
+        }
+
+        private void CopmarisonWithExtensions(ReadOnlySpan<char> input)
+        {
+            SyntaxView.IndexOf(input, fullSyntax, separator);
+            input.IndexOf(separator, fullSyntax);
+
+            SyntaxView.SliceBetween(input, syntaxSubset, '(', ')');
+            input.SliceBetween('(', ')', syntaxSubset);
+
+            foreach (var subSpan in SyntaxView.Split(input, fullSyntax, separator)) ;
+            foreach (var subSpan in input.Split(separator, fullSyntax)) ;
+
+            foreach (var (start, end, isToken) in SyntaxView.SplitTokenized(input, fullSyntax, supportedTokens)) ;
+            foreach (var (start, end, isToken) in input.SplitTokenized(supportedTokens, fullSyntax)) ;
+            
+            foreach (var (start, end, isToken) in SyntaxView.SplitTokenized(input, fullSyntax, tokenPair)) ;
+            foreach (var (start, end, isToken) in input.SplitTokenized(tokenPair, fullSyntax)) ;
         }
     }
 

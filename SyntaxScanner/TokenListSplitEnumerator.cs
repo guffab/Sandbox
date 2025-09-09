@@ -6,7 +6,7 @@ namespace SyntaxScanner;
 /// <remarks>
 /// This may return partial tokens if the input is insufficient.
 /// </remarks>
-public ref struct SyntaxTokenSplitEnumerator
+public ref struct TokenListSplitEnumerator
 {
     private readonly ReadOnlySpan<char> _span;
     private SyntaxSplitBlocker _splitBlocker;
@@ -17,7 +17,7 @@ public ref struct SyntaxTokenSplitEnumerator
     private int _endCurrent;
     private bool _isToken;
 
-    internal SyntaxTokenSplitEnumerator(ReadOnlySpan<char> span, SyntaxPair[] syntaxPairs, string[] supportedTokens, Span<SyntaxPair> initialBuffer)
+    internal TokenListSplitEnumerator(ReadOnlySpan<char> span, SyntaxPair[] syntaxPairs, string[] supportedTokens, Span<SyntaxPair> initialBuffer)
     {
         _span = span;
         _supportedTokens = supportedTokens;
@@ -29,7 +29,7 @@ public ref struct SyntaxTokenSplitEnumerator
     }
 
     /// <summary>Gets an enumerator that allows for iteration over the split span.</summary>
-    public SyntaxTokenSplitEnumerator GetEnumerator() => this; //do not rename (duck typing)
+    public TokenListSplitEnumerator GetEnumerator() => this; //do not rename (duck typing)
 
     /// <summary>The current element of the enumeration. This may only be called after a successful call to <see cref="MoveNext"/></summary>
     public (int start, int end, bool isToken) Current => (_startCurrent, _endCurrent, _isToken); //do not rename (duck typing)

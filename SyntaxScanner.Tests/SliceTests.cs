@@ -71,7 +71,7 @@ public class SliceTests
     private void RunSliceTest(string input, string expectedResult)
     {
         // Act
-        var result = SyntaxView.SliceInBetween(input, syntaxSubset, openingParentheses, closingParentheses, out _).ToString();
+        var result = input.SliceBetween(openingParentheses, closingParentheses, syntaxSubset).ToString();
 
         // Assert
         Assert.That(result == expectedResult, $"Expected '{expectedResult}' but got '{result}' for slicing '{input}'");
@@ -80,7 +80,7 @@ public class SliceTests
     private void RunSliceTest(string input, string expectedResult, char start, char end)
     {
         // Act
-        var result = SyntaxView.SliceInBetween(input, [], start, end, out _).ToString();
+        var result = input.SliceBetween(start, end, []).ToString();
 
         // Assert
         Assert.That(result == expectedResult, $"Expected '{expectedResult}' but got '{result}' for slicing '{input}'");
@@ -89,7 +89,7 @@ public class SliceTests
     private void RunSliceRemainderTest(string input, string expectedRemainder)
     {
         // Act
-        _ = SyntaxView.SliceInBetween(input, syntaxSubset, openingParentheses, closingParentheses, out var spanRemainder);
+        _ = input.SliceBetween(openingParentheses, closingParentheses, syntaxSubset, out var spanRemainder);
         string remainder = spanRemainder.ToString();
 
         // Assert

@@ -14,8 +14,28 @@ public class SyntaxView
 {
 #if NETFRAMEWORK
     /// <inheritdoc cref="Split(ReadOnlySpan{char}, SyntaxPair[], char, Span{SyntaxPair})"/>
-    public static SyntaxEnumerator Split(string input, SyntaxPair[] syntaxPairs, char separator, Span<SyntaxPair> initialBuffer = default)
+    public static SplitEnumerator Split(string input, SyntaxPair[] syntaxPairs, char separator, Span<SyntaxPair> initialBuffer = default)
         => Split(input.AsSpan(), syntaxPairs, separator, initialBuffer);
+
+    /// <inheritdoc cref="SplitTokenized(ReadOnlySpan{char}, SyntaxPair[], string[], Span{SyntaxPair})"/>
+    public static TokenListSplitEnumerator SplitTokenized(string input, SyntaxPair[] syntaxPairs, string[] supportedTokens, Span<SyntaxPair> initialBuffer = default)
+        => SplitTokenized(input.AsSpan(), syntaxPairs, supportedTokens, initialBuffer);
+
+    /// <inheritdoc cref="SplitTokenized(ReadOnlySpan{char}, SyntaxPair[], SyntaxPair, Span{SyntaxPair})"/>1
+    public static TokenPairSplitEnumerator SplitTokenized(string input, SyntaxPair[] syntaxPairs, SyntaxPair tokenPair, Span<SyntaxPair> initialBuffer = default)
+        => SplitTokenized(input.AsSpan(), syntaxPairs, tokenPair, initialBuffer);
+
+    /// <inheritdoc cref="IndexOf(ReadOnlySpan{char}, SyntaxPair[], char)"/>
+    public static int IndexOf(string input, SyntaxPair[] syntaxPairs, char value)
+        => IndexOf(input.AsSpan(), syntaxPairs, value);
+
+    /// <inheritdoc cref="SliceBetween(ReadOnlySpan{char}, SyntaxPair[], char, char, out ReadOnlySpan{char})"/>
+    public static ReadOnlySpan<char> SliceBetween(string input, SyntaxPair[] syntaxPairs, char start, char end)
+        => SliceBetween(input.AsSpan(), syntaxPairs, start, end, out _);
+
+    /// <inheritdoc cref="SliceBetween(ReadOnlySpan{char}, SyntaxPair[], char, char, out ReadOnlySpan{char})"/>
+    public static ReadOnlySpan<char> SliceBetween(string input, SyntaxPair[] syntaxPairs, char start, char end, out ReadOnlySpan<char> remainder)
+        => SliceBetween(input.AsSpan(), syntaxPairs, start, end, out remainder);
 #endif
 
     /// <summary>
@@ -25,17 +45,11 @@ public class SyntaxView
     /// <param name="syntaxPairs">The supported syntax identifiers to look out for.</param>
     /// <param name="separator">The separator to split on.</param>
     /// <param name="initialBuffer">A buffer that will be used as internal storage. For stack-allocated arrays, this should be kept well below a length of 128 (adding up to ~1 kb)</param>
-    public static SyntaxEnumerator Split(ReadOnlySpan<char> input, SyntaxPair[] syntaxPairs, char separator, Span<SyntaxPair> initialBuffer = default)
-        => new SyntaxEnumerator(input, syntaxPairs, separator, initialBuffer);
-
-#if NETFRAMEWORK
-    /// <inheritdoc cref="SplitByTokens(ReadOnlySpan{char}, SyntaxPair[], string[], Span{SyntaxPair})"/>
-    public static SyntaxTokenSplitEnumerator SplitByTokens(string input, SyntaxPair[] syntaxPairs, string[] supportedTokens, Span<SyntaxPair> initialBuffer = default)
-        => SplitByTokens(input.AsSpan(), syntaxPairs, supportedTokens, initialBuffer);
-#endif
+    public static SplitEnumerator Split(ReadOnlySpan<char> input, SyntaxPair[] syntaxPairs, char separator, Span<SyntaxPair> initialBuffer = default)
+        => new(input, syntaxPairs, separator, initialBuffer);
 
     /// <summary>
-    /// Performs syntax-aware token/literal splitting on a span of characters.
+    /// Performs syntax-aware splitting on a span of characters, but also returns the tokens it got split on.
     /// </summary>
     /// <param name="input">The characters to split.</param>
     /// <param name="syntaxPairs">The supported syntax identifiers to look out for.</param>
@@ -44,30 +58,21 @@ public class SyntaxView
     /// <remarks>
     /// This may return partial tokens if the input is insufficient.
     /// </remarks>
-    public static SyntaxTokenSplitEnumerator SplitByTokens(ReadOnlySpan<char> input, SyntaxPair[] syntaxPairs, string[] supportedTokens, Span<SyntaxPair> initialBuffer = default)
-        => new SyntaxTokenSplitEnumerator(input, syntaxPairs, supportedTokens, initialBuffer);
-
-#if NETFRAMEWORK
-    /// <inheritdoc cref="SplitByTokenPair(ReadOnlySpan{char}, SyntaxPair[], SyntaxPair, Span{SyntaxPair})"/>1
-    public static TokenPairSplitEnumerator SplitByTokenPair(string input, SyntaxPair[] syntaxPairs, SyntaxPair tokenPair, Span<SyntaxPair> initialBuffer = default)
-        => SplitByTokenPair(input.AsSpan(), syntaxPairs, tokenPair, initialBuffer);
-#endif
+    public static TokenListSplitEnumerator SplitTokenized(ReadOnlySpan<char> input, SyntaxPair[] syntaxPairs, string[] supportedTokens, Span<SyntaxPair> initialBuffer = default)
+        => new(input, syntaxPairs, supportedTokens, initialBuffer);
 
     /// <summary>
-    /// Performs syntax-aware splitting around a token pair.
+    /// Performs syntax-aware splitting around a token pair, but also returns the inside of the token pair.
     /// </summary>
     /// <param name="input">The characters to split.</param>
     /// <param name="syntaxPairs">The supported syntax identifiers to look out for.</param>
     /// <param name="tokenPair">The token pair to split on and return.</param>
     /// <param name="initialBuffer">A buffer that will be used as internal storage. For stack-allocated arrays, this should be kept well below a length of 128 (adding up to ~1 kb)</param>
-    public static TokenPairSplitEnumerator SplitByTokenPair(ReadOnlySpan<char> input, SyntaxPair[] syntaxPairs, SyntaxPair tokenPair, Span<SyntaxPair> initialBuffer = default)
-        => new TokenPairSplitEnumerator(input, syntaxPairs, tokenPair, initialBuffer);
-
-#if NETFRAMEWORK
-    /// <inheritdoc cref="IndexOf(ReadOnlySpan{char}, SyntaxPair[], char)"/>
-    public static int IndexOf(string input, SyntaxPair[] syntaxPairs, char value)
-        => IndexOf(input.AsSpan(), syntaxPairs, value);
-#endif
+    /// <remarks>
+    /// This may return partial tokens if the input is insufficient.
+    /// </remarks>1
+    public static TokenPairSplitEnumerator SplitTokenized(ReadOnlySpan<char> input, SyntaxPair[] syntaxPairs, SyntaxPair tokenPair, Span<SyntaxPair> initialBuffer = default)
+        => new(input, syntaxPairs, tokenPair, initialBuffer);
 
     /// <summary>
     /// Performs a syntax-aware search for the <paramref name="value"/> parameter.
@@ -94,11 +99,9 @@ public class SyntaxView
         return -1;
     }
 
-#if NETFRAMEWORK
-    /// <inheritdoc cref="SliceInBetween(ReadOnlySpan{char}, SyntaxPair[], char, char, out ReadOnlySpan{char})"/>
-    public static ReadOnlySpan<char> SliceInBetween(string input, SyntaxPair[] syntaxPairs, char start, char end, out ReadOnlySpan<char> remainder)
-        => SliceInBetween(input.AsSpan(), syntaxPairs, start, end, out remainder);
-#endif
+    /// <inheritdoc cref="SliceBetween(ReadOnlySpan{char}, SyntaxPair[], char, char, out ReadOnlySpan{char})"/>
+    public static ReadOnlySpan<char> SliceBetween(ReadOnlySpan<char> input, SyntaxPair[] syntaxPairs, char start, char end)
+        => SliceBetween(input, syntaxPairs, start, end, out _);
 
     /// <summary>
     /// Performs syntax-aware slicing between <paramref name="start"/> and <paramref name="end"/>.
@@ -112,7 +115,7 @@ public class SyntaxView
     /// The slice will only be performed on the outer-most <paramref name="start"/> and <paramref name="end"/>.<br/>
     /// Slicing may therefore fail if the amount of both does not add up.
     /// </remarks>
-    public static ReadOnlySpan<char> SliceInBetween(ReadOnlySpan<char> input, SyntaxPair[] syntaxPairs, char start, char end, out ReadOnlySpan<char> remainder)
+    public static ReadOnlySpan<char> SliceBetween(ReadOnlySpan<char> input, SyntaxPair[] syntaxPairs, char start, char end, out ReadOnlySpan<char> remainder)
     {
         var splitBlocker = new SyntaxSplitBlocker(syntaxPairs, stackalloc SyntaxPair[64]);
 

@@ -50,7 +50,6 @@ internal class TokenPairSplitTests
         RunSplitTest(input, expectedResult);
     }
 
-
     [TestCase("('a')", "('a')")]
     [TestCase("'(a')", "'(a')")]
     [TestCase("('a)'", "('a)", "'")]
@@ -59,13 +58,12 @@ internal class TokenPairSplitTests
         RunSplitTest(input, expectedResult);
     }
 
-
     private void RunSplitTest(string input, IList<bool> expectedResult)
     {
         // Act
         var result = new List<bool>();
 
-        foreach (var (start, end, isToken) in SyntaxView.SplitByTokenPair(input, syntax, tokenPair, stackalloc SyntaxPair[64]))
+        foreach (var (start, end, isToken) in input.SplitTokenized(tokenPair, syntax, stackalloc SyntaxPair[64]))
             result.Add(isToken);
 
         // Assert
@@ -77,7 +75,7 @@ internal class TokenPairSplitTests
         // Act
         var result = new List<string>();
 
-        foreach (var (start, end, isToken) in SyntaxView.SplitByTokenPair(input, syntax, tokenPair, stackalloc SyntaxPair[64]))
+        foreach (var (start, end, isToken) in input.SplitTokenized(tokenPair, syntax, stackalloc SyntaxPair[64]))
             result.Add(input.Substring(start, end - start));
 
         // Assert
