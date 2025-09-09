@@ -14,7 +14,7 @@ public class SyntaxView
 {
 #if NETFRAMEWORK
     /// <inheritdoc cref="Split(ReadOnlySpan{char}, SyntaxPair[], char, Span{SyntaxPair})"/>
-    public static SyntaxEnumerator Split(string input, SyntaxPair[] syntaxPairs, char separator, Span<SyntaxPair> initialBuffer = default)
+    public static SplitEnumerator Split(string input, SyntaxPair[] syntaxPairs, char separator, Span<SyntaxPair> initialBuffer = default)
         => Split(input.AsSpan(), syntaxPairs, separator, initialBuffer);
 
     /// <inheritdoc cref="SplitTokenized(ReadOnlySpan{char}, SyntaxPair[], string[], Span{SyntaxPair})"/>
@@ -45,7 +45,7 @@ public class SyntaxView
     /// <param name="syntaxPairs">The supported syntax identifiers to look out for.</param>
     /// <param name="separator">The separator to split on.</param>
     /// <param name="initialBuffer">A buffer that will be used as internal storage. For stack-allocated arrays, this should be kept well below a length of 128 (adding up to ~1 kb)</param>
-    public static SyntaxEnumerator Split(ReadOnlySpan<char> input, SyntaxPair[] syntaxPairs, char separator, Span<SyntaxPair> initialBuffer = default)
+    public static SplitEnumerator Split(ReadOnlySpan<char> input, SyntaxPair[] syntaxPairs, char separator, Span<SyntaxPair> initialBuffer = default)
         => new(input, syntaxPairs, separator, initialBuffer);
 
     /// <summary>

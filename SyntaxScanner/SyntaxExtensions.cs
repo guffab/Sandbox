@@ -7,7 +7,7 @@ public static class SyntaxExtensions
         => SyntaxView.IndexOf(input, syntaxPairs, value);
 
     /// <inheritdoc cref="SyntaxView.Split(string, SyntaxPair[], char, Span{SyntaxPair})"/>
-    public static SyntaxEnumerator Split(this string input, char separator, SyntaxPair[] syntaxPairs, Span<SyntaxPair> initialBuffer = default)
+    public static SplitEnumerator Split(this string input, char separator, SyntaxPair[] syntaxPairs, Span<SyntaxPair> initialBuffer = default)
         => SyntaxView.Split(input, syntaxPairs, separator, initialBuffer);
 
     /// <inheritdoc cref="SyntaxView.SplitTokenized(string, SyntaxPair[], string[], Span{SyntaxPair})"/>
@@ -31,7 +31,7 @@ public static class SyntaxExtensions
         => SyntaxView.IndexOf(input, syntaxPairs, value);
 
     /// <inheritdoc cref="SyntaxView.Split(ReadOnlySpan{char}, SyntaxPair[], char, Span{SyntaxPair})"/>
-    public static SyntaxEnumerator Split(this ReadOnlySpan<char> input, char separator, SyntaxPair[] syntaxPairs, Span<SyntaxPair> initialBuffer = default)
+    public static SplitEnumerator Split(this ReadOnlySpan<char> input, char separator, SyntaxPair[] syntaxPairs, Span<SyntaxPair> initialBuffer = default)
         => SyntaxView.Split(input, syntaxPairs, separator, initialBuffer);
 
     /// <inheritdoc cref="SyntaxView.SplitTokenized(ReadOnlySpan{char}, SyntaxPair[], string[], Span{SyntaxPair})"/>
