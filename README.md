@@ -29,7 +29,7 @@ var standardIndex = input.IndexOf(';');
 var input = "path('some text) '), trailing text";
 var syntax = [ new SyntaxPair('\'', '\'') ];
 
-var slice = input.SliceInBetween('(', ')', syntax, out var remainder);
+var slice = input.SliceBetween('(', ')', syntax, out var remainder);
 
 var start = input.IndexOf('(');
 var end = input.IndexOf(')', start);
