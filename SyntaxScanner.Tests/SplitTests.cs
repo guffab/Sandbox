@@ -62,7 +62,7 @@ public class SplitTests
         // Act
         var result = new List<string>();
 
-        foreach (var subSpan in SyntaxView.Split(input, syntax, separator, stackalloc SyntaxPair[64]))
+        foreach (var subSpan in input.Split(separator, syntax, stackalloc SyntaxPair[64]))
             result.Add(subSpan.ToString());
 
         // Assert

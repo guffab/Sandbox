@@ -36,7 +36,7 @@ public class IndexOfTests
     private void RunIndexOfTest(string input, char value, int expectedIndex)
     {
         // Act
-        int index = SyntaxView.IndexOf(input, syntax, value);
+        int index = input.IndexOf(value, syntax);
 
         // Assert
         Assert.That(index, Is.EqualTo(expectedIndex), $"Expected index of '{value}' in '{input}' to be {expectedIndex}, but got {index}.");

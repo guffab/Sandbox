@@ -49,7 +49,7 @@ public class SyntaxView
         => new(input, syntaxPairs, separator, initialBuffer);
 
     /// <summary>
-    /// Performs syntax-aware token/literal splitting on a span of characters.
+    /// Performs syntax-aware splitting on a span of characters, but also returns the tokens it got split on.
     /// </summary>
     /// <param name="input">The characters to split.</param>
     /// <param name="syntaxPairs">The supported syntax identifiers to look out for.</param>
@@ -62,7 +62,7 @@ public class SyntaxView
         => new(input, syntaxPairs, supportedTokens, initialBuffer);
 
     /// <summary>
-    /// Performs syntax-aware splitting around a token pair.
+    /// Performs syntax-aware splitting around a token pair, but also returns the inside of the token pair.
     /// </summary>
     /// <param name="input">The characters to split.</param>
     /// <param name="syntaxPairs">The supported syntax identifiers to look out for.</param>
