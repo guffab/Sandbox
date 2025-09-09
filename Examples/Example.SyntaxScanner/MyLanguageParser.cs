@@ -43,7 +43,7 @@ namespace Example
             //assuming input is enclosed by parentheses 
             if (input[0] is openingParentheses && input[input.Length - 1] is closingParentheses)
             {
-                var inner = SyntaxView.SliceInBetween(input, syntaxSubset, openingParentheses, closingParentheses, out var remainder);
+                var inner = SyntaxView.SliceBetween(input, syntaxSubset, openingParentheses, closingParentheses, out var remainder);
 
                 //now we need to define how our language works: is it incorrect to have something after the parentheses or could it even be a requirement?
                 if (!remainder.Trim().IsEmpty)
@@ -74,16 +74,16 @@ namespace Example
             SyntaxView.IndexOf(input, fullSyntax, separator);
             input.IndexOf(separator, fullSyntax);
 
-            SyntaxView.SliceInBetween(input, syntaxSubset, '(', ')', out _);
+            SyntaxView.SliceBetween(input, syntaxSubset, '(', ')');
             input.SliceBetween('(', ')', syntaxSubset);
 
             foreach (var subSpan in SyntaxView.Split(input, fullSyntax, separator)) ;
             foreach (var subSpan in input.Split(separator, fullSyntax)) ;
 
-            foreach (var (start, end, isToken) in SyntaxView.SplitByTokens(input, fullSyntax, supportedTokens)) ;
+            foreach (var (start, end, isToken) in SyntaxView.SplitTokenized(input, fullSyntax, supportedTokens)) ;
             foreach (var (start, end, isToken) in input.SplitTokenized(supportedTokens, fullSyntax)) ;
             
-            foreach (var (start, end, isToken) in SyntaxView.SplitByTokenPair(input, fullSyntax, tokenPair)) ;
+            foreach (var (start, end, isToken) in SyntaxView.SplitTokenized(input, fullSyntax, tokenPair)) ;
             foreach (var (start, end, isToken) in input.SplitTokenized(tokenPair, fullSyntax)) ;
         }
     }
