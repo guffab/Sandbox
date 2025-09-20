@@ -74,9 +74,4 @@ internal interface IAction
 
     /// <inheritdoc cref="TryGetParameterValue"/>
     bool TryGetParameterValue(string parameterName, out IList<string> value);
-
-    /// <summary>
-    /// Serializes this <see cref="IAction"/> to a JSON string.
-    /// </summary>
-    string Serialize();
 }
