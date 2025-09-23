@@ -9,11 +9,17 @@ namespace ActionContainers;
 [DebuggerDisplay($"{{{nameof(Id)},nq}}")]
 internal class MutableAction(ActionNode actionNode, MutableParameter parent) : IAction
 {
+    private readonly ActionNode BackingNode = actionNode;
+
     /// <inheritdoc/>
-    public string Id { get => actionNode.Id; set => actionNode.Id = value; }
+    public string Id { get => BackingNode.Id; set => BackingNode.Id = value; }
 
     /// <inheritdoc cref="IAction.Parameters"/>
-    public List<MutableParameter> Parameters { get; set; }
+    public List<MutableParameter> Parameters
+    {
+        get => BackingNode.Parameters.Select(x => new MutableParameter(x, this)).ToList();
+        set => BackingNode.Parameters = value.Select(x => x.BackingNode).ToList();
+    }
 
     /// <inheritdoc cref="IAction.ParentParameter"/>
     public MutableParameter ParentParameter { get; init; } = parent;
@@ -38,14 +44,6 @@ internal class MutableAction(ActionNode actionNode, MutableParameter parent) : I
 
         parameter = default;
         return false;
-    }
-
-    /// <inheritdoc/>
-    bool IAction.TryGetParameter(string parameterName, [NotNullWhen(true)] out IParameter parameter)
-    {
-        var result = TryGetParameter(parameterName, out var mutableParameter);
-        parameter = mutableParameter;
-        return result;
     }
 
     /// <inheritdoc/>
@@ -118,20 +116,11 @@ internal class MutableAction(ActionNode actionNode, MutableParameter parent) : I
         return false;
     }
 
-    /// <summary>
-    /// Checks wether the <paramref name="id"/> is referring to this action or one of its parents.
-    /// </summary>
-    /// <param name="id">The id to look.</param>
-    /// <remarks>
-    /// This can be used to determine wether it is safe to put a sub-action with this Id below this action.
-    /// </remarks>
-    public bool IsSelfReferencing(string id)
+    bool IAction.TryGetParameter(string parameterName, [NotNullWhen(true)] out IParameter? parameter)
     {
-        if (Id == id)
-            return true;
-
-        //this is a hidden null check
-        return ParentParameter?.ParentAction is MutableAction parent && parent.IsSelfReferencing(id);
+        var result = TryGetParameter(parameterName, out var mutableParameter);
+        parameter = mutableParameter;
+        return result;
     }
 
     /// <summary>
@@ -140,7 +129,7 @@ internal class MutableAction(ActionNode actionNode, MutableParameter parent) : I
     /// <returns>
     /// The parameter if found; otherwise <see langword="null"/>.
     /// </returns>
-    public MutableParameter this[string parameterName]
+    public MutableParameter? this[string parameterName]
     {
         get
         {
@@ -149,21 +138,26 @@ internal class MutableAction(ActionNode actionNode, MutableParameter parent) : I
         }
         set
         {
-            //try replace existing version first
-            for (int i = 0; i < Parameters.Count; i++)
+            if (value is null)
+                ActionNodePool.RemoveParameter(BackingNode.Id, parameterName);
+            else
             {
-                if (Parameters[i].Id == parameterName)
+                //try replace existing version first
+                for (int i = 0; i < Parameters.Count; i++)
                 {
-                    Parameters[i] = value;
-                    return;
+                    if (Parameters[i].Id == parameterName)
+                    {
+                        ActionNodePool.ReplaceParameter(BackingNode.Id, Parameters[i].BackingNode, value.BackingNode);
+                        return;
+                    }
                 }
+
+                //not found
+                ActionNodePool.AddParamter(BackingNode.Id, value.BackingNode);
             }
-#warning this needs to be adapted
-            //not found
-            Parameters.Add(value);
         }
     }
 
     /// <inheritdoc/>
-    IParameter IAction.this[string parameterName] => this[parameterName];
+    IParameter? IAction.this[string parameterName] => this[parameterName];
 }

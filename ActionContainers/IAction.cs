@@ -23,7 +23,7 @@ internal interface IAction
     /// <remarks>
     /// Can be <see langword="null"/> if this <see cref="IAction"/> is the first item in its hierarchical structure.
     /// </remarks>
-    IParameter ParentParameter { get; }
+    IParameter? ParentParameter { get; }
 
     /// <summary>
     /// Finds the <see cref="IParameter"/> with the specified <paramref name="parameterName"/>.
@@ -31,7 +31,7 @@ internal interface IAction
     /// <returns>
     /// The parameter if found; otherwise <see langword="null"/>.
     /// </returns>
-    public IParameter this[string parameterName] { get; }
+    public IParameter? this[string parameterName] { get; }
 
     /// <summary>
     /// Finds the <see cref="IParameter"/> with the specified <paramref name="parameterName"/>.

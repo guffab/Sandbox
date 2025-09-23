@@ -19,7 +19,7 @@ public class ActionNode(string id, List<ParameterNode> parameters)
 /// <remarks>
 /// This object is entirely mutable so that any changes are immediately visible to all objects referencing it+.
 /// </remarsk>
-public class ParameterNode(string id, string value, Unit unit = Unit.TextOrAction)
+public class ParameterNode(string id, string value = "", Unit unit = Unit.TextOrAction)
 {
     public string Id { get; set; } = id;
     public string Value { get; set; } = value;

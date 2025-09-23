@@ -30,4 +30,28 @@ public static class ActionNodePool
         actionNode = default;
         return false;
     }
+
+    public static List<ActionNode> GetNodes(string[] ids)
+    {
+        return _nodes.Where(x => ids.Contains(x.Id)).ToList();
+    }
+
+    public static void AddParamter(string actionId, ParameterNode parameter)
+    {
+#warning needs a way to sync between all same objects with a different type
+        if (TryGetNode(actionId, out var action))
+        {
+            action.Parameters.Add(parameter);            
+        }
+    }
+
+    public static void RemoveParameter(string id, string parameterName)
+    {
+        throw new NotImplementedException();
+    }
+
+    public static void ReplaceParameter(string actionId, ParameterNode toReplace, ParameterNode replacement)
+    {
+        throw new NotImplementedException();
+    }
 }

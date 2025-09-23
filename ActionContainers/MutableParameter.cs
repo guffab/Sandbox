@@ -6,43 +6,46 @@ namespace ActionContainers;
 /// Represents an <see cref="IParameter"/> that can be freely mutated.
 /// </summary>
 /// <remarks>
-/// With JSON (de-) serialization in mind, this object deliberately uses concrete types over interfaces.
+/// The data structure is re-built on every call to have all downstream changes bubble up immediately.
 /// </remarks>
 [DebuggerDisplay($"{{{nameof(Id)},nq}}")]
 internal class MutableParameter(ParameterNode parameterNode, MutableAction parent) : IParameter
 {
     private const char separatorChar = ';';
 
-    /// <inheritdoc/>
-    public string Id { get; set; }
+    internal readonly ParameterNode BackingNode = parameterNode;
 
     /// <inheritdoc/>
-    public string Value { get; set; }
+    public string Id { get => BackingNode.Id; set => BackingNode.Id = value; }
 
     /// <inheritdoc/>
-    public Unit Unit { get; set; }
+    public string Value { get => BackingNode.Value; set => BackingNode.Value = value; }
+
+    /// <inheritdoc/>
+    public Unit Unit { get => BackingNode.Unit; set => BackingNode.Unit = value; }
 
     /// <inheritdoc cref="IParameter.ParentAction"/>
-    public MutableAction ParentAction { get; } = parent;
-
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    IAction IParameter.ParentAction => ParentAction;
+    public MutableAction? ParentAction { get; } = parent;
 
     /// <inheritdoc cref="IParameter.SubAction"/>
     public MutableAction? SubAction
     {
-#warning this needs to modify the nodes!!
         get => SubActions.FirstOrDefault();
         set => SubActions = value is null ? [] : [value];
     }
 
     /// <inheritdoc cref="IParameter.SubActions"/>
-    public List<MutableAction> SubActions { get; set; }
+    public List<MutableAction> SubActions
+    {
+        get => ActionNodePool.GetNodes(Value.Split(separatorChar)).Select(x => new MutableAction(x, this)).ToList();
+        set => Value = string.Join(separatorChar, value.Select(x => x.Id));
+    }
 
-    /// <inheritdoc/>
-    IAction IParameter.SubAction => SubAction;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    IAction? IParameter.ParentAction => ParentAction;
 
-    /// <inheritdoc/>
+    IAction? IParameter.SubAction => SubAction;
+
     List<IAction> IParameter.SubActions => [.. SubActions];
 
     /// <inheritdoc/>
@@ -113,7 +116,6 @@ internal class MutableParameter(ParameterNode parameterNode, MutableAction paren
                 if (double.TryParse(stringValue, out var doubleValue))
                     value.Add(doubleValue);
             }
-
             return true;
         }
 

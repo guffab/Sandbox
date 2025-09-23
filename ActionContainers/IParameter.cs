@@ -19,12 +19,12 @@ internal interface IParameter
     /// <summary>
     /// The inverse relationship to its action.
     /// </summary>
-    IAction ParentAction { get; }
+    IAction? ParentAction { get; }
 
     /// <summary>
     /// Represents the first/only <see cref="IAction"/> that is linked directly to this <see cref="IParameter"/>.
     /// </summary>
-    public IAction SubAction { get; }
+    public IAction? SubAction { get; }
 
     /// <summary>
     /// Represents every <see cref="IAction"/> that is linked directly to this <see cref="IParameter"/>.
