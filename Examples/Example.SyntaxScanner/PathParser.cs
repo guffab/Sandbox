@@ -1,31 +1,13 @@
-using System;
+using SyntaxScanner;
 
-namespace SyntaxScanner;
+namespace Example.SyntaxScanner;
 
-public static  class PathParser
+public static  class ObjectPathParser
 {
     static readonly SyntaxPair[] syntax = [new SyntaxPair('(', ')', 0), new SyntaxPair('[', ']', 0)];
 
-    public static void Run()
-    {
-        var example1 = "Disassemble[Parameters[Definition.Name((PF_Number)|(Number))].AsElementId.Name(^Ass)].Name";
-        var example2 = "Disassemble[Parameters[Definition.Name((PF_Number)|(Number)).AsElementId.Name(^Ass)].Name";
-        var example3 = "Disassemble[Parameters[Definition.Name((PF_Number)|(Number)].AsElementId.Name(^Ass)].Name";
-
-        var aa = Parse(example1.AsSpan());
-        var bb = Parse(example2.AsSpan());
-        var cc = Parse(example3.AsSpan());
-
-        var av = aa?.IsValid() ?? false;
-        var bv = bb?.IsValid() ?? false;
-        var cv = cc?.IsValid() ?? false;
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
     /// <returns>
-    /// May return <see langword="null"/> if the input consists of whitespace only.
+    /// The parsed <see cref="PathToken"/> if the input consists of more than whitespace; Otherwise <see langword="null"/>.
     /// </returns> 
     public static PathToken? Parse(ReadOnlySpan<char> input)
     {

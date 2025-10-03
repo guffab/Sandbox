@@ -1,4 +1,4 @@
-namespace SyntaxScanner;
+namespace Example.SyntaxScanner;
 
 public abstract record PathToken(PathToken? Next, TokenType TokenType)
 {

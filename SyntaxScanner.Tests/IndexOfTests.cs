@@ -10,8 +10,6 @@ public class IndexOfTests
         var quotesSynxtax = new SyntaxPair('\"', '\"', int.MaxValue);
         var parenthesesSyntax = new SyntaxPair('(', ')', 0);
 
-
-        PathParser.Run();
         syntax = [quotesSynxtax, parenthesesSyntax];
     }
 
