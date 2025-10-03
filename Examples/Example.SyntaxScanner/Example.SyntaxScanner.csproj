@@ -1,23 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <OutputType>Exe</OutputType>
     <TargetFrameworks>net48;net8.0</TargetFrameworks>
     <LangVersion>latest</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup Condition="$(DefineConstants.Contains('NET'))">
-    <Reference Include="SyntaxScanner">
-      <HintPath>..\..\SyntaxScanner\obj\Release\net8.0\SyntaxScanner.dll</HintPath>
-    </Reference>
+  <ItemGroup Condition="$(DefineConstants.Contains('NETFRAMEWORK'))">
+	  <PackageReference Include="System.Memory" Version="4.5.5" />
   </ItemGroup>
 
-  <ItemGroup Condition="$(DefineConstants.Contains('NETFRAMEWORK'))">
-	<PackageReference Include="System.Memory" Version="4.5.5" />
-	<Reference Include="SyntaxScanner">
-      <HintPath>..\..\SyntaxScanner\obj\Release\net48\SyntaxScanner.dll</HintPath>
-    </Reference>
+  <ItemGroup>
+    <ProjectReference Include="../../SyntaxScanner/SyntaxScanner.csproj" />
   </ItemGroup>
 	
 </Project>

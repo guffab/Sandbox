@@ -99,6 +99,37 @@ public class SyntaxView
         return -1;
     }
 
+    /// <summary>
+    /// Performs a syntax-aware search for any of the characters in the <paramref name="anyOf"/> parameter.
+    /// </summary>
+    /// <param name="input">The characters to search in.</param>
+    /// <param name="syntaxPairs">The supported syntax identifiers to look out for.</param>
+    /// <param name="anyOf">The values to find any of in the input chars.</param>
+    /// <returns>The zero-based index position of the first match from the start of the current instance if that char is found, or -1 if it is not.</returns>
+    public static int IndexOfAny(ReadOnlySpan<char> input, SyntaxPair[] syntaxPairs, char[] anyOf)
+    {
+        if (anyOf.Length is 0)
+            return -1;
+
+        if (anyOf.Length is 1)
+            return IndexOf(input, syntaxPairs, anyOf[0]);
+
+        var blocker = new SyntaxSplitBlocker(syntaxPairs, stackalloc SyntaxPair[64]);
+
+        for (int i = 0; i < input.Length; i++)
+        {
+            var currentChar = input[i];
+
+            blocker.Process(currentChar);
+            if (blocker.IsBlocking())
+                continue;
+
+            if (anyOf.Contains(currentChar))
+                return i;
+        }
+        return -1;
+    }
+
     /// <inheritdoc cref="SliceBetween(ReadOnlySpan{char}, SyntaxPair[], char, char, out ReadOnlySpan{char})"/>
     public static ReadOnlySpan<char> SliceBetween(ReadOnlySpan<char> input, SyntaxPair[] syntaxPairs, char start, char end)
         => SliceBetween(input, syntaxPairs, start, end, out _);

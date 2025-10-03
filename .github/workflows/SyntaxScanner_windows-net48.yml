@@ -9,7 +9,7 @@ on:
     paths: [ 'SyntaxScanner*/**' ]
   pull_request:
     branches: [ "main" ]
-    paths: [ 'SyntaxScanner*/**' ]
+    paths: [ 'SyntaxScanner*/**', 'Examples/Example.SyntaxScanner/**' ]
 
 jobs:
   build:
@@ -29,5 +29,3 @@ jobs:
       run: dotnet build --framework net48 --configuration Release --no-restore
     - name: Test
       run: dotnet test --no-build --framework net48 --configuration Release --verbosity minimal
-    - name: Build example project
-      run: dotnet build "../Examples/Example.SyntaxScanner/Example.SyntaxScanner.sln" --framework net48 --configuration Release
