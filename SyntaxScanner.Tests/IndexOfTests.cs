@@ -39,7 +39,7 @@ public class IndexOfTests
     {
         // Act
         int index = input.IndexOf(value, syntax);
-PathParser.Run();
+        
         // Assert
         Assert.That(index, Is.EqualTo(expectedIndex), $"Expected index of '{value}' in '{input}' to be {expectedIndex}, but got {index}.");
     }

@@ -9,7 +9,16 @@ public static  class PathParser
     public static void Run()
     {
         var example1 = "Disassemble[Parameters[Definition.Name((PF_Number)|(Number))].AsElementId.Name(^Ass)].Name";
-        var bb = Parse(example1.AsSpan());
+        var example2 = "Disassemble[Parameters[Definition.Name((PF_Number)|(Number)).AsElementId.Name(^Ass)].Name";
+        var example3 = "Disassemble[Parameters[Definition.Name((PF_Number)|(Number)].AsElementId.Name(^Ass)].Name";
+
+        var aa = Parse(example1.AsSpan());
+        var bb = Parse(example2.AsSpan());
+        var cc = Parse(example3.AsSpan());
+
+        var av = aa?.IsValid() ?? false;
+        var bv = bb?.IsValid() ?? false;
+        var cv = cc?.IsValid() ?? false;
     }
 
     /// <summary>
