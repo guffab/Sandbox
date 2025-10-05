@@ -20,11 +20,7 @@ public class PathItemParser
     /// </summary>
     private PathItem? Parse(ReadOnlySpan<char> input, int index)
     {
-        index += CountLeadingWhiteSpace(input);
-        input = input.Trim();
-        input = input.TrimStart('.'); //not actually needed to indicate a property
-        index += CountLeadingChar(input, '.');
-
+        CleanInput(ref input, ref index);
         if (input.IsEmpty)
             return null;
 
@@ -35,7 +31,7 @@ public class PathItemParser
 
         if (input[indexOfSyntax] is '.')
         {
-            var next = Parse(input.Slice(indexOfSyntax), index + (indexOfSyntax + 1));
+            var next = Parse(input.Slice(indexOfSyntax), index + (indexOfSyntax));
             return new PropertyItem(input.Slice(0, indexOfSyntax), index, next);
         }
 
@@ -54,13 +50,35 @@ public class PathItemParser
             if (closingIndex is -1)
                 return new PropertyItem(input.Slice(0, indexOfSyntax), index, new InvalidItem(index + indexOfSyntax + 1, input.Length - indexOfSyntax));
 
-            var subItem = Parse(input.Slice(indexOfSyntax + 1, closingIndex - 1), index + (indexOfSyntax + 1)) ?? new InvalidItem(index + indexOfSyntax + 1, input.Length - (indexOfSyntax + 1 + 1));
-            var next = Parse(input.Slice(indexOfSyntax + 1 + closingIndex), index + (indexOfSyntax + 1 + closingIndex +1));
+            var subItem = ParseOrInvalid(input.Slice(indexOfSyntax + 1, closingIndex - 1), index + (indexOfSyntax + 1));
+            var next = Parse(input.Slice(indexOfSyntax + 1 + closingIndex), index + (indexOfSyntax + closingIndex + 1));
 
             return new PropertyItem(input.Slice(0, indexOfSyntax), index, new ListItem(subItem, index + indexOfSyntax, index + indexOfSyntax + closingIndex, next));
         }
 
         return new InvalidItem(index, input.Length);
+    }
+
+    /// <summary>
+    /// Parses the input as usual, but guarantees a non-null return value.
+    /// </summary>
+    private PathItem ParseOrInvalid(ReadOnlySpan<char> input, int index)
+    {
+        CleanInput(ref input, ref index);
+
+        var result = Parse(input, index);
+        if (result is not null)
+            return result;
+
+        return new InvalidItem(index, input.Length);
+    }
+
+    private static void CleanInput(ref ReadOnlySpan<char> input, ref int index)
+    {
+        index += CountLeadingWhiteSpace(input);
+        input = input.Trim();
+        index += CountLeadingChar(input, '.');
+        input = input.TrimStart('.'); //not actually needed to indicate a property
     }
 
     internal static int CountLeadingWhiteSpace(ReadOnlySpan<char> input)
