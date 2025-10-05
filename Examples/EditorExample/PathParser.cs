@@ -11,6 +11,19 @@ public class ObjectPathParser
     /// </returns> 
     public static PathItem? Parse(ReadOnlySpan<char> input)
     {
+        {
+            {
+                {
+                    {
+                        {
+                            {
+
+                            }
+                        }
+                    }
+                }
+            }
+        }
         var parser = new ObjectPathParser();
         return parser.Parse(input, 0);
     }
@@ -45,7 +58,7 @@ public class ObjectPathParser
             if (closingIndex is -1)
                 return new PropertyItem(input.Slice(0, indexOfSyntax), index, new InvalidItem(index + indexOfSyntax + 1, input.Length - indexOfSyntax));
 
-            return new PropertyItem(input.Slice(0, indexOfSyntax), index, new CheckItem(input.Slice(indexOfSyntax + 1, closingIndex - 1), index + indexOfSyntax + 1));
+            return new PropertyItem(input.Slice(0, indexOfSyntax), index, new CheckItem(input.Slice(indexOfSyntax + 1, closingIndex - 1), index + indexOfSyntax, index + indexOfSyntax + closingIndex, index + indexOfSyntax + 1));
         }
 
         if (input[indexOfSyntax] is '[')
@@ -57,7 +70,7 @@ public class ObjectPathParser
             var subItem = Parse(input.Slice(indexOfSyntax + 1, closingIndex - 1), index + (indexOfSyntax + 1)) ?? new InvalidItem(index + indexOfSyntax + 1, input.Length - (indexOfSyntax + 1 + 1));
             var next = Parse(input.Slice(indexOfSyntax + 1 + closingIndex), index + (indexOfSyntax + 1 + closingIndex +1));
 
-            return new PropertyItem(input.Slice(0, indexOfSyntax), index, new ListItem(subItem, next));
+            return new PropertyItem(input.Slice(0, indexOfSyntax), index, new ListItem(subItem, index + indexOfSyntax, index + indexOfSyntax + closingIndex, next));
         }
 
         return new InvalidItem(index, input.Length);

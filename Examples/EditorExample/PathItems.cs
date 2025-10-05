@@ -49,7 +49,7 @@ public abstract record PathItem(PathItem? Next, int Start, int Length) : IPathIt
     }
 }
 
-public record ListItem(PathItem SubItem, PathItem? Next) : PathItem(Next, 0, 0)
+public record ListItem(PathItem SubItem, int OpeningBracket, int ClosingBracket, PathItem? Next) : PathItem(Next, OpeningBracket, ClosingBracket - OpeningBracket)
 {
     public override bool IsValid()
     {
@@ -57,7 +57,8 @@ public record ListItem(PathItem SubItem, PathItem? Next) : PathItem(Next, 0, 0)
         while (last.Next is not null)
             last = last.Next;
 
-        return base.IsValid() && SubItem.IsValid() && (SubItem is PropertyItem && last is CheckItem); //without a check on a property, we wouldn't know what item to select
+        return base.IsValid() && SubItem.IsValid()
+        && SubItem is PropertyItem && (last is CheckItem || SubItem.Next is null); //without a check on a property, we wouldn't know what item to select. Special case: a single 'fake' property which is actually a macro that can be expanded
     }
 }
 
@@ -77,10 +78,10 @@ public record PropertyItem(string Name, int Start, PathItem? Next) : PathItem(Ne
     }
 }
 
-public record CheckItem(string Value, int Start) : PathItem(null, Start, Value.Length)
+public record CheckItem(string Value, int OpeningBracket, int ClosingBracket, int Start) : PathItem(null, Start, Value.Length)
 {
     //enables a more readable parser file
-    public CheckItem(ReadOnlySpan<char> Value, int Start) : this(Value.ToString(), Start) { }
+    public CheckItem(ReadOnlySpan<char> Value, int OpeningBracket, int ClosingBracket, int Start) : this(Value.ToString(), OpeningBracket, ClosingBracket, Start) { }
 
     public override bool IsValid()
     {

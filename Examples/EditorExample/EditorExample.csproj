@@ -11,7 +11,7 @@
 
   <ItemGroup>
     <Reference Include="SyntaxScanner">
-      <HintPath>..\Sandbox\SyntaxScanner\bin\Debug\net8.0\SyntaxScanner.dll</HintPath>
+      <HintPath>..\..\SyntaxScanner\bin\Debug\net8.0\SyntaxScanner.dll</HintPath>
     </Reference>
   </ItemGroup>
 

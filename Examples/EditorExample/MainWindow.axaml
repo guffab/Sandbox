@@ -20,8 +20,7 @@
 
         </Grid>
         
-        <AvaloniaEdit:TextEditor Text="Disassemble[Parameters[Definition.Name((PF_Number)|(Number))].AsElementId.Name(^Ass)].Name"
-                                 Grid.Row="0"
+        <AvaloniaEdit:TextEditor Grid.Row="0"
                                  Background="#1e1e1e"
                                  DockPanel.Dock="Top"
                                  ShowLineNumbers="True"
@@ -31,7 +30,7 @@
                                  VerticalScrollBarVisibility="Visible"
                                  FontWeight="Light"
                                  FontSize="14"
-                                 Watermark="Start typing to bring your ideas to life...">
+                                 Watermark="Example: Parameters[PF_Number].Value">
 
             <AvaloniaEdit:TextEditor.ContextFlyout>
                 <MenuFlyout>
