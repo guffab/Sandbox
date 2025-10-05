@@ -9,7 +9,7 @@ on:
     paths: [ 'SyntaxScanner*/**' ]
   pull_request:
     branches: [ "main" ]
-    paths: [ 'SyntaxScanner*/**', 'Examples/Example.SyntaxScanner/**' ]
+    paths: [ 'SyntaxScanner*/**', ]
 
 jobs:
   build:
@@ -18,7 +18,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: ./SyntaxScanner
+        working-directory: ./SyntaxScanner/SyntaxScanner
 
     steps:
     - name: Checkout repository
