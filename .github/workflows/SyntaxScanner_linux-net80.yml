@@ -1,7 +1,7 @@
 # This workflow will build a net80 project on linux
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
 
-name: SyntaxScanner on [linux-net80]
+name: SyntaxScanner on [linux-net90]
 
 on:
   push:
@@ -30,6 +30,6 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
-      run: dotnet build --framework net8.0 --configuration Release --no-restore
+      run: dotnet build --framework net9.0 --configuration Release --no-restore
     - name: Test
-      run: dotnet test --no-build --framework net8.0 --configuration Release --verbosity minimal
+      run: dotnet test --no-build --framework net9.0 --configuration Release --verbosity minimal
