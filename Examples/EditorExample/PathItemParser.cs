@@ -2,7 +2,7 @@ using SyntaxScanner;
 
 namespace Example.SyntaxScanner;
 
-public class ObjectPathParser
+public class PathItemParser
 {
     static readonly SyntaxPair[] syntax = [new SyntaxPair('(', ')', 0), new SyntaxPair('[', ']', 0)];
 
@@ -11,20 +11,7 @@ public class ObjectPathParser
     /// </returns> 
     public static PathItem? Parse(ReadOnlySpan<char> input)
     {
-        {
-            {
-                {
-                    {
-                        {
-                            {
-
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        var parser = new ObjectPathParser();
+        var parser = new PathItemParser();
         return parser.Parse(input, 0);
     }
 

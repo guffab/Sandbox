@@ -65,7 +65,7 @@ public record ListItem(PathItem SubItem, int OpeningBracket, int ClosingBracket,
 public record PropertyItem(string Name, int Start, PathItem? Next) : PathItem(Next, Start, Name.Length)
 {
     //enables a more readable parser file
-    public PropertyItem(ReadOnlySpan<char> Name, int Start, PathItem? Next) : this(Name.Trim().ToString(), Start  + ObjectPathParser.CountLeadingWhiteSpace(Name), Next) { }
+    public PropertyItem(ReadOnlySpan<char> Name, int Start, PathItem? Next) : this(Name.Trim().ToString(), Start  + PathItemParser.CountLeadingWhiteSpace(Name), Next) { }
 
     public bool IsNameValid()
     {

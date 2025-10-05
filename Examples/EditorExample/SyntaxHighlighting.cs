@@ -17,7 +17,7 @@ class SyntaxHighlighting : DocumentColorizingTransformer
 
     protected override void Colorize(ITextRunConstructionContext context)
     {
-        pathItems = ObjectPathParser.Parse(context.Document.Text)?.Flatten() ?? [];
+        pathItems = PathItemParser.Parse(context.Document.Text)?.Flatten() ?? [];
         base.Colorize(context);
     }
 
