@@ -18,7 +18,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: ./SyntaxScanner/SyntaxScanner
+        working-directory: ./SyntaxScanner/Example
 
     steps:
     - name: Checkout repository
