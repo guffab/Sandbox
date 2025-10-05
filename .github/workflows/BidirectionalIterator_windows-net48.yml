@@ -18,7 +18,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: ./BidirectionalIterator
+        working-directory: ./BidirectionalIterator/BidirectionalIterator
 
     steps:
     - name: Checkout repository
