@@ -1,7 +1,6 @@
 using Avalonia.Media;
 using AvaloniaEdit.Document;
 using AvaloniaEdit.Rendering;
-using Example.SyntaxScanner;
 
 namespace EditorExample;
 

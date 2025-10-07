@@ -1,4 +1,4 @@
-namespace Example.SyntaxScanner;
+namespace EditorExample;
 
 /// <summary>
 /// Represents a user-defined object path to traverse at run-time.

@@ -1,6 +1,6 @@
 using SyntaxScanner;
 
-namespace Example.SyntaxScanner;
+namespace EditorExample;
 
 public class PathItemParser
 {
