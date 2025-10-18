@@ -25,6 +25,7 @@ var example1 = /*lang=jsonc,strict*/ """
                     "I": "Filigree Slab",
                     "P": [
                         "Layer_@_Filigree",
+                        "",
                         "0"
                     ]
                 },
