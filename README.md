@@ -1,12 +1,12 @@
-# SyntaxView
+# SyntaxScanner
 
 ## What is it?
 
-**SyntaxView**  is a high-performance .NET library for syntax-aware splitting and slicing based on arbitrary text input. The available API lets you freely define the syntax rules of your language and how it interacts with one another. It is heavily optimized to favor stack allocations and `ReadOnlySpan<char>` for maximum performance.
+**SyntaxScanner**  is a high-performance .NET library for syntax-aware splitting and slicing based on arbitrary text input. The available API lets you freely define the syntax rules of your language and how they interact with each another. It is heavily optimized to favor stack allocations and `ReadOnlySpan<char>` for maximum performance.
 
 ## Examples vs. Native
 
-#### This section is intended as a showcase for the library, thus comparisons to existing `string` methods are made.
+This section is intended as a showcase for the library, thus comparisons to existing `string` methods are made.
 
 * `IndexOf with syntax awareness`
 
