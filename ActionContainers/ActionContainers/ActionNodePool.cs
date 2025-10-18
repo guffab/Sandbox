@@ -43,9 +43,26 @@ public class ActionNodePool
         return false;
     }
 
-    public List<ActionNode> GetNodes(string[] ids)
+    public List<ActionTypeNode> GetNodes(string[] ids)
     {
-        return _nodes.Where(x => ids.Contains(x.Id)).ToList();
+        var typeNodes = new List<ActionTypeNode>();
+
+        foreach (var id in ids)
+        {
+            const string delimiter = "_@_";
+
+            var delimiterIndex = id.IndexOf(delimiter);
+            if (delimiterIndex is -1)
+                continue;
+
+            var actionName = id[..delimiterIndex];
+            var typeName = id[(delimiterIndex + delimiter.Length)..];
+
+            var matches = _nodes.Where(x => x.Id == actionName).SelectMany(x => x.Types).Where(x => x.Id == typeName);
+            typeNodes.AddRange(matches);
+        }
+
+        return typeNodes;
     }
 
     public ActionNode? this[string id]

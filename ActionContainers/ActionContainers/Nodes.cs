@@ -4,6 +4,12 @@ using Newtonsoft.Json.Converters;
 
 namespace ActionContainers;
 
+/// <summary>
+/// Represents an action, meaning it encapsulates implementing types and their shared parameters.
+/// </summary>
+/// <remarks>
+/// This object is entirely mutable (sometimes through specialized methods only) so that any changes are immediately visible to all objects referencing it.
+/// </remarks>
 public class ActionNode(string id, IReadOnlyList<ParameterTemplateNode> parameters, IReadOnlyList<ActionTypeNode> types)
 {
     [JsonProperty("I")] public string Id { get; set; } = id;
@@ -11,8 +17,9 @@ public class ActionNode(string id, IReadOnlyList<ParameterTemplateNode> paramete
     [JsonProperty("P")] public IReadOnlyList<ParameterTemplateNode> Parameters { get; private set; } = parameters;
 
     [JsonProperty("T")] public IReadOnlyList<ActionTypeNode> Types { get; private set; } = types;
-    
-    public string this[string type, string parameter]
+
+    [NotNull]
+    public string? this[string type, string parameter]
     {
         get
         {
@@ -29,19 +36,28 @@ public class ActionNode(string id, IReadOnlyList<ParameterTemplateNode> paramete
         }
         set
         {
+            if (value is null)
+            {
+                RemoveParameter(parameter);
+                return;
+            }
+
             if (!TryGetType(type, out var typeNode))
                 throw new Exception("type does not exist");
-            
+
+            SET_PARAMETER:
             for (int i = 0; i < Parameters.Count; i++)
             {
                 if (Parameters[i].Id == parameter)
                 {
-                    typeNode.UpdateValues([.. typeNode.ParameterValues.Take(i), value, .. typeNode.ParameterValues.Skip(i + 1)]);
+                    typeNode.ParameterValues = [.. typeNode.ParameterValues.Take(i), value, .. typeNode.ParameterValues.Skip(i + 1)];
                     return;
                 }
             }
 
-            throw new Exception("parameter does not exist");
+            //not found, create it then
+            AddParameter(parameter);
+            goto SET_PARAMETER;
         }
     }
 
@@ -50,7 +66,7 @@ public class ActionNode(string id, IReadOnlyList<ParameterTemplateNode> paramete
         Parameters = [.. Parameters, new ParameterTemplateNode(id, unit)];
 
         foreach (var type in Types)
-            type.UpdateValues([.. type.ParameterValues, ""]);
+            type.ParameterValues = [.. type.ParameterValues, ""];
     }
 
     public bool TryGetType(string id, [NotNullWhen(true)] out ActionTypeNode? typeNode)
@@ -67,7 +83,7 @@ public class ActionNode(string id, IReadOnlyList<ParameterTemplateNode> paramete
         typeNode = null;
         return false;
     }
-    
+
     public bool TryGetParameter(string id, [NotNullWhen(true)] out ParameterTemplateNode? templateNode)
     {
         foreach (var parameter in Parameters)
@@ -98,58 +114,37 @@ public class ActionNode(string id, IReadOnlyList<ParameterTemplateNode> paramete
 
         //remove implementations
         foreach (var type in Types)
-            type.UpdateValues([.. type.ParameterValues.Take(i), .. type.ParameterValues.Skip(i + 1)]);
+            type.ParameterValues = [.. type.ParameterValues.Take(i), .. type.ParameterValues.Skip(i + 1)];
     }
 }
 
+/// <summary>
+/// Represents a single parameter template of an <see cref="ActionNode"/>, meaning it does not provide a value.
+/// </summary>
 public class ParameterTemplateNode(string id, Unit unit = Unit.TextOrAction)
 {
+    internal ActionNode Parent;
+
     [JsonProperty("I")] public string Id { get; set; } = id;
 
     //having a reliable logic for automatic conversions between incompatible units is damn near impossible. Just delete the parameter and recreate it if you must!
     [JsonProperty("U")] public Unit Unit { get; } = unit;
 }
 
+/// <summary>
+/// Represents a type of an action, meaning it provides a value for every parameter.
+/// </summary>
+/// <remarks>
+/// This object is entirely mutable (sometimes through specialized methods only)  so that any changes are immediately visible to all objects referencing it+.
+/// </remarks>
 public class ActionTypeNode(string id, IReadOnlyList<string> parameterValues)
 {
-    #warning renaming the Id should probably update all values
+    internal ActionNode Parent;
+
+#warning renaming the Id should probably update all values
     [JsonProperty("I")] public string Id { get; set; } = id;
 
-    [JsonProperty("V")] public IReadOnlyList<string> ParameterValues { get; private set; } = parameterValues;
-
-    /// <summary>
-    /// DO NOT CALL THIS DIRECTLY!
-    /// </summary>
-    internal void UpdateValues(IReadOnlyList<string> newValues)
-    {
-        ParameterValues = newValues;
-    }
-}
-
-/// <summary>
-/// Represents a single action and it's paramets without any sub-actions. zzzzzzzzzz6zh7ugj           
-/// </summary>
-/// <remarks>
-/// This object is entirely mutable so that any changes are immediately visible to all objects referencing it+.
-/// </remarsk>
-public class old_ActionNode(string id, List<old_ParameterNode> parameters)
-{
-    public string Id { get; set; } = id;
-
-    public List<old_ParameterNode> Parameters { get; set; } = parameters;
-}
-
-/// <summary>
-/// Represents a single parameter of an <see cref="old_ActionNode"/> without a sub-action.
-/// </summary>
-/// <remarks>
-/// This object is entirely mutable so that any changes are immediately visible to all objects referencing it+.
-/// </remarsk>
-public class old_ParameterNode(string id, string value = "", Unit unit = Unit.TextOrAction)
-{
-    public string Id { get; set; } = id;
-    public string Value { get; set; } = value;
-    public Unit Unit { get; set; } = unit;
+    [JsonProperty("V")] public IReadOnlyList<string> ParameterValues { get; set; } = parameterValues;
 }
 
 /// <summary>

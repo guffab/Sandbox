@@ -9,23 +9,23 @@ namespace ActionContainers;
 /// The data structure is re-built on every call to have all downstream changes bubble up immediately.
 /// </remarks>
 [DebuggerDisplay($"{{{nameof(Id)},nq}}")]
-internal class MutableParameter(old_ParameterNode parameterNode, MutableAction parent) : IParameter
+internal class MutableParameter(ParameterTemplateNode parameterNode, MutableAction parent) : IParameter
 {
     private const char separatorChar = ';';
 
-    internal readonly old_ParameterNode BackingNode = parameterNode;
+    internal readonly ParameterTemplateNode BackingNode = parameterNode;
 
     /// <inheritdoc/>
     public string Id { get => BackingNode.Id; set => BackingNode.Id = value; }
 
     /// <inheritdoc/>
-    public string Value { get => BackingNode.Value; set => BackingNode.Value = value; }
+    public string Value { get => BackingNode.Parent[BackingNode.Id, ParentAction.TypeName]; set => BackingNode.Parent[BackingNode.Id, ParentAction.TypeName] = value; }
 
-    /// <inheritdoc/>
-    public Unit Unit { get => BackingNode.Unit; set => BackingNode.Unit = value; }
+    /// <inheritdoc cref="ActionContainers.Unit"/>
+    public Unit Unit => BackingNode.Unit;
 
     /// <inheritdoc cref="IParameter.ParentAction"/>
-    public MutableAction? ParentAction { get; } = parent;
+    public MutableAction ParentAction { get; } = parent;
 
     /// <inheritdoc cref="IParameter.SubAction"/>
     public MutableAction? SubAction

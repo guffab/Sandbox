@@ -8,9 +8,14 @@ namespace ActionContainers;
 internal interface IAction
 {
     /// <summary>
-    /// The name of this <see cref="IAction"/>.
+    /// The first name of this <see cref="IAction"/>.
     /// </summary>
-    string Id { get; }
+    string ActionName { get; }
+
+    /// <summary>
+    /// The second name of this <see cref="IAction"/>.
+    /// </summary>
+    string TypeName { get; }
 
     /// <summary>
     /// The backing value of this <see cref="IAction"/>.

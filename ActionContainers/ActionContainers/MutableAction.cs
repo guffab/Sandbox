@@ -6,30 +6,31 @@ namespace ActionContainers;
 /// <summary>
 /// Represents an <see cref="IAction"/> that can be freely mutated.
 /// </summary>
-[DebuggerDisplay($"{{{nameof(Id)},nq}}")]
-internal class MutableAction(ActionNode actionNode, MutableParameter parent) : IAction
+[DebuggerDisplay($"{{{nameof(ActionName)}_@_{nameof(TypeName)},nq}}")]
+internal class MutableAction(ActionTypeNode actionNode, MutableParameter? parent) : IAction
 {
-    private readonly ActionNode BackingNode = actionNode;
+    private readonly ActionTypeNode BackingNode = actionNode;
+
+    public string Id => $"{ActionName}_@_{TypeName}";
 
     /// <inheritdoc/>
-    public string Id { get => BackingNode.Id; set => BackingNode.Id = value; }
+    public string ActionName { get => BackingNode.Parent.Id; set => BackingNode.Parent.Id = value; }
 
+    /// <inheritdoc/>
+    public string TypeName { get => BackingNode.Id; set => BackingNode.Id = value; }
+
+#warning unknowns: how to create or delete a parameter
     /// <inheritdoc cref="IAction.Parameters"/>
-    public List<MutableParameter> Parameters
-    {
-        #warning I have to repair this at some point
-        get => [];// BackingNode.Parameters.Select(x => new MutableParameter(x, this)).ToList();
-        // set => BackingNode.Parameters = value.Select(x => x.BackingNode).ToList();
-    }
+    public List<MutableParameter> Parameters => BackingNode.Parent.Parameters.Select(x => new MutableParameter(x, this)).ToList();
 
     /// <inheritdoc cref="IAction.ParentParameter"/>
-    public MutableParameter ParentParameter { get; init; } = parent;
+    public MutableParameter? ParentParameter { get; init; } = parent;
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     IReadOnlyList<IParameter> IAction.Parameters => [.. Parameters];
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    IParameter IAction.ParentParameter => ParentParameter;
+    IParameter? IAction.ParentParameter => ParentParameter;
 
     /// <inheritdoc cref="IAction.TryGetParameter(string, out IParameter)"/>
     public bool TryGetParameter(string parameterName, [NotNullWhen(true)] out MutableParameter? parameter)
@@ -139,24 +140,7 @@ internal class MutableAction(ActionNode actionNode, MutableParameter parent) : I
         }
         set
         {
-            if (value is null)
-                BackingNode.RemoveParameter(parameterName);
-            else
-            {
-                #warning unclear how to do just yet
-                // //try replace existing version first
-                // for (int i = 0; i < Parameters.Count; i++)
-                // {
-                //     if (Parameters[i].Id == parameterName)
-                //     {
-                //         BackingNode.ReplaceParameter(BackingNode.Id, Parameters[i].BackingNode, value.BackingNode);
-                //         return;
-                //     }
-                // }
-
-                // //not found
-                // BackingNode.AddParamter(BackingNode.Id, value.BackingNode);
-            }
+            BackingNode.Parent[BackingNode.Id, parameterName] = value?.Value;
         }
     }
 
