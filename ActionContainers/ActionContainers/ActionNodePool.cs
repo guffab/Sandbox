@@ -1,22 +1,34 @@
 using System.Diagnostics.CodeAnalysis;
+using Newtonsoft.Json;
 
 namespace ActionContainers;
 
-public static class ActionNodePool
+public class ActionNodePool
 {
-    static List<ActionNode> _nodes = [];
+    List<ActionNode> _nodes = [];
 
-    public static void Add(ActionNode node)
+    public static ActionNodePool Instance { get; } = new();
+
+    public void Add(ActionNode node)
     {
+        //there may never be duplicated actions (wether intentional or not!)
+        if (_nodes.Any(x => x.Id == node.Id))
+            throw new InvalidOperationException();
+
         _nodes.Add(node);
     }
 
-    public static void RemoveAll(string id)
+    public void Remove(string id)
     {
         _nodes.RemoveAll(x => x.Id == id);
     }
 
-    public static bool TryGetNode(string id, [NotNullWhen(true)] out ActionNode? actionNode)
+    public void Reset(List<ActionNode> nodes)
+    {
+        _nodes = nodes ?? [];
+    }
+
+    public bool TryGetNode(string id, [NotNullWhen(true)] out ActionNode? actionNode)
     {
         foreach (var node in _nodes)
         {
@@ -31,27 +43,23 @@ public static class ActionNodePool
         return false;
     }
 
-    public static List<ActionNode> GetNodes(string[] ids)
+    public List<ActionNode> GetNodes(string[] ids)
     {
         return _nodes.Where(x => ids.Contains(x.Id)).ToList();
     }
 
-    public static void AddParamter(string actionId, ParameterNode parameter)
+    public ActionNode? this[string id]
     {
-#warning needs a way to sync between all same objects with a different type
-        if (TryGetNode(actionId, out var action))
+        get
         {
-            action.Parameters.Add(parameter);            
+            TryGetNode(id, out var actionNode);
+            return actionNode;
         }
     }
 
-    public static void RemoveParameter(string id, string parameterName)
+    public string Serialize()
     {
-        throw new NotImplementedException();
-    }
-
-    public static void ReplaceParameter(string actionId, ParameterNode toReplace, ParameterNode replacement)
-    {
-        throw new NotImplementedException();
+        var settings = new JsonSerializerSettings() { DefaultValueHandling = DefaultValueHandling.Ignore };
+        return JsonConvert.SerializeObject(_nodes, settings);
     }
 }

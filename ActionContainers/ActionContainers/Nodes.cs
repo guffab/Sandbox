@@ -1,39 +1,42 @@
+using System.Diagnostics.CodeAnalysis;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
 namespace ActionContainers;
 
-public class TemplateAction(string id, IReadOnlyList<TemplateParameter> parameters, IReadOnlyList<TypeAction> types)
+public class ActionNode(string id, IReadOnlyList<ParameterTemplateNode> parameters, IReadOnlyList<ActionTypeNode> types)
 {
     [JsonProperty("I")] public string Id { get; set; } = id;
 
-    [JsonProperty("P")] public IReadOnlyList<TemplateParameter> Parameters { get; private set; } = parameters;
+    [JsonProperty("P")] public IReadOnlyList<ParameterTemplateNode> Parameters { get; private set; } = parameters;
 
-    [JsonProperty("T")] public IReadOnlyList<TypeAction> Types { get; private set; } = types;
+    [JsonProperty("T")] public IReadOnlyList<ActionTypeNode> Types { get; private set; } = types;
     
     public string this[string type, string parameter]
     {
         get
         {
-            var t = Types.FirstOrDefault(x => x.Id == type) ?? throw new Exception("type does not exist");
+            if (!TryGetType(type, out var typeNode))
+                throw new Exception("type does not exist");
 
             for (int i = 0; i < Parameters.Count; i++)
             {
                 if (Parameters[i].Id == parameter)
-                    return t.ParameterValues[i];
+                    return typeNode.ParameterValues[i];
             }
 
             throw new Exception("parameter does not exist");
         }
         set
         {
-            var t = Types.FirstOrDefault(x => x.Id == type) ?? throw new Exception("type does not exist");
+            if (!TryGetType(type, out var typeNode))
+                throw new Exception("type does not exist");
             
             for (int i = 0; i < Parameters.Count; i++)
             {
                 if (Parameters[i].Id == parameter)
                 {
-                    t.UpdateValues([.. t.ParameterValues.Take(i), value, .. t.ParameterValues.Skip(i + 1)]);
+                    typeNode.UpdateValues([.. typeNode.ParameterValues.Take(i), value, .. typeNode.ParameterValues.Skip(i + 1)]);
                     return;
                 }
             }
@@ -42,29 +45,81 @@ public class TemplateAction(string id, IReadOnlyList<TemplateParameter> paramete
         }
     }
 
-    public void AddParameter(string id, Unit unit)
+    public void AddParameter(string id, Unit unit = Unit.TextOrAction)
     {
-        Parameters = [..Parameters, new TemplateParameter(id, unit)];
+        Parameters = [.. Parameters, new ParameterTemplateNode(id, unit)];
 
         foreach (var type in Types)
             type.UpdateValues([.. type.ParameterValues, ""]);
     }
+
+    public bool TryGetType(string id, [NotNullWhen(true)] out ActionTypeNode? typeNode)
+    {
+        foreach (var type in Types)
+        {
+            if (type.Id == id)
+            {
+                typeNode = type;
+                return true;
+            }
+        }
+
+        typeNode = null;
+        return false;
+    }
+    
+    public bool TryGetParameter(string id, [NotNullWhen(true)] out ParameterTemplateNode? templateNode)
+    {
+        foreach (var parameter in Parameters)
+        {
+            if (parameter.Id == id)
+            {
+                templateNode = parameter;
+                return true;
+            }
+        }
+
+        templateNode = null;
+        return false;
+    }
+
+    public void RemoveParameter(string parameterName)
+    {
+        var match = Parameters.FirstOrDefault(x => x.Id == parameterName);
+        if (match is null)
+            return;
+
+        var parameters = Parameters.ToList();
+        int i = parameters.IndexOf(match);
+
+        //remove template
+        parameters.RemoveAt(i);
+        Parameters = [.. parameters];
+
+        //remove implementations
+        foreach (var type in Types)
+            type.UpdateValues([.. type.ParameterValues.Take(i), .. type.ParameterValues.Skip(i + 1)]);
+    }
 }
 
-public class TemplateParameter(string id,  Unit unit = Unit.TextOrAction)
+public class ParameterTemplateNode(string id, Unit unit = Unit.TextOrAction)
 {
     [JsonProperty("I")] public string Id { get; set; } = id;
 
-    [JsonProperty("U")] public Unit Unit { get; set; } = unit;
+    //having a reliable logic for automatic conversions between incompatible units is damn near impossible. Just delete the parameter and recreate it if you must!
+    [JsonProperty("U")] public Unit Unit { get; } = unit;
 }
 
-public class TypeAction(string id, IReadOnlyList<string> parameterValues)
+public class ActionTypeNode(string id, IReadOnlyList<string> parameterValues)
 {
     #warning renaming the Id should probably update all values
     [JsonProperty("I")] public string Id { get; set; } = id;
 
     [JsonProperty("V")] public IReadOnlyList<string> ParameterValues { get; private set; } = parameterValues;
 
+    /// <summary>
+    /// DO NOT CALL THIS DIRECTLY!
+    /// </summary>
     internal void UpdateValues(IReadOnlyList<string> newValues)
     {
         ParameterValues = newValues;
@@ -77,20 +132,20 @@ public class TypeAction(string id, IReadOnlyList<string> parameterValues)
 /// <remarks>
 /// This object is entirely mutable so that any changes are immediately visible to all objects referencing it+.
 /// </remarsk>
-public class ActionNode(string id, List<ParameterNode> parameters)
+public class old_ActionNode(string id, List<old_ParameterNode> parameters)
 {
     public string Id { get; set; } = id;
 
-    public List<ParameterNode> Parameters { get; set; } = parameters;
+    public List<old_ParameterNode> Parameters { get; set; } = parameters;
 }
 
 /// <summary>
-/// Represents a single parameter of an <see cref="ActionNode"/> without a sub-action.
+/// Represents a single parameter of an <see cref="old_ActionNode"/> without a sub-action.
 /// </summary>
 /// <remarks>
 /// This object is entirely mutable so that any changes are immediately visible to all objects referencing it+.
 /// </remarsk>
-public class ParameterNode(string id, string value = "", Unit unit = Unit.TextOrAction)
+public class old_ParameterNode(string id, string value = "", Unit unit = Unit.TextOrAction)
 {
     public string Id { get; set; } = id;
     public string Value { get; set; } = value;

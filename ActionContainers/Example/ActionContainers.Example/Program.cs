@@ -1,22 +1,20 @@
-﻿// See https://aka.ms/new-console-template for more information
-using System.Diagnostics;
-using ActionContainers;
+﻿using ActionContainers;
 using Newtonsoft.Json;
 
-Console.WriteLine("Hello, World!");
+var node = new ActionNode("Production Unit", [new("Layer 1"), new("Layer 2"), new("Flip Layer 1", Unit.Bool)], [new("Filigree Slab", ["Layer_@_Filigree", "", "0"]), new("Double Wall", ["", "Layer_@_Wall 2", "0"])]);
+ActionNodePool.Instance.Add(node);
 
-List<TemplateAction> a = [new TemplateAction("Production Unit", [new("Layer 1"), new("Layer 2"), new("Flip Layer 1", Unit.Bool)],
-[new("Filigree Slab", ["Layer_@_Filigree", "", "0"]), new("Double Wall", ["", "Layer_@_Wall 2", "0"])])];
-var serialized = JsonConvert.SerializeObject(a, Formatting.Indented, new JsonSerializerSettings() {DefaultValueHandling = DefaultValueHandling.Ignore});
+node["Filigree Slab", "Layer 1"] = "Layer_@_Something Else";
+if (node.TryGetParameter("Layer 1", out var templateNode))
+    templateNode.Id = "PF_Layer 1";
+
+var serialized = ActionNodePool.Instance.Serialize();
 Console.WriteLine(serialized);
 
-var b = a.First()["Filigree Slab", "Layer 1"];
-a.First()["Filigree Slab", "Layer 1"] = "Layer_@_Something Else";
+ActionNodePool.Instance["Production Unit"]!.AddParameter("hate");
 
-var c = a.First().Parameters.FirstOrDefault(x => x.Id == "Layer 1");
-a.First().Parameters.FirstOrDefault(x => x.Id == "Layer 1").Id = "PF_Layer 1";
-
-var deserialized = JsonConvert.DeserializeObject<List<TemplateAction>>(serialized);
+var deserialized = JsonConvert.DeserializeObject<List<ActionNode>>(serialized);
+ActionNodePool.Instance.Reset(deserialized);
 
 var example1 = /*lang=json*/ """
 [

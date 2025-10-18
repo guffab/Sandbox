@@ -17,8 +17,9 @@ internal class MutableAction(ActionNode actionNode, MutableParameter parent) : I
     /// <inheritdoc cref="IAction.Parameters"/>
     public List<MutableParameter> Parameters
     {
-        get => BackingNode.Parameters.Select(x => new MutableParameter(x, this)).ToList();
-        set => BackingNode.Parameters = value.Select(x => x.BackingNode).ToList();
+        #warning I have to repair this at some point
+        get => [];// BackingNode.Parameters.Select(x => new MutableParameter(x, this)).ToList();
+        // set => BackingNode.Parameters = value.Select(x => x.BackingNode).ToList();
     }
 
     /// <inheritdoc cref="IAction.ParentParameter"/>
@@ -139,21 +140,22 @@ internal class MutableAction(ActionNode actionNode, MutableParameter parent) : I
         set
         {
             if (value is null)
-                ActionNodePool.RemoveParameter(BackingNode.Id, parameterName);
+                BackingNode.RemoveParameter(parameterName);
             else
             {
-                //try replace existing version first
-                for (int i = 0; i < Parameters.Count; i++)
-                {
-                    if (Parameters[i].Id == parameterName)
-                    {
-                        ActionNodePool.ReplaceParameter(BackingNode.Id, Parameters[i].BackingNode, value.BackingNode);
-                        return;
-                    }
-                }
+                #warning unclear how to do just yet
+                // //try replace existing version first
+                // for (int i = 0; i < Parameters.Count; i++)
+                // {
+                //     if (Parameters[i].Id == parameterName)
+                //     {
+                //         BackingNode.ReplaceParameter(BackingNode.Id, Parameters[i].BackingNode, value.BackingNode);
+                //         return;
+                //     }
+                // }
 
-                //not found
-                ActionNodePool.AddParamter(BackingNode.Id, value.BackingNode);
+                // //not found
+                // BackingNode.AddParamter(BackingNode.Id, value.BackingNode);
             }
         }
     }
