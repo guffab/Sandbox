@@ -1,52 +1,57 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using System.Diagnostics;
 using ActionContainers;
-using ActionContainers.Example;
 using Newtonsoft.Json;
 
 Console.WriteLine("Hello, World!");
 
-List<TemplateAction> a = [new TemplateAction("Production Unit", [new("Layer 1"), new("Layer 2"), new("Flip Layer 1", "bool")],
+List<TemplateAction> a = [new TemplateAction("Production Unit", [new("Layer 1"), new("Layer 2"), new("Flip Layer 1", Unit.Bool)],
 [new("Filigree Slab", ["Layer_@_Filigree", "", "0"]), new("Double Wall", ["", "Layer_@_Wall 2", "0"])])];
-var serialized = JsonConvert.SerializeObject(a, Formatting.Indented);
+var serialized = JsonConvert.SerializeObject(a, Formatting.Indented, new JsonSerializerSettings() {DefaultValueHandling = DefaultValueHandling.Ignore});
 Console.WriteLine(serialized);
+
+var b = a.First()["Filigree Slab", "Layer 1"];
+a.First()["Filigree Slab", "Layer 1"] = "Layer_@_Something Else";
+
+var c = a.First().Parameters.FirstOrDefault(x => x.Id == "Layer 1");
+a.First().Parameters.FirstOrDefault(x => x.Id == "Layer 1").Id = "PF_Layer 1";
 
 var deserialized = JsonConvert.DeserializeObject<List<TemplateAction>>(serialized);
 
 var example1 = /*lang=json*/ """
 [
   {
-    "Id": "Production Unit",
-    "Parameters": [
+    "I": "Production Unit",
+    "P": [
       {
-        "Id": "Layer 1",
+        "I": "Layer 1",
       },
       {
-        "Id": "Layer 2",
+        "I": "Layer 2",
       },
       {
-        "Id": "Flip Layer 1",
-        "Unit": "bool"
+        "I": "Flip Layer 1",
+        "U": "bool"
       }
     ],
-    "Types": [
+    "T": [
       {
-        "Id": "Filigree Slab",
-        "ParameterValues": [
+        "I": "Filigree Slab",
+        "V": [
           "Layer_@_Filigree",
           "",
           "0"
         ]
       },
       {
-        "Id": "Double Wall",
+        "I": "Double Wall",
         
         //Represents the value of each parameter connected by its index => saves a lot of space (no key duplication), although each parameter needs a value assigned even if it's default!
         //Rename: O(1) => no types involved
         //Create: (t + 1)*O(1) = O(1) => instant by appending, all types have to append as well
         //Read/Update: O(1)
         //Delete: O(n)
-        "ParameterValues": [
+        "V": [
           "",
           "Layer_@_Wall 2",
           "0"
