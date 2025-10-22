@@ -43,7 +43,7 @@ public class ActionNodePool
         return false;
     }
 
-    public List<ActionTypeNode> GetNodes(string[] ids)
+    public List<ActionTypeNode> GetTypeNodes(string[] ids)
     {
         var typeNodes = new List<ActionTypeNode>();
 
@@ -65,12 +65,23 @@ public class ActionNodePool
         return typeNodes;
     }
 
-    public ActionNode? this[string id]
+    public ActionNode? this[string actionName]
     {
         get
         {
-            TryGetNode(id, out var actionNode);
+            TryGetNode(actionName, out var actionNode);
             return actionNode;
+        }
+    }
+
+    public ActionTypeNode? this[string actionName, string typeName]
+    {
+        get
+        {
+            if (TryGetNode(actionName, out var actionNode) && actionNode.TryGetType(typeName, out var typeNode))
+                return typeNode;
+
+            return null;
         }
     }
 

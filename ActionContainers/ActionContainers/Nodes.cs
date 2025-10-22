@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Reflection.Metadata;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
@@ -10,13 +11,28 @@ namespace ActionContainers;
 /// <remarks>
 /// This object is entirely mutable (sometimes through specialized methods only) so that any changes are immediately visible to all objects referencing it.
 /// </remarks>
-public class ActionNode(string id, IReadOnlyList<ParameterTemplateNode> parameters, IReadOnlyList<ActionTypeNode> types)
+public class ActionNode
 {
-    [JsonProperty("I")] public string Id { get; set; } = id;
+    public ActionNode(string id, List<ParameterTemplateNode> parameters, List<ActionTypeNode> types)
+    {
+        Id = id;
+        Parameters = parameters;
+        Types = types;
 
-    [JsonProperty("P")] public IReadOnlyList<ParameterTemplateNode> Parameters { get; private set; } = parameters;
+        //the classic chicken egg problem when deserializing: you can't instantiate the children without providing a parent, which needs it children to be constructed.
+        //as a compromise, the children can be instantiated without their parent, but this should only be used during deserialization!
+        foreach (var p in Parameters)
+            p.Parent = this;
 
-    [JsonProperty("T")] public IReadOnlyList<ActionTypeNode> Types { get; private set; } = types;
+        foreach (var t in Types)
+            t.Parent = this;
+    }
+
+    [JsonProperty("I")] public string Id { get; set; }
+
+    [JsonProperty("P")] public IReadOnlyList<ParameterTemplateNode> Parameters { get; set; }
+
+    [JsonProperty("T")] public IReadOnlyList<ActionTypeNode> Types { get; set; }
 
     [NotNull]
     public string? this[string type, string parameter]
@@ -63,10 +79,15 @@ public class ActionNode(string id, IReadOnlyList<ParameterTemplateNode> paramete
 
     public void AddParameter(string id, Unit unit = Unit.TextOrAction)
     {
-        Parameters = [.. Parameters, new ParameterTemplateNode(id, unit)];
+        ((List<ParameterTemplateNode>)Parameters).Add(new ParameterTemplateNode(id, unit, this));
 
         foreach (var type in Types)
             type.ParameterValues = [.. type.ParameterValues, ""];
+    }
+
+    public void AddType(string id)
+    {
+        Types = [.. Types, new ActionTypeNode(id, Enumerable.Repeat("", Parameters.Count).ToArray(), this)];
     }
 
     public bool TryGetType(string id, [NotNullWhen(true)] out ActionTypeNode? typeNode)
@@ -121,9 +142,9 @@ public class ActionNode(string id, IReadOnlyList<ParameterTemplateNode> paramete
 /// <summary>
 /// Represents a single parameter template of an <see cref="ActionNode"/>, meaning it does not provide a value.
 /// </summary>
-public class ParameterTemplateNode(string id, Unit unit = Unit.TextOrAction)
+public class ParameterTemplateNode(string id, Unit unit = Unit.TextOrAction, ActionNode parent = null!)
 {
-    internal ActionNode Parent;
+    internal ActionNode Parent = parent;
 
     [JsonProperty("I")] public string Id { get; set; } = id;
 
@@ -137,9 +158,9 @@ public class ParameterTemplateNode(string id, Unit unit = Unit.TextOrAction)
 /// <remarks>
 /// This object is entirely mutable (sometimes through specialized methods only)  so that any changes are immediately visible to all objects referencing it+.
 /// </remarks>
-public class ActionTypeNode(string id, IReadOnlyList<string> parameterValues)
+public class ActionTypeNode(string id, IReadOnlyList<string> parameterValues, ActionNode parent = null!)
 {
-    internal ActionNode Parent;
+    internal ActionNode Parent = parent;
 
 #warning renaming the Id should probably update all values
     [JsonProperty("I")] public string Id { get; set; } = id;

@@ -9,7 +9,7 @@ namespace ActionContainers;
 /// The data structure is re-built on every call to have all downstream changes bubble up immediately.
 /// </remarks>
 [DebuggerDisplay($"{{{nameof(Id)},nq}}")]
-internal class MutableParameter(ParameterTemplateNode parameterNode, MutableAction parent) : IParameter
+public class MutableParameter(ParameterTemplateNode parameterNode, MutableAction parent) : IParameter
 {
     private const char separatorChar = ';';
 
@@ -37,7 +37,7 @@ internal class MutableParameter(ParameterTemplateNode parameterNode, MutableActi
     /// <inheritdoc cref="IParameter.SubActions"/>
     public List<MutableAction> SubActions
     {
-        get => ActionNodePool.Instance.GetNodes(Value.Split(separatorChar)).Select(x => new MutableAction(x, this)).ToList();
+        get => ActionNodePool.Instance.GetTypeNodes(Value.Split(separatorChar)).Select(x => new MutableAction(x, this)).ToList();
         set => Value = string.Join(separatorChar, value.Select(x => x.Id));
     }
 

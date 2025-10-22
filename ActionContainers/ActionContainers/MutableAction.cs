@@ -7,7 +7,7 @@ namespace ActionContainers;
 /// Represents an <see cref="IAction"/> that can be freely mutated.
 /// </summary>
 [DebuggerDisplay($"{{{nameof(ActionName)}_@_{nameof(TypeName)},nq}}")]
-internal class MutableAction(ActionTypeNode actionNode, MutableParameter? parent) : IAction
+public class MutableAction(ActionTypeNode actionNode, MutableParameter? parent) : IAction
 {
     private readonly ActionTypeNode BackingNode = actionNode;
 
