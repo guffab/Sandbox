@@ -18,6 +18,7 @@ ActionNodePool.Instance.Reset(deserialized);
 
 var ma = new MutableAction(ActionNodePool.Instance["Production Unit", "Filigree Slab"], null);
 ma.ActionName = "Flanders";
+ma.TypeName = "Ned";
 
 Console.WriteLine(ma.Id);
 

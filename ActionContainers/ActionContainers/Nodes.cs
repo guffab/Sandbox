@@ -1,5 +1,5 @@
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Reflection.Metadata;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
@@ -11,15 +11,16 @@ namespace ActionContainers;
 /// <remarks>
 /// This object is entirely mutable (sometimes through specialized methods only) so that any changes are immediately visible to all objects referencing it.
 /// </remarks>
+[DebuggerDisplay($"{{{nameof(Id)},nq}}")]
 public class ActionNode
 {
-    public ActionNode(string id, List<ParameterTemplateNode> parameters, List<ActionTypeNode> types)
+    public ActionNode(string id, IReadOnlyList<ParameterTemplateNode> parameters, IReadOnlyList<ActionTypeNode> types)
     {
         Id = id;
-        Parameters = parameters;
-        Types = types;
+        Parameters = parameters.ToList();
+        Types = types.ToList();
 
-        //the classic chicken egg problem when deserializing: you can't instantiate the children without providing a parent, which needs it children to be constructed.
+        //the classic chicken egg problem when deserializing: you can't instantiate the children without providing a parent, which in turn needs its children to be constructed first.
         //as a compromise, the children can be instantiated without their parent, but this should only be used during deserialization!
         foreach (var p in Parameters)
             p.Parent = this;
@@ -87,7 +88,7 @@ public class ActionNode
 
     public void AddType(string id)
     {
-        Types = [.. Types, new ActionTypeNode(id, Enumerable.Repeat("", Parameters.Count).ToArray(), this)];
+        Types = [.. Types, new ActionTypeNode(id, Enumerable.Repeat("", Parameters.Count).ToList(), this)];
     }
 
     public bool TryGetType(string id, [NotNullWhen(true)] out ActionTypeNode? typeNode)
@@ -142,6 +143,7 @@ public class ActionNode
 /// <summary>
 /// Represents a single parameter template of an <see cref="ActionNode"/>, meaning it does not provide a value.
 /// </summary>
+[DebuggerDisplay($"{{{nameof(Id)},nq}}")]
 public class ParameterTemplateNode(string id, Unit unit = Unit.TextOrAction, ActionNode parent = null!)
 {
     internal ActionNode Parent = parent;
@@ -158,11 +160,12 @@ public class ParameterTemplateNode(string id, Unit unit = Unit.TextOrAction, Act
 /// <remarks>
 /// This object is entirely mutable (sometimes through specialized methods only)  so that any changes are immediately visible to all objects referencing it+.
 /// </remarks>
+[DebuggerDisplay($"{{{nameof(Id)},nq}}")]
 public class ActionTypeNode(string id, IReadOnlyList<string> parameterValues, ActionNode parent = null!)
 {
     internal ActionNode Parent = parent;
 
-#warning renaming the Id should probably update all values
+#warning renaming the Id should probably update all values. Callback to ActionNodePool, as only it contains all the nodes with possible parameter values?
     [JsonProperty("I")] public string Id { get; set; } = id;
 
     [JsonProperty("V")] public IReadOnlyList<string> ParameterValues { get; set; } = parameterValues;

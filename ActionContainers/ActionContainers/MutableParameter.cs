@@ -13,13 +13,13 @@ public class MutableParameter(ParameterTemplateNode parameterNode, MutableAction
 {
     private const char separatorChar = ';';
 
-    internal readonly ParameterTemplateNode BackingNode = parameterNode;
+    private readonly ParameterTemplateNode BackingNode = parameterNode;
 
     /// <inheritdoc/>
     public string Id { get => BackingNode.Id; set => BackingNode.Id = value; }
 
     /// <inheritdoc/>
-    public string Value { get => BackingNode.Parent[BackingNode.Id, ParentAction.TypeName]; set => BackingNode.Parent[BackingNode.Id, ParentAction.TypeName] = value; }
+    public string Value { get => BackingNode.Parent[ParentAction.TypeName, BackingNode.Id]; set => BackingNode.Parent[ParentAction.TypeName, BackingNode.Id] = value; }
 
     /// <inheritdoc cref="ActionContainers.Unit"/>
     public Unit Unit => BackingNode.Unit;
