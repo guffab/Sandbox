@@ -142,3 +142,41 @@ if (iterator.Move(-3)) //move three indices backwards
     var current = iterator.Current;
 }
 ```
+
+<br/>
+
+# ActionContainers
+
+## What is it?
+
+**ActionContainers** are a simple and save way to represent complex hierarchies of data refererrencing each other. The goal is to have any updates (like renaming a tpye, changing a parameter value) be reflected across the entire structure, **without** performing recursive search-and-replace.
+As a secondary goal, data redunancy is reduced to an absolute minimum to allow for even smaller file sizes when serialized.
+
+## Usage
+
+* `Initializing the pool`
+
+```csharp
+//assuming you already have some data available
+var serializedJson = "[]"
+ActionNodePool.Instance.Reset(serializedJson);
+```
+
+<br/>
+
+* `Using mutable abstractions`
+
+```csharp
+var action1 = new MutableAction(ActionNodePool.Instance["PG_Production Unit", "Filigree Slab"]);
+var action2 = new MutableAction(ActionNodePool.Instance["PG_Production Unit", "Double Wall"]);
+
+action1.ActionName = "Production Unit"; //updates the representations in the pool directly, therefore both action1 and action2 now refer to the new name.
+
+var parameter1 = action1["PF_Layer 1"];
+parameter1.Id = "Layer 1"; //again, since this updates the pool directly, all consumers of the "Production Unit" see the updated parameter name.
+```
+
+<br/>
+
+* `PLACEHODLER`
+

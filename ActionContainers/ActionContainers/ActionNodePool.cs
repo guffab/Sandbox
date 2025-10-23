@@ -23,6 +23,13 @@ public class ActionNodePool
         _nodes.RemoveAll(x => x.Id == id);
     }
 
+    public void Reset(string serializedJson)
+    {
+        var deserialized = JsonConvert.DeserializeObject<List<ActionNode>>(serializedJson);
+        deserialized ??= [];
+        Reset(deserialized);
+    }
+
     public void Reset(List<ActionNode> nodes)
     {
         _nodes = nodes ?? [];
