@@ -149,7 +149,7 @@ if (iterator.Move(-3)) //move three indices backwards
 
 ## What is it?
 
-**ActionContainers** are a simple and save way to represent complex hierarchies of data refererrencing each other. The goal is to have any updates (like renaming a tpye, changing a parameter value) be reflected across the entire structure, **without** performing recursive search-and-replace.
+**ActionContainers** are a simple and save way to represent complex hierarchies of data refererrencing each other. The goal is to have any updates (like renaming a tpye, changing a parameter value) be reflected across the entire structure, ___without performing recursive search-and-replace___. To make that possible, the entire structure is rebuilt lazily on every property access. <br/>
 As a secondary goal, data redunancy is reduced to an absolute minimum to allow for even smaller file sizes when serialized.
 
 ## Usage
@@ -195,8 +195,3 @@ var flippedLayer = filigreeSlab["Layer 1"].SubAction;
 
 flippedLayer["Flip Component 1"].Value = "1"; //set bool to true
 ```
-
-<br/>
-
-* `PLACEHODLER`
-
