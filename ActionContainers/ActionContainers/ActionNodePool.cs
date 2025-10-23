@@ -9,13 +9,14 @@ public class ActionNodePool
 
     public static ActionNodePool Instance { get; } = new();
 
-    public void Add(ActionNode node)
+    public ActionNode Add(ActionNode node)
     {
         //there may never be duplicated actions (wether intentional or not!)
         if (_nodes.Any(x => x.Id == node.Id))
             throw new InvalidOperationException();
 
         _nodes.Add(node);
+        return node;
     }
 
     public void Remove(string id)

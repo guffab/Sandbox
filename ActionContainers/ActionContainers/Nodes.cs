@@ -14,26 +14,34 @@ namespace ActionContainers;
 [DebuggerDisplay($"{{{nameof(Id)},nq}}")]
 public class ActionNode
 {
+    readonly List<ParameterTemplateNode> _parameters;
+    readonly List<ActionTypeNode> _types;
+
+    [JsonConstructor]
     public ActionNode(string id, IReadOnlyList<ParameterTemplateNode> parameters, IReadOnlyList<ActionTypeNode> types)
     {
         Id = id;
-        Parameters = parameters.ToList();
-        Types = types.ToList();
+        _parameters = parameters.ToList();
+        _types = types.ToList();
 
         //the classic chicken egg problem when deserializing: you can't instantiate the children without providing a parent, which in turn needs its children to be constructed first.
         //as a compromise, the children can be instantiated without their parent, but this should only be used during deserialization!
-        foreach (var p in Parameters)
+        foreach (var p in _parameters)
             p.Parent = this;
 
-        foreach (var t in Types)
+        foreach (var t in _types)
             t.Parent = this;
+    }
+
+    public ActionNode(string id) : this(id, [], [new ActionTypeNode(id, new List<string>())])
+    {
     }
 
     [JsonProperty("I")] public string Id { get; set; }
 
-    [JsonProperty("P")] public IReadOnlyList<ParameterTemplateNode> Parameters { get; set; }
+    [JsonProperty("P")] public IReadOnlyList<ParameterTemplateNode> Parameters => _parameters;
 
-    [JsonProperty("T")] public IReadOnlyList<ActionTypeNode> Types { get; set; }
+    [JsonProperty("T")] public IReadOnlyList<ActionTypeNode> Types => _types;
 
     [NotNull]
     public string? this[string type, string parameter]
@@ -43,9 +51,9 @@ public class ActionNode
             if (!TryGetType(type, out var typeNode))
                 throw new Exception("type does not exist");
 
-            for (int i = 0; i < Parameters.Count; i++)
+            for (int i = 0; i < _parameters.Count; i++)
             {
-                if (Parameters[i].Id == parameter)
+                if (_parameters[i].Id == parameter)
                     return typeNode.ParameterValues[i];
             }
 
@@ -63,9 +71,9 @@ public class ActionNode
                 throw new Exception("type does not exist");
 
             SET_PARAMETER:
-            for (int i = 0; i < Parameters.Count; i++)
+            for (int i = 0; i < _parameters.Count; i++)
             {
-                if (Parameters[i].Id == parameter)
+                if (_parameters[i].Id == parameter)
                 {
                     typeNode.ParameterValues = [.. typeNode.ParameterValues.Take(i), value, .. typeNode.ParameterValues.Skip(i + 1)];
                     return;
@@ -80,20 +88,23 @@ public class ActionNode
 
     public void AddParameter(string id, Unit unit = Unit.TextOrAction)
     {
-        ((List<ParameterTemplateNode>)Parameters).Add(new ParameterTemplateNode(id, unit, this));
+        _parameters.Add(new ParameterTemplateNode(id, unit, this));
 
-        foreach (var type in Types)
+        foreach (var type in _types)
             type.ParameterValues = [.. type.ParameterValues, ""];
     }
 
-    public void AddType(string id)
+    public ActionTypeNode AddType(string id)
     {
-        Types = [.. Types, new ActionTypeNode(id, Enumerable.Repeat("", Parameters.Count).ToList(), this)];
+        var typeNode = new ActionTypeNode(id, Enumerable.Repeat("", _parameters.Count).ToList(), this);
+        _types.Add(typeNode);
+
+        return typeNode;
     }
 
     public bool TryGetType(string id, [NotNullWhen(true)] out ActionTypeNode? typeNode)
     {
-        foreach (var type in Types)
+        foreach (var type in _types)
         {
             if (type.Id == id)
             {
@@ -108,7 +119,7 @@ public class ActionNode
 
     public bool TryGetParameter(string id, [NotNullWhen(true)] out ParameterTemplateNode? templateNode)
     {
-        foreach (var parameter in Parameters)
+        foreach (var parameter in _parameters)
         {
             if (parameter.Id == id)
             {
@@ -123,19 +134,16 @@ public class ActionNode
 
     public void RemoveParameter(string parameterName)
     {
-        var match = Parameters.FirstOrDefault(x => x.Id == parameterName);
+        var match = _parameters.FirstOrDefault(x => x.Id == parameterName);
         if (match is null)
             return;
 
-        var parameters = Parameters.ToList();
-        int i = parameters.IndexOf(match);
-
         //remove template
-        parameters.RemoveAt(i);
-        Parameters = [.. parameters];
+        int i = _parameters.IndexOf(match);
+        _parameters.RemoveAt(i);
 
         //remove implementations
-        foreach (var type in Types)
+        foreach (var type in _types)
             type.ParameterValues = [.. type.ParameterValues.Take(i), .. type.ParameterValues.Skip(i + 1)];
     }
 }

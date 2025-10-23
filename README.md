@@ -157,9 +157,16 @@ As a secondary goal, data redunancy is reduced to an absolute minimum to allow f
 * `Initializing the pool`
 
 ```csharp
-//assuming you already have some data available
-var serializedJson = "[]"
-ActionNodePool.Instance.Reset(serializedJson);
+//an action with two types and a single parameter
+var pu = ActionNodePool.Instance.Add(new ActionNode("PG_Production Unit"));
+pu.AddType("Filigree Slab");
+pu.AddType("Double Wall");
+pu.AddParameter("PF_Layer 1");
+
+//an action with a single type and a parameter with a special unit
+var layer = ActionNodePool.Instance.Add(new ActionNode("Layer"));
+layer.AddType("Flipped Layer");
+layer.AddParameter("Flip 1", Unit.Bool);
 ```
 
 <br/>
@@ -174,6 +181,19 @@ action1.ActionName = "Production Unit"; //updates the representations in the poo
 
 var parameter1 = action1["PF_Layer 1"];
 parameter1.Id = "Layer 1"; //again, since this updates the pool directly, all consumers of the "Production Unit" see the updated parameter name.
+```
+
+<br/>
+
+* `Linking actions together`
+
+```csharp
+var filigreeSlab = new MutableAction(ActionNodePool.Instance["Production Unit", "Filigree Slab"]);
+
+filigreeSlab["Layer 1"].Value = "Layer_@_Flipped Layer"; //uniquely identifies another action from the pool
+var flippedLayer = filigreeSlab["Layer 1"].SubAction;
+
+flippedLayer["Flip Component 1"].Value = "1"; //set bool to true
 ```
 
 <br/>

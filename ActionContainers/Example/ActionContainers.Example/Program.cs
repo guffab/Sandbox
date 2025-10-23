@@ -28,6 +28,28 @@ paraL2.Id = "EAt dirt";
 paraL2.Value = "1e-6";
 
 
+var serializedJson = "[]";
+ActionNodePool.Instance.Reset(serializedJson);
+
+var pu = ActionNodePool.Instance.Add(new ActionNode("PG_Production Unit"));
+pu.AddParameter("Layer 1");
+pu.AddType("Filigree Slab");
+pu.AddType("Double Wall");
+
+var layer = ActionNodePool.Instance.Add(new ActionNode("Layer"));
+layer.AddParameter("Component 1");
+layer.AddParameter("Flip Component 1", Unit.Bool);
+
+layer.AddType("Flipped Layer");
+
+var filigreeSlab = new MutableAction(ActionNodePool.Instance["PG_Production Unit", "Filigree Slab"], null);
+
+filigreeSlab["Layer 1"].Value = "Layer_@_Flipped Layer"; //uniquely identifies another action from the pool
+var flippedLayer = filigreeSlab["Layer 1"].SubAction;
+
+flippedLayer["Flip Component 1"].Value = "1"; //set bool to true
+
+
 var example1 = /*lang=json*/ """
 [
   {
