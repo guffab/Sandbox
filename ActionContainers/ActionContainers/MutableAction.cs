@@ -6,11 +6,13 @@ namespace ActionContainers;
 /// <summary>
 /// Represents an <see cref="IAction"/> that can be freely mutated.
 /// </summary>
-[DebuggerDisplay($"{{{nameof(ActionName)}_@_{nameof(TypeName)},nq}}")]
+[DebuggerDisplay($"{{{nameof(Id)},nq}}")]
+[DebuggerTypeProxy(typeof(ActionDebugView))]
 public class MutableAction(ActionTypeNode actionNode, MutableParameter? parent) : IAction
 {
     private readonly ActionTypeNode BackingNode = actionNode;
 
+    /// <inheritdoc/>
     public string Id => $"{ActionName}_@_{TypeName}";
 
     /// <inheritdoc/>
@@ -144,6 +146,6 @@ public class MutableAction(ActionTypeNode actionNode, MutableParameter? parent) 
         }
     }
 
-    /// <inheritdoc/>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     IParameter? IAction.this[string parameterName] => this[parameterName];
 }

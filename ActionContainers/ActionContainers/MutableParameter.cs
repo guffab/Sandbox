@@ -9,9 +9,10 @@ namespace ActionContainers;
 /// The data structure is re-built on every call to have all downstream changes bubble up immediately.
 /// </remarks>
 [DebuggerDisplay($"{{{nameof(Id)},nq}}")]
+[DebuggerTypeProxy(typeof(ParameterDebugView))]
 public class MutableParameter(ParameterTemplateNode parameterNode, MutableAction parent) : IParameter
 {
-    private const char separatorChar = ';';
+    const char separatorChar = ';';
 
     private readonly ParameterTemplateNode BackingNode = parameterNode;
 
@@ -44,8 +45,10 @@ public class MutableParameter(ParameterTemplateNode parameterNode, MutableAction
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     IAction? IParameter.ParentAction => ParentAction;
 
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     IAction? IParameter.SubAction => SubAction;
 
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     List<IAction> IParameter.SubActions => [.. SubActions];
 
     /// <inheritdoc/>

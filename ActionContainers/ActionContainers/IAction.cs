@@ -8,6 +8,11 @@ namespace ActionContainers;
 internal interface IAction
 {
     /// <summary>
+    /// Combines the <see cref="ActionName"/> and <see cref="TypeName"/>.
+    /// </summary>
+    public string Id => $"{ActionName}_@_{TypeName}";
+
+    /// <summary>
     /// The first name of this <see cref="IAction"/>.
     /// </summary>
     string ActionName { get; }
