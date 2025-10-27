@@ -14,7 +14,7 @@ Console.WriteLine(serialized);
 ActionNodePool.Instance["Production Unit"]!.AddParameter("hate");
 
 var deserialized = JsonConvert.DeserializeObject<List<ActionNode>>(serialized)!;
-ActionNodePool.Instance.Reset(deserialized);
+ActionNodePool.Instance.Initialize(deserialized);
 
 var ma = new MutableAction(ActionNodePool.Instance["Production Unit", "Filigree Slab"], null);
 ma.ActionName = "Flanders";
@@ -29,7 +29,7 @@ paraL2.Value = "1e-6";
 
 
 var serializedJson = "[]";
-ActionNodePool.Instance.Reset(serializedJson);
+ActionNodePool.Instance.Initialize(serializedJson);
 
 var pu = ActionNodePool.Instance.Add(new ActionNode("PG_Production Unit"));
 pu.AddParameter("Layer 1");

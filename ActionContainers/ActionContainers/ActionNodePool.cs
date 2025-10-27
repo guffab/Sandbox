@@ -7,6 +7,11 @@ public class ActionNodePool
 {
     List<ActionNode> _nodes = [];
 
+    //this object is a Singleton, so use the static instance property.
+    private ActionNodePool()
+    {
+    }
+
     public static ActionNodePool Instance { get; } = new();
 
     public ActionNode Add(ActionNode node)
@@ -23,15 +28,20 @@ public class ActionNodePool
     {
         _nodes.RemoveAll(x => x.Id == id);
     }
+    
+    public void Reset()
+    {
+        _nodes = [];
+    }
 
-    public void Reset(string serializedJson)
+    public void Initialize(string serializedJson)
     {
         var deserialized = JsonConvert.DeserializeObject<List<ActionNode>>(serializedJson);
         deserialized ??= [];
-        Reset(deserialized);
+        Initialize(deserialized);
     }
 
-    public void Reset(List<ActionNode> nodes)
+    public void Initialize(List<ActionNode> nodes)
     {
         _nodes = nodes ?? [];
     }
@@ -97,5 +107,26 @@ public class ActionNodePool
     {
         var settings = new JsonSerializerSettings() { DefaultValueHandling = DefaultValueHandling.Ignore };
         return JsonConvert.SerializeObject(_nodes, settings);
+    }
+
+    /// <summary>
+    /// When changing the id of an action, this updates all parameters referencing it to use the new id.
+    /// </summary>
+    internal void UpdateAllReferences(string oldActionName, string oldTypeName, string newActionName, string newTypeName)
+    {
+        string oldId = $"{oldActionName}_@_{oldTypeName}";
+        string newId = $"{newActionName}_@_{newTypeName}";
+
+        foreach (var node in _nodes)
+        {
+            foreach (var type in node.Types)
+            {
+                var pv = type.ParameterValues.ToList();
+                for (int i = 0; i < pv.Count; i++)
+                    pv[i] = pv[i].Replace(oldId, newId);
+
+                type.ParameterValues = pv;
+            }
+        }
     }
 }
