@@ -1,0 +1,35 @@
+# This workflow will build a net80 project on linux
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
+
+name: ActionContainers on [linux-net90]
+
+on:
+  push:
+    branches: [ "main" ]
+    paths: [ 'ActionContainers*/**' ]
+  pull_request:
+    branches: [ "main" ]
+    paths: [ 'ActionContainers*/**', ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./ActionContainers/ActionContainers
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '9.0.x'
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build --framework net9.0 --configuration Release --no-restore
+    - name: Test
+      run: dotnet test --no-build --framework net9.0 --configuration Release --verbosity minimal

@@ -1,56 +1,24 @@
 ﻿using ActionContainers;
-using Newtonsoft.Json;
 
-var node = new ActionNode("Production Unit", [new("Layer 1"), new("Layer 2"), new("Flip Layer 1", Unit.Bool)], [new("Filigree Slab", ["Layer_@_Filigree", "", "0"]), new("Double Wall", ["", "Layer_@_Wall 2", "0"])]);
-ActionNodePool.Instance.Add(node);
+var pool = ActionNodePool.Instance;
+
+var node = pool.Add(new ActionNode("Production Unit"));
+node.AddParameter("Layer 1");
+node.AddParameter("Layer 2");
+node.AddParameter("Flip Layer 1", Unit.Bool);
+
+var fs = node.AddType("Filigree Slab");
+fs["Layer 1"] = "Layer_@_Filigree";
+
+var dw = node.AddType("Double Wall");
+dw["Layer 2"] = "Layer_@_Wall 2";
+dw["Flip Layer 1"] = "1";
 
 node["Filigree Slab", "Layer 1"] = "Layer_@_Something Else";
 if (node.TryGetParameter("Layer 1", out var templateNode))
     templateNode.Id = "PF_Layer 1";
 
-var serialized = ActionNodePool.Instance.Serialize();
-Console.WriteLine(serialized);
-
-ActionNodePool.Instance["Production Unit"]!.AddParameter("hate");
-
-var deserialized = JsonConvert.DeserializeObject<List<ActionNode>>(serialized)!;
-ActionNodePool.Instance.Reset(deserialized);
-
-var ma = new MutableAction(ActionNodePool.Instance["Production Unit", "Filigree Slab"], null);
-ma.ActionName = "Flanders";
-ma.TypeName = "Ned";
-
-Console.WriteLine(ma.Id);
-
-var paraL2 = ma["Layer 2"];
-paraL2.Id = "EAt dirt";
-
-paraL2.Value = "1e-6";
-
-
-var serializedJson = "[]";
-ActionNodePool.Instance.Reset(serializedJson);
-
-var pu = ActionNodePool.Instance.Add(new ActionNode("PG_Production Unit"));
-pu.AddParameter("Layer 1");
-pu.AddType("Filigree Slab");
-pu.AddType("Double Wall");
-
-var layer = ActionNodePool.Instance.Add(new ActionNode("Layer"));
-layer.AddParameter("Component 1");
-layer.AddParameter("Flip Component 1", Unit.Bool);
-
-layer.AddType("Flipped Layer");
-
-var filigreeSlab = new MutableAction(ActionNodePool.Instance["PG_Production Unit", "Filigree Slab"], null);
-
-filigreeSlab["Layer 1"].Value = "Layer_@_Flipped Layer"; //uniquely identifies another action from the pool
-var flippedLayer = filigreeSlab["Layer 1"].SubAction;
-
-flippedLayer["Flip Component 1"].Value = "1"; //set bool to true
-
-
-var example1 = /*lang=json*/ """
+_ = /*lang=json*/ """
 [
   {
     "I": "Production Unit",

@@ -14,13 +14,14 @@ namespace ActionContainers;
 [DebuggerDisplay($"{{{nameof(Id)},nq}}")]
 public class ActionNode
 {
+    string _id;
     readonly List<ParameterTemplateNode> _parameters;
     readonly List<ActionTypeNode> _types;
 
     [JsonConstructor]
-    public ActionNode(string id, IReadOnlyList<ParameterTemplateNode> parameters, IReadOnlyList<ActionTypeNode> types)
+    private ActionNode(string id, IReadOnlyList<ParameterTemplateNode> parameters, IReadOnlyList<ActionTypeNode> types)
     {
-        Id = id;
+        _id = id;
         _parameters = parameters.ToList();
         _types = types.ToList();
 
@@ -30,18 +31,37 @@ public class ActionNode
             p.Parent = this;
 
         foreach (var t in _types)
+        {
             t.Parent = this;
+
+            //if they don't match up, we can hardly tell which parameter is missing
+            if (t.ParameterValues.Count != _parameters.Count)
+                throw new InvalidDataException();
+        }
     }
 
-    public ActionNode(string id) : this(id, [], [new ActionTypeNode(id, new List<string>())])
+    public ActionNode(string id) : this(id, [], [])
     {
     }
 
-    [JsonProperty("I")] public string Id { get; set; }
+    [JsonProperty("I")]
+    public string Id
+    {
+        get => _id;
+        set
+        {
+            foreach (var type in Types)
+                ActionNodePool.Instance.UpdateAllReferences(_id, type.Id, value, type.Id);
 
-    [JsonProperty("P")] public IReadOnlyList<ParameterTemplateNode> Parameters => _parameters;
+            _id = value;
+        }
+    }
 
-    [JsonProperty("T")] public IReadOnlyList<ActionTypeNode> Types => _types;
+    [JsonProperty("P")]
+    public IReadOnlyList<ParameterTemplateNode> Parameters => _parameters;
+
+    [JsonProperty("T")]
+    public IReadOnlyList<ActionTypeNode> Types => _types;
 
     [NotNull]
     public string? this[string type, string parameter]
@@ -156,10 +176,12 @@ public class ParameterTemplateNode(string id, Unit unit = Unit.TextOrAction, Act
 {
     internal ActionNode Parent = parent;
 
-    [JsonProperty("I")] public string Id { get; set; } = id;
+    [JsonProperty("I")]
+    public string Id { get; set; } = id;
 
     //having a reliable logic for automatic conversions between incompatible units is damn near impossible. Just delete the parameter and recreate it if you must!
-    [JsonProperty("U")] public Unit Unit { get; } = unit;
+    [JsonProperty("U")]
+    public Unit Unit { get; } = unit;
 }
 
 /// <summary>
@@ -172,11 +194,28 @@ public class ParameterTemplateNode(string id, Unit unit = Unit.TextOrAction, Act
 public class ActionTypeNode(string id, IReadOnlyList<string> parameterValues, ActionNode parent = null!)
 {
     internal ActionNode Parent = parent;
+    private string _id = id;
 
-#warning renaming the Id should probably update all values. Callback to ActionNodePool, as only it contains all the nodes with possible parameter values?
-    [JsonProperty("I")] public string Id { get; set; } = id;
+    [JsonProperty("I")]
+    public string Id
+    {
+        get => _id;
+        set
+        {
+            ActionNodePool.Instance.UpdateAllReferences(Parent.Id, _id, Parent.Id, value);
+            _id = value;
+        }
+    }
 
-    [JsonProperty("V")] public IReadOnlyList<string> ParameterValues { get; set; } = parameterValues;
+    [JsonProperty("V")]
+    public IReadOnlyList<string> ParameterValues { get; set; } = parameterValues;
+
+    [NotNull]
+    public string? this[string parameter]
+    {
+        get => Parent[Id, parameter];
+        set => Parent[Id, parameter] = value;
+    }
 }
 
 /// <summary>
