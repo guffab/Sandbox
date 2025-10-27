@@ -19,7 +19,7 @@ public class ActionNode
     readonly List<ActionTypeNode> _types;
 
     [JsonConstructor]
-    public ActionNode(string id, IReadOnlyList<ParameterTemplateNode> parameters, IReadOnlyList<ActionTypeNode> types)
+    private ActionNode(string id, IReadOnlyList<ParameterTemplateNode> parameters, IReadOnlyList<ActionTypeNode> types)
     {
         _id = id;
         _parameters = parameters.ToList();
@@ -40,11 +40,12 @@ public class ActionNode
         }
     }
 
-    public ActionNode(string id) : this(id, [], [new ActionTypeNode(id, new List<string>())])
+    public ActionNode(string id) : this(id, [], [])
     {
     }
 
-    [JsonProperty("I")] public string Id
+    [JsonProperty("I")]
+    public string Id
     {
         get => _id;
         set
@@ -56,9 +57,11 @@ public class ActionNode
         }
     }
 
-    [JsonProperty("P")] public IReadOnlyList<ParameterTemplateNode> Parameters => _parameters;
+    [JsonProperty("P")]
+    public IReadOnlyList<ParameterTemplateNode> Parameters => _parameters;
 
-    [JsonProperty("T")] public IReadOnlyList<ActionTypeNode> Types => _types;
+    [JsonProperty("T")]
+    public IReadOnlyList<ActionTypeNode> Types => _types;
 
     [NotNull]
     public string? this[string type, string parameter]
@@ -173,10 +176,12 @@ public class ParameterTemplateNode(string id, Unit unit = Unit.TextOrAction, Act
 {
     internal ActionNode Parent = parent;
 
-    [JsonProperty("I")] public string Id { get; set; } = id;
+    [JsonProperty("I")]
+    public string Id { get; set; } = id;
 
     //having a reliable logic for automatic conversions between incompatible units is damn near impossible. Just delete the parameter and recreate it if you must!
-    [JsonProperty("U")] public Unit Unit { get; } = unit;
+    [JsonProperty("U")]
+    public Unit Unit { get; } = unit;
 }
 
 /// <summary>
@@ -191,7 +196,8 @@ public class ActionTypeNode(string id, IReadOnlyList<string> parameterValues, Ac
     internal ActionNode Parent = parent;
     private string _id = id;
 
-    [JsonProperty("I")] public string Id
+    [JsonProperty("I")]
+    public string Id
     {
         get => _id;
         set
@@ -200,7 +206,16 @@ public class ActionTypeNode(string id, IReadOnlyList<string> parameterValues, Ac
             _id = value;
         }
     }
-    [JsonProperty("V")] public IReadOnlyList<string> ParameterValues { get; set; } = parameterValues;
+
+    [JsonProperty("V")]
+    public IReadOnlyList<string> ParameterValues { get; set; } = parameterValues;
+
+    [NotNull]
+    public string? this[string parameter]
+    {
+        get => Parent[Id, parameter];
+        set => Parent[Id, parameter] = value;
+    }
 }
 
 /// <summary>

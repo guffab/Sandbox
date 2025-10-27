@@ -14,9 +14,10 @@ public class ActionNodePool
 
     public static ActionNodePool Instance { get; } = new();
 
+    /// <returns>The input <paramref name="node"/>.</returns>
     public ActionNode Add(ActionNode node)
     {
-        //there may never be duplicated actions (wether intentional or not!)
+        //there may never be duplicated actions
         if (_nodes.Any(x => x.Id == node.Id))
             throw new InvalidOperationException();
 
@@ -28,7 +29,7 @@ public class ActionNodePool
     {
         _nodes.RemoveAll(x => x.Id == id);
     }
-    
+
     public void Reset()
     {
         _nodes = [];

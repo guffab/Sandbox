@@ -10,13 +10,13 @@ public class ActionNodePoolTests
         pool.Reset();
 
         //an action with two types and a single parameter
-        var pu = ActionNodePool.Instance.Add(new ActionNode("PG_Production Unit"));
+        var pu = pool.Add(new ActionNode("PG_Production Unit"));
         pu.AddType("Filigree Slab");
         pu.AddType("Double Wall");
         pu.AddParameter("PF_Layer 1");
 
         //an action with a single type and a parameter with a special unit
-        var layer = ActionNodePool.Instance.Add(new ActionNode("PG_Layer"));
+        var layer = pool.Add(new ActionNode("PG_Layer"));
         layer.AddType("Flipped Layer");
         layer.AddParameter("PF_Flip 1", Unit.Bool);
     }
@@ -55,5 +55,29 @@ public class ActionNodePoolTests
         //Assert
         Assert.That(layer1Param.SubAction, Is.Not.EqualTo(null));
         Assert.That(layer1Param.SubAction.TypeName, Is.EqualTo("Regular Layer"));
+    }
+
+    [Test]
+    public void Pool_SerializeEditDeserialize_RevertChanges()
+    {
+        //Arrange
+        var serializedJson = pool.Serialize();
+        var layer = pool["PG_Layer"]!;
+        layer.Id = "Something else";
+
+        layer = pool["PG_Layer"]!;
+        var somethingElse = pool["Something else"];
+
+        //Act
+        pool.Initialize(serializedJson);
+
+        //Assert
+        Assert.Multiple(() =>
+        {
+            //Assert
+            Assert.That(layer, Is.EqualTo(null));
+            Assert.That(somethingElse, Is.Not.EqualTo(null));
+            Assert.That(pool["PG_Layer"], Is.Not.EqualTo(null));
+        });
     }
 }
