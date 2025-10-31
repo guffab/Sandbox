@@ -133,10 +133,12 @@ public class ActionNodePoolTests
     {
         //Arrange
         var filigreeSlab = new MutableAction(pool["PG_Production Unit", "Filigree Slab"]!, null);
+        
         filigreeSlab.AddParameter("A");
-        filigreeSlab.AddParameter("B");
-        filigreeSlab.AddParameter("C");
-        filigreeSlab.AddParameter("D");
+        filigreeSlab.AddParameter("B", true);
+        filigreeSlab.AddParameter("C", "Value");
+        filigreeSlab.AddParameter("D", Unit.Weight, 68);
+
         var countBefore = filigreeSlab.Parameters.Count;
 
         //Act
@@ -164,7 +166,9 @@ public class ActionNodePoolTests
         var somethingElse = pool["Something else"];
 
         //Act
-        pool.Initialize(serializedJson);
+        var deserialized = JsonConvert.DeserializeObject<List<ActionNode>>(serializedJson);
+        deserialized ??= [];
+        pool.Initialize(deserialized);
 
         //Assert
         Assert.Multiple(() =>

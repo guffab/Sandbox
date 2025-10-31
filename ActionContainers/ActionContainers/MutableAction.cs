@@ -39,6 +39,18 @@ public class MutableAction(ActionTypeNode actionNode, MutableParameter? parent) 
         AddParameter(id, default, value);
     }
 
+    /// <inheritdoc cref="AddParameter(string, Unit, string)"/>
+    public void AddParameter(string id, bool value)
+    {
+        AddParameter(id, Unit.Bool, value ? "1" : "0");
+    }
+
+    /// <inheritdoc cref="AddParameter(string, Unit, string)"/>
+    public void AddParameter(string id, Unit unit, double value)
+    {
+        AddParameter(id, unit, value.ToString());
+    }
+
     /// <summary>
     /// Adds a parameter with the given <paramref name="id"/>.
     /// </summary>

@@ -69,7 +69,7 @@ public class ActionNode : IEquatable<ActionNode>
         get
         {
             if (!TryGetType(type, out var typeNode))
-                throw new Exception("type does not exist");
+                throw new InvalidOperationException("type does not exist");
 
             for (int i = 0; i < _parameters.Count; i++)
             {
@@ -77,7 +77,7 @@ public class ActionNode : IEquatable<ActionNode>
                     return typeNode.ParameterValues[i];
             }
 
-            throw new Exception("parameter does not exist");
+            throw new InvalidOperationException("parameter does not exist");
         }
         set
         {
@@ -88,7 +88,7 @@ public class ActionNode : IEquatable<ActionNode>
             }
 
             if (!TryGetType(type, out var typeNode))
-                throw new Exception("type does not exist");
+                throw new InvalidOperationException("type does not exist");
 
             SET_PARAMETER:
             for (int i = 0; i < _parameters.Count; i++)
@@ -119,6 +119,9 @@ public class ActionNode : IEquatable<ActionNode>
 
     public ActionTypeNode AddType(string id)
     {
+        if (_types.Any(x => x.Id == id))
+            throw new InvalidOperationException();
+
         var typeNode = new ActionTypeNode(id, Enumerable.Repeat("", _parameters.Count).ToList(), this);
         _types.Add(typeNode);
 

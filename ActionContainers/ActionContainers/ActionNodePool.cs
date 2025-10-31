@@ -35,13 +35,6 @@ public class ActionNodePool
         _nodes = [];
     }
 
-    public void Initialize(string serializedJson)
-    {
-        var deserialized = JsonConvert.DeserializeObject<List<ActionNode>>(serializedJson);
-        deserialized ??= [];
-        Initialize(deserialized);
-    }
-
     public void Initialize(List<ActionNode> nodes)
     {
         _nodes = nodes ?? [];
