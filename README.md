@@ -157,14 +157,16 @@ As a secondary goal, data redunancy is reduced to an absolute minimum to allow f
 * `Initializing the pool`
 
 ```csharp
+var pool = ActionNodePool.Instance;
+
 //an action with two types and a single parameter
-var pu = ActionNodePool.Instance.Add(new ActionNode("PG_Production Unit"));
+var pu = pool.Add(new ActionNode("PG_Production Unit"));
 pu.AddType("Filigree Slab");
 pu.AddType("Double Wall");
 pu.AddParameter("PF_Layer 1");
 
 //an action with a single type and a parameter with a special unit
-var layer = ActionNodePool.Instance.Add(new ActionNode("Layer"));
+var layer = pool.Add(new ActionNode("Layer"));
 layer.AddType("Flipped Layer");
 layer.AddParameter("Flip 1", Unit.Bool);
 ```
@@ -174,8 +176,8 @@ layer.AddParameter("Flip 1", Unit.Bool);
 * `Using mutable abstractions`
 
 ```csharp
-var action1 = new MutableAction(ActionNodePool.Instance["PG_Production Unit", "Filigree Slab"]);
-var action2 = new MutableAction(ActionNodePool.Instance["PG_Production Unit", "Double Wall"]);
+var action1 = new MutableAction(pool["PG_Production Unit", "Filigree Slab"]);
+var action2 = new MutableAction(pool["PG_Production Unit", "Double Wall"]);
 
 action1.ActionName = "Production Unit"; //updates the representations in the pool directly, therefore both action1 and action2 now refer to the new name.
 
@@ -188,7 +190,7 @@ parameter1.Id = "Layer 1"; //again, since this updates the pool directly, all co
 * `Linking actions together`
 
 ```csharp
-var filigreeSlab = new MutableAction(ActionNodePool.Instance["Production Unit", "Filigree Slab"]);
+var filigreeSlab = new MutableAction(pool["Production Unit", "Filigree Slab"]);
 
 filigreeSlab["Layer 1"].Value = "Layer_@_Flipped Layer"; //uniquely identifies another action from the pool
 var flippedLayer = filigreeSlab["Layer 1"].SubAction;
@@ -201,7 +203,7 @@ flippedLayer["Flip Component 1"].Value = "1"; //set bool to true
 * `Adding/Removing Parameters`
 
 ```csharp
-var filigreeSlab = new MutableAction(ActionNodePool.Instance["Production Unit", "Filigree Slab"]);
+var filigreeSlab = new MutableAction(pool["Production Unit", "Filigree Slab"]);
 
 filigreeSlab.AddParameter("Parameter 1", "Value");
 filigreeSlab.AddParameter("Parameter 2", true);
