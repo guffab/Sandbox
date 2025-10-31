@@ -1,3 +1,5 @@
+using Newtonsoft.Json;
+
 namespace ActionContainers.Tests;
 
 public class ActionNodePoolTests
@@ -19,6 +21,40 @@ public class ActionNodePoolTests
         var layer = pool.Add(new ActionNode("PG_Layer"));
         layer.AddType("Flipped Layer");
         layer.AddParameter("PF_Flip 1", Unit.Bool);
+    }
+
+    [Test]
+    public void ActionNode_DeserializeWithMissingParamters_Throws()
+    {
+        //Arrange
+        var serialized = """
+        {
+            "I": "action",
+            "P": [
+                {
+                    "I": "A",
+                },
+                {
+                    "I": "B",
+                },
+                {
+                    "I": "C",
+                }
+            ],
+            "T": [
+                {
+                    "I": "tpye",
+                    "V": [
+                        "1",
+                        "3",
+                    ]
+                },
+            ]
+        }
+        """;
+
+        //Assert
+        Assert.Throws<InvalidDataException>(() => JsonConvert.DeserializeObject<ActionNode>(serialized));
     }
 
     [Test]
@@ -55,6 +91,65 @@ public class ActionNodePoolTests
         //Assert
         Assert.That(layer1Param.SubAction, Is.Not.EqualTo(null));
         Assert.That(layer1Param.SubAction.TypeName, Is.EqualTo("Regular Layer"));
+    }
+
+    [Test]
+    public void MutableAction_AddParameter_ParameterExists()
+    {
+        //Arrange
+        var filigreeSlab = new MutableAction(pool["PG_Production Unit", "Filigree Slab"]!, null);
+        var before = filigreeSlab["New Parameter"];
+
+        //Act
+        filigreeSlab.AddParameter("New Parameter", Unit.Length, "something");
+        var after = filigreeSlab["New Parameter"];
+
+        //Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(before, Is.EqualTo(null));
+            Assert.That(after, Is.Not.EqualTo(null));
+        });
+        Assert.Multiple(() =>
+        {
+            Assert.That(after.Unit, Is.EqualTo(Unit.Length));
+            Assert.That(after.Value, Is.EqualTo("something"));
+        });
+    }
+
+    [Test]
+    public void MutableAction_AddExistingParameter_Throws()
+    {
+        //Arrange
+        var filigreeSlab = new MutableAction(pool["PG_Production Unit", "Filigree Slab"]!, null);
+        filigreeSlab.AddParameter("Add Me Twice");
+
+        //Assert
+        Assert.Throws<InvalidOperationException>(() => filigreeSlab.AddParameter("Add Me Twice"));
+    }
+
+    [Test]
+    public void MutableAction_RemoveParameter_IsRemoved()
+    {
+        //Arrange
+        var filigreeSlab = new MutableAction(pool["PG_Production Unit", "Filigree Slab"]!, null);
+        filigreeSlab.AddParameter("A");
+        filigreeSlab.AddParameter("B");
+        filigreeSlab.AddParameter("C");
+        filigreeSlab.AddParameter("D");
+        var countBefore = filigreeSlab.Parameters.Count;
+
+        //Act
+        filigreeSlab.RemoveParameter("C");
+        var deletedParameter = filigreeSlab["C"];
+        var countNow = filigreeSlab.Parameters.Count;
+
+        //Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(deletedParameter, Is.EqualTo(null));
+            Assert.That(countNow, Is.EqualTo(countBefore - 1));
+        });
     }
 
     [Test]

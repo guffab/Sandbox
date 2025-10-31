@@ -4,7 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace ActionContainers;
 
 /// <summary>
-/// Represents an <see cref="IAction"/> that can be freely mutated.
+/// Represents a single type of an action that can be freely mutated.
 /// </summary>
 [DebuggerDisplay($"{{{nameof(Id)},nq}}")]
 [DebuggerTypeProxy(typeof(ActionDebugView))]
@@ -21,7 +21,6 @@ public class MutableAction(ActionTypeNode actionNode, MutableParameter? parent) 
     /// <inheritdoc/>
     public string TypeName { get => BackingNode.Id; set => BackingNode.Id = value; }
 
-#warning unknowns: how to create or delete a parameter
     /// <inheritdoc cref="IAction.Parameters"/>
     public List<MutableParameter> Parameters => BackingNode.Parent.Parameters.Select(x => new MutableParameter(x, this)).ToList();
 
@@ -33,6 +32,33 @@ public class MutableAction(ActionTypeNode actionNode, MutableParameter? parent) 
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     IParameter? IAction.ParentParameter => ParentParameter;
+
+    /// <inheritdoc cref="AddParameter(string, Unit, string)"/>
+    public void AddParameter(string id, string value = "")
+    {
+        AddParameter(id, default, value);
+    }
+
+    /// <summary>
+    /// Adds a parameter with the given <paramref name="id"/>.
+    /// </summary>
+    /// <param name="id">A unique id.</param>
+    /// <param name="unit">The data type this parameter holds. Keep in mind that this can't be changed later!</param>
+    /// <param name="value">The initial value to assign (applies to this ActionType only).</param>
+    /// <exception cref="InvalidOperationException"/>
+    public void AddParameter(string id, Unit unit, string value)
+    {
+        BackingNode.Parent.AddParameter(id, unit);
+        BackingNode[id] = value ?? "";
+    }
+
+    /// <summary>
+    /// Removes the parameter with the given <paramref name="id"/> from all types of this action.
+    /// </summary>
+    public void RemoveParameter(string id)
+    {
+        BackingNode.Parent.RemoveParameter(id);
+    }
 
     /// <inheritdoc cref="IAction.TryGetParameter(string, out IParameter)"/>
     public bool TryGetParameter(string parameterName, [NotNullWhen(true)] out MutableParameter? parameter)

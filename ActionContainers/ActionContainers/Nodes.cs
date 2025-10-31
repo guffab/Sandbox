@@ -155,9 +155,9 @@ public class ActionNode : IEquatable<ActionNode>
         return false;
     }
 
-    public void RemoveParameter(string parameterName)
+    public void RemoveParameter(string id)
     {
-        var match = _parameters.FirstOrDefault(x => x.Id == parameterName);
+        var match = _parameters.FirstOrDefault(x => x.Id == id);
         if (match is null)
             return;
 
