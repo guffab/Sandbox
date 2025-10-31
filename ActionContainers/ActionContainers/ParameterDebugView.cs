@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ActionContainers;
 
@@ -7,6 +8,7 @@ namespace ActionContainers;
 /// Allows a simpler presentation in the debugger.
 /// </summary>
 [DebuggerDisplay($"{{{nameof(Id)},nq}}")]
+[ExcludeFromCodeCoverage]
 internal class ParameterDebugView(IParameter parameter)
 {
     public string Id => parameter.Id;
