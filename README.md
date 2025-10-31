@@ -195,7 +195,7 @@ var filigreeSlab = new MutableAction(pool["Production Unit", "Filigree Slab"]);
 filigreeSlab["Layer 1"].Value = "Layer_@_Flipped Layer"; //uniquely identifies another action from the pool
 var flippedLayer = filigreeSlab["Layer 1"].SubAction;
 
-flippedLayer["Flip Component 1"].Value = "1"; //set bool to true
+flippedLayer["Flip 1"].Value = "1"; //set bool to true
 ```
 
 <br/>
