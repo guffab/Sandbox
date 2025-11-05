@@ -5,7 +5,8 @@ namespace ActionContainers;
 
 public class ActionNodePool
 {
-    List<ActionNode> _nodes = [];
+    const string delimiter = "_@_";
+    private List<ActionNode> _nodes = [];
 
     //this object is a Singleton, so use the static instance property.
     private ActionNodePool()
@@ -61,7 +62,6 @@ public class ActionNodePool
 
         foreach (var id in ids)
         {
-            const string delimiter = "_@_";
 
             var delimiterIndex = id.IndexOf(delimiter);
             if (delimiterIndex is -1)
@@ -108,8 +108,8 @@ public class ActionNodePool
     /// </summary>
     internal void UpdateAllReferences(string oldActionName, string oldTypeName, string newActionName, string newTypeName)
     {
-        string oldId = $"{oldActionName}_@_{oldTypeName}";
-        string newId = $"{newActionName}_@_{newTypeName}";
+        string oldId = $"{oldActionName}{delimiter}{oldTypeName}";
+        string newId = $"{newActionName}{delimiter}{newTypeName}";
 
         foreach (var node in _nodes)
         {

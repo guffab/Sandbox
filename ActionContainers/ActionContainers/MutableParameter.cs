@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ActionContainers;
 
@@ -43,12 +44,15 @@ public class MutableParameter(ParameterTemplateNode parameterNode, MutableAction
     }
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    [ExcludeFromCodeCoverage]
     IAction? IParameter.ParentAction => ParentAction;
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    [ExcludeFromCodeCoverage]
     IAction? IParameter.SubAction => SubAction;
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    [ExcludeFromCodeCoverage]
     List<IAction> IParameter.SubActions => [.. SubActions];
 
     /// <inheritdoc/>
