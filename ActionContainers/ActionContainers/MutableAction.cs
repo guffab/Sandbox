@@ -28,9 +28,11 @@ public class MutableAction(ActionTypeNode actionNode, MutableParameter? parent) 
     public MutableParameter? ParentParameter { get; init; } = parent;
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    [ExcludeFromCodeCoverage]
     IReadOnlyList<IParameter> IAction.Parameters => [.. Parameters];
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    [ExcludeFromCodeCoverage]
     IParameter? IAction.ParentParameter => ParentParameter;
 
     /// <inheritdoc cref="AddParameter(string, Unit, string)"/>
@@ -158,6 +160,7 @@ public class MutableAction(ActionTypeNode actionNode, MutableParameter? parent) 
         return false;
     }
 
+    [ExcludeFromCodeCoverage]
     bool IAction.TryGetParameter(string parameterName, [NotNullWhen(true)] out IParameter? parameter)
     {
         var result = TryGetParameter(parameterName, out var mutableParameter);
@@ -185,5 +188,6 @@ public class MutableAction(ActionTypeNode actionNode, MutableParameter? parent) 
     }
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    [ExcludeFromCodeCoverage]
     IParameter? IAction.this[string parameterName] => this[parameterName];
 }

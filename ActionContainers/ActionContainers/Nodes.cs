@@ -12,7 +12,7 @@ namespace ActionContainers;
 /// This object is entirely mutable (sometimes through specialized methods only) so that any changes are immediately visible to all objects referencing it.
 /// </remarks>
 [DebuggerDisplay($"{{{nameof(Id)},nq}}")]
-public class ActionNode : IEquatable<ActionNode>
+public class ActionNode
 {
     string _id;
     readonly List<ParameterTemplateNode> _parameters;
@@ -172,49 +172,13 @@ public class ActionNode : IEquatable<ActionNode>
         foreach (var type in _types)
             type.ParameterValues = [.. type.ParameterValues.Take(i), .. type.ParameterValues.Skip(i + 1)];
     }
-
-    //all sorts of equality implementations from here on
-    public static bool operator ==(ActionNode a, ActionNode b) => a.Equals(b);
-    public static bool operator !=(ActionNode a, ActionNode b) => !a.Equals(b);
-
-    public override bool Equals(object? obj)
-    {
-        return Equals(obj as ActionNode);
-    }
-
-    public bool Equals(ActionNode? other)
-    {
-        if (other is null)
-            return false;
-
-        if (object.ReferenceEquals(other, this))
-            return true;
-
-        return other._id == this._id &&
-               other._parameters.SequenceEqual(this._parameters) &&
-               other._types.SequenceEqual(this._types);
-    }
-
-    public override int GetHashCode()
-    {
-        var hashCode = new HashCode();
-        hashCode.Add(_id);
-
-        foreach (var p in _parameters)
-            hashCode.Add(p);
-
-        foreach (var t in _types)
-            hashCode.Add(t);
-
-        return hashCode.ToHashCode();
-    }
 }
 
 /// <summary>
 /// Represents a single parameter template of an <see cref="ActionNode"/>, meaning it does not provide a value.
 /// </summary>
 [DebuggerDisplay($"{{{nameof(Id)},nq}}")]
-public class ParameterTemplateNode(string id, Unit unit = Unit.TextOrAction, ActionNode parent = null!) : IEquatable<ParameterTemplateNode>
+public class ParameterTemplateNode(string id, Unit unit = Unit.TextOrAction, ActionNode parent = null!)
 {
     internal ActionNode Parent = parent;
 
@@ -224,32 +188,6 @@ public class ParameterTemplateNode(string id, Unit unit = Unit.TextOrAction, Act
     //having a reliable logic for automatic conversions between incompatible units is damn near impossible. Just delete the parameter and recreate it if you must!
     [JsonProperty("U")]
     public Unit Unit { get; } = unit;
-
-    //all sorts of equality implementations from here on
-    public static bool operator ==(ParameterTemplateNode a, ParameterTemplateNode b) => a.Equals(b);
-    public static bool operator !=(ParameterTemplateNode a, ParameterTemplateNode b) => !a.Equals(b);
-
-    public override bool Equals(object? obj)
-    {
-        return Equals(obj as ParameterTemplateNode);
-    }
-
-    public bool Equals(ParameterTemplateNode? other)
-    {
-        if (other is null)
-            return false;
-
-        if (object.ReferenceEquals(other, this))
-            return true;
-
-        return other.Id == this.Id &&
-               other.Unit == this.Unit;
-    }
-
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(Id, Unit);
-    }
 }
 
 /// <summary>
@@ -259,7 +197,7 @@ public class ParameterTemplateNode(string id, Unit unit = Unit.TextOrAction, Act
 /// This object is entirely mutable (sometimes through specialized methods only)  so that any changes are immediately visible to all objects referencing it+.
 /// </remarks>
 [DebuggerDisplay($"{{{nameof(Id)},nq}}")]
-public class ActionTypeNode(string id, IReadOnlyList<string> parameterValues, ActionNode parent = null!) : IEquatable<ActionTypeNode>
+public class ActionTypeNode(string id, IReadOnlyList<string> parameterValues, ActionNode parent = null!)
 {
     internal ActionNode Parent = parent;
     private string _id = id;
@@ -283,40 +221,6 @@ public class ActionTypeNode(string id, IReadOnlyList<string> parameterValues, Ac
     {
         get => Parent[Id, parameter];
         set => Parent[Id, parameter] = value;
-    }
-
-    //all sorts of equality implementations from here on
-    public static bool operator ==(ActionTypeNode a, ActionTypeNode b) => a.Equals(b);
-    public static bool operator !=(ActionTypeNode a, ActionTypeNode b) => !a.Equals(b);
-
-    public override bool Equals(object? obj)
-    {
-        return Equals(obj as ActionTypeNode);
-    }
-
-    public bool Equals(ActionTypeNode? other)
-    {
-        if (other is null)
-            return false;
-
-        if (object.ReferenceEquals(other, this))
-            return true;
-
-        if (other._id != this._id)
-            return false;
-
-        return other.ParameterValues.SequenceEqual(this.ParameterValues);
-    }
-
-    public override int GetHashCode()
-    {
-        var hashCode = new HashCode();
-        hashCode.Add(_id);
-
-        foreach (var p in ParameterValues)
-            hashCode.Add(p);
-
-        return hashCode.ToHashCode();
     }
 }
 

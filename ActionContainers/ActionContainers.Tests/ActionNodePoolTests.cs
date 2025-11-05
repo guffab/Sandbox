@@ -58,6 +58,28 @@ public class ActionNodePoolTests
     }
 
     [Test]
+    public void ActionParameter_ChangeId_UpdatesEverywhere()
+    {
+        //Arrange
+        var action1 = new MutableAction(pool["PG_Production Unit", "Filigree Slab"]!, null);
+        var action2 = new MutableAction(pool["PG_Production Unit", "Double Wall"]!, null);
+
+        //Act
+        var v1 = action1["PF_Layer 1"]!;
+        v1.Id = "Layer 1";
+
+        var v2 = action2["Layer 1"]!;
+        v2.Id = "Ly 1";
+
+        //Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(v1.Id, Is.EqualTo(v2.Id));
+            Assert.That(v2.Id, Is.EqualTo("Ly 1"));
+        });
+    }
+
+    [Test]
     public void ActionNode_ChangeId_ReferencesDontBreak()
     {
         //Arrange
@@ -177,6 +199,67 @@ public class ActionNodePoolTests
             Assert.That(layer, Is.EqualTo(null));
             Assert.That(somethingElse, Is.Not.EqualTo(null));
             Assert.That(pool["PG_Layer"], Is.Not.EqualTo(null));
+        });
+    }
+
+    [Test]
+    public void MutableParameter_InsertSubAction_Works()
+    {
+        //Arrange
+        var pu = pool["PG_Production Unit"]!;
+        pu.AddParameter("Test");
+
+        var pu1 = new MutableAction(pu.AddType("Type 1"), null);
+        var pu1Param = pu1["Test"]!;
+
+        var pu2 = new MutableAction(pu.AddType("Type 2"), null);
+        var pu2Param = pu2["Test"]!;
+
+        var layer = pool["PG_Layer"]!;
+        var ly1 = new MutableAction(layer.AddType("Type 1"), null);
+        var ly2 = new MutableAction(layer.AddType("Type 2"), null);
+
+        //Act
+        pu1Param.SubAction = ly1;
+        pu2Param.SubAction = ly2;
+
+        Assert.Multiple(() =>
+        {
+            //Assert
+            Assert.That(pu1Param.SubAction.Id, Is.EqualTo(ly1.Id));
+            Assert.That(pu2Param.SubAction.Id, Is.EqualTo(ly2.Id));
+        });
+    }
+
+    [Test]
+    public void MutableAction_InsertParamters_Works()
+    {
+        //Arrange
+        var pu1 = new MutableAction(pool["PG_Production Unit", "Filigree Slab"]!, null);
+        var before1 = pu1["PU Test 1"]?.Id;
+        var before2 = pu1["PU Test 2"]?.Id;
+
+        var layer = pool["PG_Layer"]!;
+        layer.AddParameter("Test 1");
+        layer.AddParameter("Test 2");
+
+        var ly = new MutableAction(layer.AddType("Type"), null);
+        
+        //Act
+        pu1["PU Test 1"] = ly["Test 1"];
+        pu1["PU Test 2"] = ly["Test 2"];
+
+        var after1 = pu1["PU Test 1"]?.Id;
+        var after2 = pu1["PU Test 2"]?.Id;
+
+        //Assert
+        Assert.Multiple(() =>
+        {
+            //Assert
+            Assert.That(before1, Is.EqualTo(null));
+            Assert.That(before2, Is.EqualTo(null));
+            Assert.That(after1, Is.Not.EqualTo(null));
+            Assert.That(after2, Is.Not.EqualTo(null));
         });
     }
 }

@@ -10,6 +10,7 @@ internal interface IAction
     /// <summary>
     /// Combines the <see cref="ActionName"/> and <see cref="TypeName"/>.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public string Id => $"{ActionName}_@_{TypeName}";
 
     /// <summary>
