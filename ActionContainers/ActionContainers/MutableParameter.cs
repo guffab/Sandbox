@@ -21,7 +21,7 @@ public class MutableParameter(ParameterTemplateNode parameterNode, MutableAction
     public string Id { get => BackingNode.Id; set => BackingNode.Id = value; }
 
     /// <inheritdoc/>
-    public string Value { get => BackingNode.Parent[ParentAction.TypeName, BackingNode.Id]; set => BackingNode.Parent[ParentAction.TypeName, BackingNode.Id] = value; }
+    public StringBoolOrDouble Value { get => BackingNode.Parent[ParentAction.TypeName, BackingNode.Id]; set => BackingNode.Parent[ParentAction.TypeName, BackingNode.Id] = value; }
 
     /// <inheritdoc cref="ActionContainers.Unit"/>
     public Unit Unit => BackingNode.Unit;
@@ -39,7 +39,7 @@ public class MutableParameter(ParameterTemplateNode parameterNode, MutableAction
     /// <inheritdoc cref="IParameter.SubActions"/>
     public List<MutableAction> SubActions
     {
-        get => ActionNodePool.Instance.GetTypeNodes(Value.Split(separatorChar)).Select(x => new MutableAction(x, this)).ToList();
+        get => ActionNodePool.Instance.GetTypeNodes(((string)Value).Split(separatorChar)).Select(x => new MutableAction(x, this)).ToList();
         set => Value = string.Join(separatorChar, value.Select(x => x.Id));
     }
 
@@ -55,11 +55,14 @@ public class MutableParameter(ParameterTemplateNode parameterNode, MutableAction
     [ExcludeFromCodeCoverage]
     List<IAction> IParameter.SubActions => [.. SubActions];
 
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    [ExcludeFromCodeCoverage]
+    string IParameter.Value => Value;
+
     /// <inheritdoc/>
     public bool TryGetValue<TEnum>(out TEnum value) where TEnum : struct, Enum
     {
-        string intermediateValue = Value ?? "";
-        return Enum.TryParse(intermediateValue, out value);
+        return Enum.TryParse(Value, out value);
     }
 
     /// <inheritdoc/>
@@ -104,7 +107,7 @@ public class MutableParameter(ParameterTemplateNode parameterNode, MutableAction
     /// <inheritdoc/>
     public bool TryGetValue(out string value)
     {
-        value = Value ?? "";
+        value = Value;
         return true;
     }
 
@@ -144,5 +147,28 @@ public class MutableParameter(ParameterTemplateNode parameterNode, MutableAction
         //not found
         value = Array.Empty<string>();
         return false;
+    }
+
+    /// <summary>
+    /// Represents a lightweight union of (string, bool, double).
+    /// </summary>
+    // C# will gain support for actual unions somewhere in the next 5 years, so this is a quick compromise.
+    public readonly struct StringBoolOrDouble(string value)
+    {
+        private readonly string value = value ?? "";
+
+        public static implicit operator string(StringBoolOrDouble sbd) => sbd.value;
+        public static implicit operator bool(StringBoolOrDouble sbd) => sbd.value is "1" ? true : false;
+        public static implicit operator double(StringBoolOrDouble sbd) => double.TryParse(sbd.value, out double result) ? result : 0;
+
+        public static implicit operator StringBoolOrDouble(string s) => new(s);
+        public static implicit operator StringBoolOrDouble(bool b) => new(b ? "1" : "0");
+        public static implicit operator StringBoolOrDouble(double d) => new(d.ToString());
+
+        public static bool operator ==(StringBoolOrDouble a, StringBoolOrDouble b) => a.value == b.value;
+        public static bool operator !=(StringBoolOrDouble a, StringBoolOrDouble b) => a.value != b.value;
+
+        public override bool Equals(object? obj) => obj is StringBoolOrDouble sbd && sbd == this;
+        public override int GetHashCode() => value.GetHashCode();
     }
 }

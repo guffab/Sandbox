@@ -180,27 +180,12 @@ var action1 = new MutableAction(pool["PG_Production Unit", "Filigree Slab"]);
 var action2 = new MutableAction(pool["PG_Production Unit", "Double Wall"]);
 
 action1.ActionName = "Production Unit"; //updates the representations in the pool directly, therefore both action1 and action2 now refer to the new name.
-
-var parameter1 = action1["PF_Layer 1"];
-parameter1.Id = "Layer 1"; //again, since this updates the pool directly, all consumers of the "Production Unit" see the updated parameter name.
+action1["PF_Layer 1"].Id = "Layer 1"; //again, since this updates the pool directly, all consumers of the "Production Unit" see the updated parameter name.
 ```
 
 <br/>
 
-* `Linking actions together`
-
-```csharp
-var filigreeSlab = new MutableAction(pool["Production Unit", "Filigree Slab"]);
-
-filigreeSlab["Layer 1"].Value = "Layer_@_Flipped Layer"; //uniquely identifies another action from the pool
-var flippedLayer = filigreeSlab["Layer 1"].SubAction;
-
-flippedLayer["Flip 1"].Value = "1"; //set bool to true
-```
-
-<br/>
-
-* `Adding/Removing Parameters`
+* `Adding/Setting/Removing Parameters`
 
 ```csharp
 var filigreeSlab = new MutableAction(pool["Production Unit", "Filigree Slab"]);
@@ -209,5 +194,28 @@ filigreeSlab.AddParameter("Parameter 1", "Value");
 filigreeSlab.AddParameter("Parameter 2", true);
 filigreeSlab.AddParameter("Parameter 3", Unit.Length, 123.45);
 
+//performs automatic conversions to whatever the backing value requires (may have unexpected side-effects, handle with care)
+filigreeSlab["Parameter 1"].Value = "Other Value";
+filigreeSlab["Parameter 2"].Value = false;
+filigreeSlab["Parameter 2"].Value = 1e-6;
+
 filigreeSlab.RemoveParameter("Parameter 2");
+filigreeSlab.RemoveParameter("Parameter 1");
+```
+
+<br/>
+
+* `Linking actions together`
+
+```csharp
+var filigreeSlab = new MutableAction(pool["Production Unit", "Filigree Slab"]);
+var flippedLayer = new MutableAction(pool["Layer", "Flipped Layer"]);
+
+//option 1: through a direct reference
+filigreeSlab["Layer 1"].SubAction = flippedLayer;
+
+//option 2: setting the value to a unique id
+filigreeSlab["Layer 1"].Value = "Layer_@_Flipped Layer";
+
+//in any case, the result will be exactly the same
 ```

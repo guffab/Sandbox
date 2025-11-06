@@ -135,7 +135,7 @@ public class ActionNodePoolTests
         Assert.Multiple(() =>
         {
             Assert.That(after.Unit, Is.EqualTo(Unit.Length));
-            Assert.That(after.Value, Is.EqualTo("something"));
+            Assert.That((string)after.Value, Is.EqualTo("something"));
         });
     }
 
@@ -155,7 +155,7 @@ public class ActionNodePoolTests
     {
         //Arrange
         var filigreeSlab = new MutableAction(pool["PG_Production Unit", "Filigree Slab"]!, null);
-        
+
         filigreeSlab.AddParameter("A");
         filigreeSlab.AddParameter("B", true);
         filigreeSlab.AddParameter("C", "Value");
@@ -235,22 +235,22 @@ public class ActionNodePoolTests
     public void MutableAction_InsertParamters_Works()
     {
         //Arrange
-        var pu1 = new MutableAction(pool["PG_Production Unit", "Filigree Slab"]!, null);
-        var before1 = pu1["PU Test 1"]?.Id;
-        var before2 = pu1["PU Test 2"]?.Id;
+        var pu = new MutableAction(pool["PG_Production Unit", "Filigree Slab"]!, null);
+        var before1 = pu["PU Test 1"]?.Id;
+        var before2 = pu["PU Test 2"]?.Id;
 
         var layer = pool["PG_Layer"]!;
         layer.AddParameter("Test 1");
         layer.AddParameter("Test 2");
 
         var ly = new MutableAction(layer.AddType("Type"), null);
-        
-        //Act
-        pu1["PU Test 1"] = ly["Test 1"];
-        pu1["PU Test 2"] = ly["Test 2"];
 
-        var after1 = pu1["PU Test 1"]?.Id;
-        var after2 = pu1["PU Test 2"]?.Id;
+        //Act
+        pu["PU Test 1"] = ly["Test 1"];
+        pu["PU Test 2"] = ly["Test 2"];
+
+        var after1 = pu["PU Test 1"]?.Id;
+        var after2 = pu["PU Test 2"]?.Id;
 
         //Assert
         Assert.Multiple(() =>
@@ -260,6 +260,36 @@ public class ActionNodePoolTests
             Assert.That(before2, Is.EqualTo(null));
             Assert.That(after1, Is.Not.EqualTo(null));
             Assert.That(after2, Is.Not.EqualTo(null));
+        });
+    }
+
+    [Test]
+    public void MutableParameter_ValueConversion_Works()
+    {
+        //Arrange
+        var pu = new MutableAction(pool["PG_Production Unit", "Filigree Slab"]!, null);
+        pu.AddParameter("Parameter Bool", false);
+        pu.AddParameter("Parameter Double", Unit.Number, 0);
+        pu.AddParameter("Parameter String");
+        var beforeB = pu["Parameter Bool"]!.Value;
+        var beforeD = pu["Parameter Double"]!.Value;
+        var beforeS = pu["Parameter String"]!.Value;
+
+        //Act
+        pu["Parameter Bool"]!.Value = true;
+        pu["Parameter Double"]!.Value = 1e-6;
+        pu["Parameter String"]!.Value = "some text";
+
+        //Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(beforeB != pu["Parameter Bool"]!.Value);
+            Assert.That(beforeD != pu["Parameter Double"]!.Value);
+            Assert.That(beforeS != pu["Parameter String"]!.Value);
+
+            Assert.That(pu["Parameter Bool"]!.Value == true);
+            Assert.That(pu["Parameter Double"]!.Value == 1e-6);
+            Assert.That(pu["Parameter String"]!.Value == "some text");
         });
     }
 }
