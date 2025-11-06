@@ -52,7 +52,7 @@ public class ActionNodePoolTests
             ]
         }
         """;
- 
+
         //Assert
         Assert.Throws<InvalidDataException>(() => JsonConvert.DeserializeObject<ActionNode>(serialized));
     }
