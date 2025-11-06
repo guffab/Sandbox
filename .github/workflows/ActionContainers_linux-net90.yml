@@ -32,4 +32,4 @@ jobs:
     - name: Build
       run: dotnet build --configuration Release --no-restore
     - name: Test
-      run: dotnet test --configuration Release --verbosity minimal
+      run: dotnet test --no-build --configuration Release --verbosity minimal
