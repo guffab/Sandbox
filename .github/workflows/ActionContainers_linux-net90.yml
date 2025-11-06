@@ -29,6 +29,8 @@ jobs:
         dotnet-version: '9.0.x'
     - name: Restore dependencies
       run: dotnet restore
+    - name: Clean build output
+      run: rm -rf ./bin ./obj
     - name: Build
       run: dotnet build --framework net9.0 --configuration Release --no-restore
     - name: Test
