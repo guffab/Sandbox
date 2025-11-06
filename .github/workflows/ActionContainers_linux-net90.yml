@@ -30,6 +30,6 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
-      run: dotnet build --framework net9.0 --configuration Release --no-restore
+      run: dotnet build --configuration Release --no-restore
     - name: Test
-      run: dotnet test --no-build --framework net9.0 --configuration Release --verbosity minimal
+      run: dotnet test --no-build --configuration Release --verbosity minimal
