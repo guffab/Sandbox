@@ -292,4 +292,42 @@ public class ActionNodePoolTests
             Assert.That(pu["Parameter String"]!.Value == "some text");
         });
     }
+
+    [Test]
+    public void MutableAction_Equality_BasedOnPool()
+    {
+        //Arrange
+        var pu1 = new MutableAction(pool["PG_Production Unit", "Filigree Slab"]!, null);
+        var pu2 = new MutableAction(pool["PG_Production Unit", "Filigree Slab"]!, null);
+
+        //Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(ReferenceEquals(pu1, pu2) is false);
+            Assert.That(pu1 == pu2);
+            Assert.That(pu1.Equals(pu2));
+            Assert.That(pu1.GetHashCode() == pu2.GetHashCode());
+        });
+    }
+
+    
+    [Test]
+    public void MutableParameter_Equality_BasedOnPool()
+    {
+        //Arrange
+        var pu1 = new MutableAction(pool["PG_Production Unit", "Filigree Slab"]!, null);
+        var pu2 = new MutableAction(pool["PG_Production Unit", "Filigree Slab"]!, null);
+
+        var pu1Layer1 = pu1["PF_Layer 1"]!;
+        var pu2Layer1 = pu2["PF_Layer 1"]!;
+
+        //Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(ReferenceEquals(pu1Layer1, pu2Layer1) is false);
+            Assert.That(pu1Layer1 == pu2Layer1);
+            Assert.That(pu1Layer1.Equals(pu2Layer1));
+            Assert.That(pu1Layer1.GetHashCode() == pu2Layer1.GetHashCode());
+        });
+    }
 }

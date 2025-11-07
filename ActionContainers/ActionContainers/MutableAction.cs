@@ -35,6 +35,10 @@ public class MutableAction(ActionTypeNode actionNode, MutableParameter? parent) 
     [ExcludeFromCodeCoverage]
     IParameter? IAction.ParentParameter => ParentParameter;
 
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    [ExcludeFromCodeCoverage]
+    IParameter? IAction.this[string parameterName] => this[parameterName];
+
     /// <inheritdoc cref="AddParameter(string, Unit, string)"/>
     public void AddParameter(string id, string value = "")
     {
@@ -187,7 +191,16 @@ public class MutableAction(ActionTypeNode actionNode, MutableParameter? parent) 
         }
     }
 
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    [ExcludeFromCodeCoverage]
-    IParameter? IAction.this[string parameterName] => this[parameterName];
+    public static bool operator ==(MutableAction a, MutableAction b) => a.BackingNode == b.BackingNode;
+    public static bool operator !=(MutableAction a, MutableAction b) => a.BackingNode == b.BackingNode;
+
+    public override bool Equals(object? obj)
+    {
+        if (obj is not MutableAction ma)
+            return false;
+
+        return ma.BackingNode == this.BackingNode;
+    }
+
+    public override int GetHashCode() => BackingNode.GetHashCode();
 }
