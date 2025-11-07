@@ -149,7 +149,6 @@ public class MutableParameter(ParameterTemplateNode parameterNode, MutableAction
         return false;
     }
 
-
     public static bool operator ==(MutableParameter a, MutableParameter b) => a.BackingNode == b.BackingNode;
     public static bool operator !=(MutableParameter a, MutableParameter b) => a.BackingNode == b.BackingNode;
 

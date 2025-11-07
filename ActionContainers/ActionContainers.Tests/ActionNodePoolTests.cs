@@ -310,7 +310,6 @@ public class ActionNodePoolTests
         });
     }
 
-    
     [Test]
     public void MutableParameter_Equality_BasedOnPool()
     {
