@@ -149,6 +149,19 @@ public class MutableParameter(ParameterTemplateNode parameterNode, MutableAction
         return false;
     }
 
+    public static bool operator ==(MutableParameter a, MutableParameter b) => a.BackingNode == b.BackingNode;
+    public static bool operator !=(MutableParameter a, MutableParameter b) => a.BackingNode == b.BackingNode;
+
+    public override bool Equals(object? obj)
+    {
+        if (obj is not MutableParameter mp)
+            return false;
+
+        return mp.BackingNode == this.BackingNode;
+    }
+
+    public override int GetHashCode() => BackingNode.GetHashCode();
+
     /// <summary>
     /// Represents a lightweight union of (string, bool, double).
     /// </summary>
